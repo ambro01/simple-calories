@@ -1,6 +1,6 @@
 -- migration: create_functions
 -- description: creates postgresql functions for business logic
--- functions: get_current_calorie_goal, update_updated_at_column, handle_new_user
+-- functions: get_current_calorie_goal, get_latest_ai_generation, update_updated_at_column, handle_new_user
 -- notes: functions use security definer to bypass rls for internal logic
 
 -- function: get_current_calorie_goal
@@ -37,6 +37,54 @@ $$ language plpgsql stable security definer;
 
 comment on function get_current_calorie_goal(uuid, date) is
   'returns current calorie goal for user on target date, defaults to 2000 kcal if not found';
+
+-- function: get_latest_ai_generation
+-- description: retrieves the latest ai generation for a specific meal
+-- parameters:
+--   meal_uuid: uuid of the meal
+-- returns: table with ai generation details
+-- notes:
+--   - returns most recent generation (order by created_at desc limit 1)
+--   - used for displaying ai generation history
+--   - stable: function doesn't modify data
+--   - security definer: runs with creator privileges (bypasses rls)
+create or replace function get_latest_ai_generation(meal_uuid uuid)
+returns table (
+  id uuid,
+  prompt text,
+  generated_calories integer,
+  generated_protein decimal(6,2),
+  generated_carbs decimal(6,2),
+  generated_fats decimal(6,2),
+  assumptions text,
+  model_used varchar(100),
+  generation_duration integer,
+  status ai_generation_status,
+  created_at timestamptz
+) as $$
+begin
+  return query
+  select
+    ag.id,
+    ag.prompt,
+    ag.generated_calories,
+    ag.generated_protein,
+    ag.generated_carbs,
+    ag.generated_fats,
+    ag.assumptions,
+    ag.model_used,
+    ag.generation_duration,
+    ag.status,
+    ag.created_at
+  from ai_generations ag
+  where ag.meal_id = meal_uuid
+  order by ag.created_at desc
+  limit 1;
+end;
+$$ language plpgsql stable security definer;
+
+comment on function get_latest_ai_generation(uuid) is
+  'returns latest ai generation for a meal (most recent by created_at)';
 
 -- function: update_updated_at_column
 -- description: trigger function to automatically update updated_at timestamp

@@ -1,6 +1,6 @@
 -- migration: disable_rls
 -- description: disables row level security on all tables
--- tables affected: profiles, calorie_goals, meals, error_logs
+-- tables affected: profiles, calorie_goals, meals, ai_generations, error_logs
 -- notes: completely disables rls, allowing full access without policy checks
 --        warning: this removes all data isolation between users
 --        use only for development/testing, never in production
@@ -28,6 +28,14 @@ alter table calorie_goals disable row level security;
 -- disable row level security
 -- allows all users to access all meal records without restrictions
 alter table meals disable row level security;
+
+-- ============================================
+-- disable rls on ai_generations table
+-- ============================================
+
+-- disable row level security
+-- allows all users to access all ai generation records without restrictions
+alter table ai_generations disable row level security;
 
 -- ============================================
 -- disable rls on error_logs table

@@ -1,7 +1,7 @@
 -- migration: create_enums
--- description: creates enum types for meal categories and input methods
--- tables affected: none (prerequisite for meals table)
--- notes: these enums must be created before the meals table
+-- description: creates enum types for meal categories, input methods, and ai generation status
+-- tables affected: none (prerequisite for meals and ai_generations tables)
+-- notes: these enums must be created before the respective tables
 
 -- create enum for meal categories
 -- used to categorize meals into standard meal times
@@ -26,3 +26,14 @@ create type input_method_type as enum (
 );
 
 comment on type input_method_type is 'tracks the source and modification status of meal data for ai metrics';
+
+-- create enum for ai generation status
+-- used to track the lifecycle of ai generation requests
+-- enables monitoring and debugging of ai service
+create type ai_generation_status as enum (
+  'pending',    -- generation in progress
+  'completed',  -- generation successful
+  'failed'      -- generation failed
+);
+
+comment on type ai_generation_status is 'tracks status of ai generation requests (pending, completed, failed)';

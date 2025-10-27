@@ -1,6 +1,6 @@
 -- migration: disable_rls_policies
--- description: disables all rls policies from tables (profiles, calorie_goals, meals, error_logs)
--- tables affected: profiles, calorie_goals, meals, error_logs
+-- description: disables all rls policies from tables (profiles, calorie_goals, meals, ai_generations, error_logs)
+-- tables affected: profiles, calorie_goals, meals, ai_generations, error_logs
 -- notes: rls remains enabled on tables, but all policies are dropped
 --        this allows full access to authenticated users without policy restrictions
 --        warning: this removes data isolation between users
@@ -46,6 +46,22 @@ drop policy if exists "users can update own meals" on meals;
 
 -- drop delete policy
 drop policy if exists "users can delete own meals" on meals;
+
+-- ============================================
+-- drop policies from ai_generations table
+-- ============================================
+
+-- drop select policy
+drop policy if exists "users can view own ai generations" on ai_generations;
+
+-- drop insert policy
+drop policy if exists "users can insert own ai generations" on ai_generations;
+
+-- drop update policy
+drop policy if exists "users can update own ai generations" on ai_generations;
+
+-- drop delete policy
+drop policy if exists "users can delete own ai generations" on ai_generations;
 
 -- ============================================
 -- note on error_logs table

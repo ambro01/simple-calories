@@ -46,12 +46,3 @@ comment on index idx_error_logs_created is
   'optimizes browsing recent errors and cleanup of old logs';
 comment on index idx_error_logs_user_created is
   'optimizes filtering errors by user and time';
-
--- enable row level security
--- critical: even admin tables must have rls enabled
-alter table error_logs enable row level security;
-
--- note: no policies for regular users
--- error logs contain technical information not suitable for end users
--- access only via supabase dashboard or direct sql for administrators
--- if admin role is needed in future, add policy here

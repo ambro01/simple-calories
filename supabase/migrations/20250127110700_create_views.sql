@@ -1,7 +1,7 @@
 -- migration: create_views
 -- description: creates database views for simplified data access
--- views: daily_progress
--- notes: regular view (not materialized) for mvp simplicity
+-- views: daily_progress, meals_with_latest_ai
+-- notes: regular views (not materialized) for mvp simplicity
 
 -- view: daily_progress
 -- description: aggregates daily meal data with calorie goal comparison
@@ -38,8 +38,43 @@ group by date(meal_timestamp), user_id;
 comment on view daily_progress is
   'aggregated daily meal data with calorie goal comparison and achievement percentage';
 
+-- view: meals_with_latest_ai
+-- description: joins meals with their latest ai generation for convenient access
+-- columns:
+--   - all columns from meals
+--   - ai_generation_id: id of latest ai generation (nullable)
+--   - ai_prompt: original user prompt (nullable)
+--   - ai_assumptions: ai assumptions text (nullable)
+--   - ai_model_used: model identifier (nullable)
+--   - ai_generation_duration: generation time in ms (nullable)
+-- usage:
+--   - displaying meal details with ai generation history
+--   - analyzing user edits vs ai suggestions
+-- notes:
+--   - uses lateral join for efficiency
+--   - rls inherited from meals and ai_generations tables
+--   - left join: meals without ai generations will have null ai columns
+create view meals_with_latest_ai as
+select
+  m.*,
+  ag.id as ai_generation_id,
+  ag.prompt as ai_prompt,
+  ag.assumptions as ai_assumptions,
+  ag.model_used as ai_model_used,
+  ag.generation_duration as ai_generation_duration
+from meals m
+left join lateral (
+  select * from ai_generations
+  where meal_id = m.id
+  order by created_at desc
+  limit 1
+) ag on true;
+
+comment on view meals_with_latest_ai is
+  'meals joined with their latest ai generation for convenient display and analysis';
+
 -- note on rls inheritance
--- daily_progress view automatically inherits rls from meals table
+-- both views automatically inherit rls from underlying tables
 -- users can only see their own data via where user_id = auth.uid()
 -- no separate policies needed for views
 
@@ -55,6 +90,10 @@ comment on view daily_progress is
 -- select * from daily_progress
 -- where user_id = auth.uid()
 --   and date = '2025-01-27';
+--
+-- meal with ai history:
+-- select * from meals_with_latest_ai
+-- where id = $1 and user_id = auth.uid();
 --
 -- calculate color status (frontend logic):
 -- - gray: total_calories < calorie_goal
