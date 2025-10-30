@@ -66,11 +66,11 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { supabaseClient, DEFAULT_USER_ID } from "../../../db/supabase.client";
-import { CreateAIGenerationSchema } from "../../../lib/validation/ai-generation.schemas";
-import { AIGenerationService } from "../../../lib/services/ai-generation.service";
-import { aiGenerationRateLimiter } from "../../../lib/services/rate-limit.service";
-import type { ErrorResponseDTO, RateLimitErrorResponseDTO, AIGenerationsListResponseDTO } from "../../../types";
+import { supabaseClient, DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CreateAIGenerationSchema } from "../../../../lib/validation/ai-generation.schemas";
+import { AIGenerationService } from "../../../../lib/services/ai-generation.service";
+import { aiGenerationRateLimiter } from "../../../../lib/services/rate-limit.service";
+import type { ErrorResponseDTO, RateLimitErrorResponseDTO, AIGenerationsListResponseDTO } from "../../../../types";
 
 /**
  * GET handler - List AI generations with pagination
