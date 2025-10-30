@@ -22,7 +22,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { AddMealModalProps } from "../../types/add-meal.types";
-import { MealForm } from "./MealForm.tsx";
+import { MealForm } from "./MealForm";
 
 export function AddMealModal({ isOpen, onClose, onSuccess }: AddMealModalProps) {
   return (
