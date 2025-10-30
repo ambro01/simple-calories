@@ -5,7 +5,8 @@
       "Bash(npx tsc:*)",
       "Bash(npm run build:*)",
       "Bash(dir:*)",
-      "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\src\\pages\\api\\v1\\daily-progress\" mkdir \"d:\\PROJEKTY\\simple-calories\\src\\pages\\api\\v1\\daily-progress\")"
+      "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\src\\pages\\api\\v1\\daily-progress\" mkdir \"d:\\PROJEKTY\\simple-calories\\src\\pages\\api\\v1\\daily-progress\")",
+      "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\.ai\" mkdir \"d:\\PROJEKTY\\simple-calories\\.ai\")"
     ],
     "deny": [],
     "ask": []
