@@ -6,7 +6,11 @@
       "Bash(npm run build:*)",
       "Bash(dir:*)",
       "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\src\\pages\\api\\v1\\daily-progress\" mkdir \"d:\\PROJEKTY\\simple-calories\\src\\pages\\api\\v1\\daily-progress\")",
-      "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\.ai\" mkdir \"d:\\PROJEKTY\\simple-calories\\.ai\")"
+      "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\.ai\" mkdir \"d:\\PROJEKTY\\simple-calories\\.ai\")",
+      "Bash(if not exist \"d:\\PROJEKTY\\simple-calories\\src\\components\\add-meal\" mkdir \"d:\\PROJEKTY\\simple-calories\\src\\components\\add-meal\")",
+      "Bash(if not exist:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx shadcn@latest add:*)"
     ],
     "deny": [],
     "ask": []
