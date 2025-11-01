@@ -112,6 +112,28 @@ export function useAddMealForm(): UseAddMealFormReturn {
     if (field === 'time') {
       setTimeout(() => autoDetectCategory(value as string), 0);
     }
+
+    // Clear validation errors when user modifies fields
+    if (field === 'description') {
+      setState(prev => ({
+        ...prev,
+        validationErrors: prev.validationErrors.filter(err => err.field !== 'description')
+      }));
+    }
+
+    if (field === 'calories') {
+      setState(prev => ({
+        ...prev,
+        validationErrors: prev.validationErrors.filter(err => err.field !== 'calories')
+      }));
+    }
+
+    if (field === 'protein' || field === 'carbs' || field === 'fats' || field === 'fiber') {
+      setState(prev => ({
+        ...prev,
+        validationErrors: prev.validationErrors.filter(err => err.field !== field)
+      }));
+    }
   }, []);
 
   // Update prompt (AI mode)
@@ -321,12 +343,18 @@ export function useAddMealForm(): UseAddMealFormReturn {
     const errors: FormValidationError[] = [];
 
     if (state.mode === 'ai') {
-      // AI mode validation
+      // AI mode validation - only check if we have AI result
       const aiIdError = validateAIGenerationId(state.aiGenerationId);
       if (aiIdError) errors.push(aiIdError);
 
-      const descError = validateDescription(state.description);
-      if (descError) errors.push(descError);
+      // Description and calories will be taken from aiResult during submit
+      // So we only validate if aiResult exists
+      if (!state.aiResult || state.aiResult.status !== 'completed') {
+        errors.push({
+          field: 'aiResult',
+          message: 'Najpierw wygeneruj posiłek',
+        });
+      }
     } else {
       // Manual mode validation
       const descError = validateDescription(state.description);
@@ -368,38 +396,103 @@ export function useAddMealForm(): UseAddMealFormReturn {
 
   // Submit meal
   const submitMeal = useCallback(async (): Promise<CreateMealResponseDTO> => {
-    // Validate
-    if (!validateForm()) {
+    // For AI mode, prepare values from aiResult if not manually accepted
+    let description = state.description;
+    let calories = state.calories;
+    let protein = state.protein;
+    let carbs = state.carbs;
+    let fats = state.fats;
+
+    if (state.mode === 'ai' && state.aiResult?.status === 'completed') {
+      // Use AI result values if form fields are empty
+      if (!description) description = state.aiPrompt;
+      if (calories === null) calories = state.aiResult.generated_calories;
+      if (protein === null) protein = state.aiResult.generated_protein;
+      if (carbs === null) carbs = state.aiResult.generated_carbs;
+      if (fats === null) fats = state.aiResult.generated_fats;
+    }
+
+    // Validate with actual values
+    const errors: FormValidationError[] = [];
+
+    if (state.mode === 'ai') {
+      const aiIdError = validateAIGenerationId(state.aiGenerationId);
+      if (aiIdError) errors.push(aiIdError);
+
+      const descError = validateDescription(description);
+      if (descError) errors.push(descError);
+
+      const calError = validateCalories(calories);
+      if (calError) errors.push(calError);
+    } else {
+      const descError = validateDescription(description);
+      if (descError) errors.push(descError);
+
+      const calError = validateCalories(calories);
+      if (calError) errors.push(calError);
+
+      if (protein !== null) {
+        const proteinError = validateMacro(protein, 'protein');
+        if (proteinError) errors.push(proteinError);
+      }
+      if (carbs !== null) {
+        const carbsError = validateMacro(carbs, 'carbs');
+        if (carbsError) errors.push(carbsError);
+      }
+      if (fats !== null) {
+        const fatsError = validateMacro(fats, 'fats');
+        if (fatsError) errors.push(fatsError);
+      }
+      if (state.fiber !== null) {
+        const fiberError = validateMacro(state.fiber, 'fiber');
+        if (fiberError) errors.push(fiberError);
+      }
+    }
+
+    // Date validation
+    if (state.dateWarning?.type === 'future') {
+      errors.push({
+        field: 'date',
+        message: state.dateWarning.message,
+      });
+    }
+
+    if (errors.length > 0) {
+      setState(prev => ({ ...prev, validationErrors: errors }));
       throw new Error('Formularz zawiera błędy');
     }
 
-    setState(prev => ({ ...prev, submitLoading: true, submitError: null }));
+    setState(prev => ({ ...prev, submitLoading: true, submitError: null, validationErrors: [] }));
 
     try {
-      const timestamp = `${state.date}T${state.time}:00Z`;
+      // Tworzymy timestamp w lokalnej strefie czasowej i konwertujemy na ISO
+      const localDateTime = new Date(`${state.date}T${state.time}:00`);
+      const timestamp = localDateTime.toISOString();
 
       const requestData = state.mode === 'ai'
         ? {
-            description: state.description,
-            calories: state.calories!,
-            protein: state.protein,
-            carbs: state.carbs,
-            fats: state.fats,
+            description: description,
+            calories: calories!,
+            protein: protein,
+            carbs: carbs,
+            fats: fats,
             category: state.category,
             input_method: 'ai' as const,
             ai_generation_id: state.aiGenerationId!,
             meal_timestamp: timestamp,
           }
         : {
-            description: state.description,
-            calories: state.calories!,
-            protein: state.protein,
-            carbs: state.carbs,
-            fats: state.fats,
+            description: description,
+            calories: calories!,
+            protein: protein,
+            carbs: carbs,
+            fats: fats,
             category: state.category,
             input_method: 'manual' as const,
             meal_timestamp: timestamp,
           };
+
+      console.log('Sending request data:', requestData);
 
       const response = await fetch('/api/v1/meals', {
         method: 'POST',
@@ -409,6 +502,7 @@ export function useAddMealForm(): UseAddMealFormReturn {
 
       if (response.status === 400) {
         const errorData = await response.json();
+        console.error('API validation error:', errorData);
         const errors = Object.entries(errorData.details || {}).map(([field, message]) => ({
           field,
           message: message as string,

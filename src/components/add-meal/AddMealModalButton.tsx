@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { AddMealModal } from "./AddMealModal";
 
 export function AddMealButton() {
@@ -6,7 +7,13 @@ export function AddMealButton() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>Dodaj posiłek</button>
+      <Button
+        onClick={() => setIsOpen(true)}
+        size="lg"
+        className="shadow-md hover:shadow-lg transition-shadow"
+      >
+        Dodaj posiłek
+      </Button>
       <AddMealModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

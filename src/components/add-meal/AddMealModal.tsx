@@ -20,7 +20,7 @@
  * />
  */
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { AddMealModalProps } from "../../types/add-meal.types";
 import { MealForm } from "./MealForm";
 
@@ -30,6 +30,7 @@ export function AddMealModal({ isOpen, onClose, onSuccess }: AddMealModalProps) 
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Dodaj posiłek</DialogTitle>
+          <DialogDescription>Użyj AI aby wygenerować wartości odżywcze lub wprowadź je ręcznie</DialogDescription>
         </DialogHeader>
         <MealForm onClose={onClose} onSuccess={onSuccess} />
       </DialogContent>

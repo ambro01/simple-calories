@@ -90,17 +90,20 @@ export function formatPercentDifference(difference: number): string {
 }
 
 /**
- * Pobiera aktualną datę w formacie YYYY-MM-DD
+ * Pobiera aktualną datę w formacie YYYY-MM-DD (w lokalnej strefie czasowej)
  *
  * @returns Data w formacie YYYY-MM-DD
  */
 export function getCurrentDate(): string {
   const now = new Date();
-  return now.toISOString().split('T')[0];
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
- * Pobiera aktualny czas w formacie HH:MM
+ * Pobiera aktualny czas w formacie HH:MM (w lokalnej strefie czasowej)
  *
  * @returns Czas w formacie HH:MM
  */

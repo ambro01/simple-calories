@@ -29,12 +29,15 @@ export function MealForm({ onClose, onSuccess }: MealFormProps) {
 
   const handleSubmit = async () => {
     try {
+      console.log('📝 [MealForm] handleSubmit START');
       const result = await form.submitMeal();
-      onSuccess(result);
-      onClose();
+      console.log('📝 [MealForm] submitMeal SUCCESS, calling onSuccess callback', result);
+      await onSuccess(result);
+      console.log('📝 [MealForm] onSuccess callback completed');
+      // onClose is now called by the parent component after refetch
     } catch (error) {
       // Errors are handled inside the hook
-      console.error('Failed to submit meal:', error);
+      console.error('❌ [MealForm] Failed to submit meal:', error);
     }
   };
 
