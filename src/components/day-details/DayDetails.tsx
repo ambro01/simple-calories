@@ -136,6 +136,7 @@ export function DayDetails({ date, onBack }: DayDetailsProps) {
           await refreshAfterMealChange();
           setIsAddMealModalOpen(false);
         }}
+        initialDate={date}
       />
 
       {/* Edit meal modal */}

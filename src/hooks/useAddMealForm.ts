@@ -26,7 +26,7 @@ import { VALIDATION_LIMITS } from '../lib/constants/meal-form.constants';
 /**
  * Initial state for the form
  */
-function getInitialState(): MealFormState {
+function getInitialState(initialDate?: string): MealFormState {
   return {
     mode: 'ai',
     editMode: 'create',
@@ -38,7 +38,7 @@ function getInitialState(): MealFormState {
     fats: null,
     fiber: null,
     category: null,
-    date: getCurrentDate(),
+    date: initialDate || getCurrentDate(),
     time: getCurrentTime(),
     aiPrompt: '',
     aiGenerationId: null,
@@ -98,8 +98,8 @@ export interface UseAddMealFormReturn {
   hasAIResult: boolean;
 }
 
-export function useAddMealForm(): UseAddMealFormReturn {
-  const [state, setState] = useState<MealFormState>(getInitialState());
+export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
+  const [state, setState] = useState<MealFormState>(getInitialState(initialDate));
 
   // Generic field update
   const updateField = useCallback(<K extends keyof MealFormState>(field: K, value: MealFormState[K]) => {

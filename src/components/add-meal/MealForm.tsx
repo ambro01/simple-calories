@@ -26,8 +26,8 @@ import { CommonFields } from './common-fields/CommonFields';
 import { FormActions } from './FormActions';
 import { LoadingOverlay } from './LoadingOverlay';
 
-export function MealForm({ onClose, onSuccess, mealId }: MealFormProps) {
-  const form = useAddMealForm();
+export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormProps) {
+  const form = useAddMealForm(initialDate);
 
   // Load meal data for editing
   useEffect(() => {

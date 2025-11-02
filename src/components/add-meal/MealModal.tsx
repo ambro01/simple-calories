@@ -37,7 +37,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import type { AddMealModalProps } from "../../types/add-meal.types";
 import { MealForm } from "./MealForm";
 
-export function MealModal({ isOpen, onClose, onSuccess, mealId }: AddMealModalProps) {
+export function MealModal({ isOpen, onClose, onSuccess, mealId, initialDate }: AddMealModalProps) {
   const isEditMode = Boolean(mealId);
   const title = isEditMode ? 'Edytuj posiłek' : 'Dodaj posiłek';
   const description = isEditMode
@@ -51,7 +51,7 @@ export function MealModal({ isOpen, onClose, onSuccess, mealId }: AddMealModalPr
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <MealForm onClose={onClose} onSuccess={onSuccess} mealId={mealId} />
+        <MealForm onClose={onClose} onSuccess={onSuccess} mealId={mealId} initialDate={initialDate} />
       </DialogContent>
     </Dialog>
   );

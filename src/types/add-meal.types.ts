@@ -126,6 +126,7 @@ export interface AddMealModalProps {
   onClose: () => void;
   onSuccess: (meal: CreateMealResponseDTO) => void;
   mealId?: string; // Jeśli podane, modal działa w trybie edycji
+  initialDate?: string; // YYYY-MM-DD - jeśli podane, formularz zostanie zainicjalizowany tą datą
 }
 
 /**
@@ -135,6 +136,7 @@ export interface MealFormProps {
   onClose: () => void;
   onSuccess: (meal: CreateMealResponseDTO) => void;
   mealId?: string; // Jeśli podane, formularz działa w trybie edycji
+  initialDate?: string; // YYYY-MM-DD - jeśli podane, formularz zostanie zainicjalizowany tą datą
 }
 
 /**
