@@ -12,7 +12,8 @@
       "Bash(mkdir:*)",
       "Bash(npx shadcn@latest add:*)",
       "Bash(npx prettier:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

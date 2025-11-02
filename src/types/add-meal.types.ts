@@ -17,6 +17,11 @@ import type {
 export type MealFormMode = 'ai' | 'manual';
 
 /**
+ * Tryb edycji formularza
+ */
+export type MealFormEditMode = 'create' | 'edit';
+
+/**
  * Etap ładowania AI (0-2)
  * 0: "Analizuję opis..."
  * 1: "Szacuję kalorie..."
@@ -57,6 +62,8 @@ export interface DateValidationWarning {
 export interface MealFormState {
   // Tryb formularza
   mode: MealFormMode;
+  editMode: MealFormEditMode;
+  editingMealId: string | null;
 
   // Dane formularza
   description: string;
@@ -80,6 +87,10 @@ export interface MealFormState {
   // Stan submitu
   submitLoading: boolean;
   submitError: string | null;
+
+  // Stan ładowania danych posiłku do edycji
+  loadingMeal: boolean;
+  loadMealError: string | null;
 
   // Walidacja i ostrzeżenia
   validationErrors: FormValidationError[];
@@ -114,6 +125,7 @@ export interface AddMealModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (meal: CreateMealResponseDTO) => void;
+  mealId?: string; // Jeśli podane, modal działa w trybie edycji
 }
 
 /**
@@ -122,6 +134,7 @@ export interface AddMealModalProps {
 export interface MealFormProps {
   onClose: () => void;
   onSuccess: (meal: CreateMealResponseDTO) => void;
+  mealId?: string; // Jeśli podane, formularz działa w trybie edycji
 }
 
 /**
@@ -243,6 +256,7 @@ export interface FormActionsProps {
   onSubmit: () => void;
   submitDisabled: boolean;
   submitLoading: boolean;
+  editMode?: MealFormEditMode; // Określa tekst przycisku
 }
 
 /**

@@ -13,7 +13,7 @@ import { MealCard } from "./MealCard";
 import { SkeletonMealCard } from "./SkeletonMealCard";
 import { EmptyMealsList } from "./EmptyMealsList";
 import { FAB } from "@/components/dashboard/FAB";
-import { AddMealModal } from "@/components/add-meal/AddMealModal";
+import { MealModal } from "@/components/add-meal";
 
 interface DayDetailsProps {
   date: string; // YYYY-MM-DD
@@ -129,7 +129,7 @@ export function DayDetails({ date, onBack }: DayDetailsProps) {
       <FAB onClick={() => setIsAddMealModalOpen(true)} />
 
       {/* Add meal modal */}
-      <AddMealModal
+      <MealModal
         isOpen={isAddMealModalOpen}
         onClose={() => setIsAddMealModalOpen(false)}
         onSuccess={async () => {
@@ -140,8 +140,9 @@ export function DayDetails({ date, onBack }: DayDetailsProps) {
 
       {/* Edit meal modal */}
       {state.editingMeal && (
-        <AddMealModal
+        <MealModal
           isOpen={isEditMealModalOpen}
+          mealId={state.editingMeal.id}
           onClose={() => {
             setIsEditMealModalOpen(false);
             setEditingMeal(null);
@@ -151,9 +152,6 @@ export function DayDetails({ date, onBack }: DayDetailsProps) {
             setIsEditMealModalOpen(false);
             setEditingMeal(null);
           }}
-          // Note: AddMealModal needs to support edit mode
-          // This would require passing initialMeal prop
-          // For now, we'll implement this in the next iteration
         />
       )}
     </>

@@ -1,9 +1,9 @@
 /**
- * AddMealModal Component
+ * AddMealModal Component (Legacy - kept for backward compatibility)
  *
- * Modal container for the AddMeal form.
- * Provides overlay, focus trap, escape handling, and responsiveness.
- * Fullscreen on mobile, dialog on desktop.
+ * @deprecated Use MealModal instead
+ * This is a wrapper component that forwards props to MealModal.
+ * It exists only for backward compatibility with existing code.
  *
  * @component
  * @example
@@ -20,20 +20,12 @@
  * />
  */
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { AddMealModalProps } from "../../types/add-meal.types";
-import { MealForm } from "./MealForm";
+import { MealModal } from "./MealModal";
 
-export function AddMealModal({ isOpen, onClose, onSuccess }: AddMealModalProps) {
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Dodaj posiłek</DialogTitle>
-          <DialogDescription>Użyj AI aby wygenerować wartości odżywcze lub wprowadź je ręcznie</DialogDescription>
-        </DialogHeader>
-        <MealForm onClose={onClose} onSuccess={onSuccess} />
-      </DialogContent>
-    </Dialog>
-  );
+/**
+ * @deprecated Use MealModal instead
+ */
+export function AddMealModal(props: AddMealModalProps) {
+  return <MealModal {...props} />;
 }

@@ -24,18 +24,18 @@
  * />
  */
 
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Sparkles, AlertCircle } from 'lucide-react';
-import type { AIModeProps } from '../../../types/add-meal.types';
-import { CharacterCounter } from '../CharacterCounter';
-import { ExampleChips } from '../ExampleChips';
-import { LoadingState } from '../LoadingState';
-import { AIResult } from './AIResult';
-import { MEAL_EXAMPLES, VALIDATION_LIMITS } from '../../../lib/constants/meal-form.constants';
-import { validatePrompt } from '../../../lib/validation/meal-form.validation';
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Sparkles, AlertCircle } from "lucide-react";
+import type { AIModeProps } from "../../../types/add-meal.types";
+import { CharacterCounter } from "../CharacterCounter";
+import { ExampleChips } from "../ExampleChips";
+import { LoadingState } from "../LoadingState";
+import { AIResult } from "./AIResult";
+import { MEAL_EXAMPLES, VALIDATION_LIMITS } from "../../../lib/constants/meal-form.constants";
+import { validatePrompt } from "../../../lib/validation/meal-form.validation";
 
 export function AIMode({
   prompt,
@@ -51,15 +51,15 @@ export function AIMode({
 }: AIModeProps) {
   const promptError = validatePrompt(prompt);
   const isGenerateDisabled = !!promptError || aiLoading;
-  const hasSuccessResult = aiResult?.status === 'completed';
-  const hasFailedResult = aiResult?.status === 'failed';
+  const hasSuccessResult = aiResult?.status === "completed";
+  const hasFailedResult = aiResult?.status === "failed";
 
   return (
     <div className="space-y-4">
       {/* Prompt Input */}
       <div className="space-y-2">
         <Label htmlFor="ai-prompt" className="text-sm font-medium">
-          Opisz posiłek
+          Opis posiłku
         </Label>
         <Textarea
           id="ai-prompt"
@@ -73,30 +73,19 @@ export function AIMode({
         />
         <div className="flex items-center justify-between">
           <CharacterCounter current={prompt.length} max={VALIDATION_LIMITS.PROMPT_MAX_LENGTH} />
-          {promptError && (
-            <span className="text-xs text-destructive">{promptError.message}</span>
-          )}
+          {promptError && <span className="text-xs text-destructive">{promptError.message}</span>}
         </div>
       </div>
 
       {/* Example Chips */}
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground">Przykłady:</p>
-        <ExampleChips
-          examples={MEAL_EXAMPLES}
-          onSelect={onPromptChange}
-          disabled={aiLoading}
-        />
+        <ExampleChips examples={MEAL_EXAMPLES} onSelect={onPromptChange} disabled={aiLoading} />
       </div>
 
       {/* Generate Button */}
       {!aiLoading && !hasSuccessResult && (
-        <Button
-          type="button"
-          onClick={onGenerate}
-          disabled={isGenerateDisabled}
-          className="w-full"
-        >
+        <Button type="button" onClick={onGenerate} disabled={isGenerateDisabled} className="w-full">
           <Sparkles className="mr-2 h-4 w-4" />
           Oblicz kalorie
         </Button>
@@ -129,7 +118,7 @@ export function AIMode({
           <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-500" />
           <AlertDescription className="space-y-3">
             <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              {aiResult.error_message || 'Nie udało się wygenerować oszacowania.'}
+              {aiResult.error_message || "Nie udało się wygenerować oszacowania."}
             </p>
             <div className="flex gap-2">
               <Button

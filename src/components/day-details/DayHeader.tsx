@@ -53,32 +53,33 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
           </div>
         </div>
 
-        {/* Calories summary */}
-        <div className="bg-gray-50 rounded-lg p-4 mb-4">
-          <div className="flex justify-between items-baseline mb-2">
-            <div className="text-2xl font-bold text-gray-900">
-              {progress.total_calories} / {progress.calorie_goal} kcal
+        {/* Calories and Macros summary in one row */}
+        <div className="flex gap-3">
+          {/* Calories summary - 1/3 width */}
+          <div className="flex-1 bg-gray-50 rounded-lg p-3">
+            <div className="flex justify-between items-baseline mb-2">
+              <div className="text-lg font-bold text-gray-900">
+                {progress.total_calories} / {progress.calorie_goal} kcal
+              </div>
+              <div className="text-sm text-gray-600">{progress.percentage.toFixed(0)}%</div>
             </div>
-            <div className="text-lg text-gray-600">{progress.percentage.toFixed(0)}%</div>
+            <CalorieProgressBar percentage={progress.percentage} status={progress.status} size="sm" />
           </div>
 
-          {/* Progress bar */}
-          <CalorieProgressBar percentage={progress.percentage} status={progress.status} size="lg" />
-        </div>
-
-        {/* Macros summary */}
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-blue-50 rounded-lg p-3">
-            <div className="text-sm text-gray-600 mb-1">Białko</div>
-            <div className="text-xl font-semibold text-gray-900">{progress.total_protein}g</div>
-          </div>
-          <div className="bg-orange-50 rounded-lg p-3">
-            <div className="text-sm text-gray-600 mb-1">Węglowodany</div>
-            <div className="text-xl font-semibold text-gray-900">{progress.total_carbs}g</div>
-          </div>
-          <div className="bg-yellow-50 rounded-lg p-3">
-            <div className="text-sm text-gray-600 mb-1">Tłuszcze</div>
-            <div className="text-xl font-semibold text-gray-900">{progress.total_fats}g</div>
+          {/* Macros summary - 2/3 width */}
+          <div className="flex-[2] grid grid-cols-3 gap-2">
+            <div className="bg-blue-50 rounded-lg p-3 text-center">
+              <div className="text-xs text-gray-600 mb-1">Białko</div>
+              <div className="text-lg font-semibold text-gray-900">{progress.total_protein}g</div>
+            </div>
+            <div className="bg-orange-50 rounded-lg p-3 text-center">
+              <div className="text-xs text-gray-600 mb-1">Węglowodany</div>
+              <div className="text-lg font-semibold text-gray-900">{progress.total_carbs}g</div>
+            </div>
+            <div className="bg-yellow-50 rounded-lg p-3 text-center">
+              <div className="text-xs text-gray-600 mb-1">Tłuszcze</div>
+              <div className="text-lg font-semibold text-gray-900">{progress.total_fats}g</div>
+            </div>
           </div>
         </div>
       </div>

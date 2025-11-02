@@ -24,7 +24,10 @@ export function FormActions({
   onSubmit,
   submitDisabled,
   submitLoading,
+  editMode = 'create',
 }: FormActionsProps) {
+  const buttonText = editMode === 'edit' ? 'Zapisz zmiany' : 'Dodaj posiłek';
+
   return (
     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
       <Button type="button" variant="ghost" onClick={onCancel} disabled={submitLoading}>
@@ -32,7 +35,7 @@ export function FormActions({
       </Button>
       <Button type="button" onClick={onSubmit} disabled={submitDisabled || submitLoading}>
         {submitLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Dodaj posiłek
+        {buttonText}
       </Button>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AddMealModal } from "./AddMealModal";
+import { MealModal } from "./MealModal";
 
 export function AddMealButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +14,7 @@ export function AddMealButton() {
       >
         Dodaj posiłek
       </Button>
-      <AddMealModal
+      <MealModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onSuccess={(meal) => {

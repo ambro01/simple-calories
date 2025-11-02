@@ -14,7 +14,7 @@ import { EmptyDashboard } from "./EmptyDashboard";
 import { DashboardHeader } from "./DashboardHeader";
 import { FAB } from "./FAB";
 import { InfiniteScrollTrigger } from "@/components/shared/InfiniteScrollTrigger";
-import { AddMealModal } from "@/components/add-meal/AddMealModal";
+import { MealModal } from "@/components/add-meal";
 
 export function Dashboard() {
   const { state, loadMoreDays, selectDay, refetchAfterMealChange } = useDashboard();
@@ -62,13 +62,13 @@ export function Dashboard() {
       <>
         <EmptyDashboard onAddMeal={() => setIsAddMealModalOpen(true)} />
         <FAB onClick={() => setIsAddMealModalOpen(true)} />
-        <AddMealModal
+        <MealModal
           isOpen={isAddMealModalOpen}
           onClose={() => setIsAddMealModalOpen(false)}
           onSuccess={async () => {
-            console.log('🎯 [Dashboard EMPTY] AddMealModal onSuccess - calling refetchAfterMealChange');
+            console.log('🎯 [Dashboard EMPTY] MealModal onSuccess - calling refetchAfterMealChange');
             await refetchAfterMealChange();
-            console.log('🎯 [Dashboard EMPTY] AddMealModal onSuccess - refetch completed, closing modal');
+            console.log('🎯 [Dashboard EMPTY] MealModal onSuccess - refetch completed, closing modal');
             setIsAddMealModalOpen(false);
           }}
         />
@@ -89,13 +89,13 @@ export function Dashboard() {
           </div>
         </div>
         <FAB onClick={() => setIsAddMealModalOpen(true)} />
-        <AddMealModal
+        <MealModal
           isOpen={isAddMealModalOpen}
           onClose={() => setIsAddMealModalOpen(false)}
           onSuccess={async () => {
-            console.log('🎯 [Dashboard REFETCH] AddMealModal onSuccess - calling refetchAfterMealChange');
+            console.log('🎯 [Dashboard REFETCH] MealModal onSuccess - calling refetchAfterMealChange');
             await refetchAfterMealChange();
-            console.log('🎯 [Dashboard REFETCH] AddMealModal onSuccess - refetch completed, closing modal');
+            console.log('🎯 [Dashboard REFETCH] MealModal onSuccess - refetch completed, closing modal');
             setIsAddMealModalOpen(false);
           }}
         />
@@ -147,13 +147,13 @@ export function Dashboard() {
       <FAB onClick={() => setIsAddMealModalOpen(true)} />
 
       {/* Add meal modal */}
-      <AddMealModal
+      <MealModal
         isOpen={isAddMealModalOpen}
         onClose={() => setIsAddMealModalOpen(false)}
         onSuccess={async () => {
-          console.log('🎯 [Dashboard MAIN] AddMealModal onSuccess - calling refetchAfterMealChange');
+          console.log('🎯 [Dashboard MAIN] MealModal onSuccess - calling refetchAfterMealChange');
           await refetchAfterMealChange();
-          console.log('🎯 [Dashboard MAIN] AddMealModal onSuccess - refetch completed, closing modal');
+          console.log('🎯 [Dashboard MAIN] MealModal onSuccess - refetch completed, closing modal');
           setIsAddMealModalOpen(false);
         }}
       />

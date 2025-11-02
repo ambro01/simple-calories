@@ -15,6 +15,7 @@
  * />
  */
 
+import { useEffect } from 'react';
 import { Separator } from '@/components/ui/separator';
 import type { MealFormProps } from '../../types/add-meal.types';
 import { useAddMealForm } from '../../hooks/useAddMealForm';
@@ -23,9 +24,21 @@ import { AIMode } from './ai-mode/AIMode';
 import { ManualMode } from './manual-mode/ManualMode';
 import { CommonFields } from './common-fields/CommonFields';
 import { FormActions } from './FormActions';
+import { LoadingOverlay } from './LoadingOverlay';
 
-export function MealForm({ onClose, onSuccess }: MealFormProps) {
+export function MealForm({ onClose, onSuccess, mealId }: MealFormProps) {
   const form = useAddMealForm();
+
+  // Load meal data for editing
+  useEffect(() => {
+    if (mealId) {
+      form.loadMealForEdit(mealId).catch((error) => {
+        console.error('Failed to load meal for editing:', error);
+        // Error is already set in form state, LoadingOverlay will be hidden
+        // and error message will be displayed
+      });
+    }
+  }, [mealId]);
 
   const handleSubmit = async () => {
     try {
@@ -50,7 +63,17 @@ export function MealForm({ onClose, onSuccess }: MealFormProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {/* Loading Overlay - shown while loading meal for edit */}
+      {form.state.loadingMeal && <LoadingOverlay />}
+
+      {/* Load Error */}
+      {form.state.loadMealError && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          {form.state.loadMealError}
+        </div>
+      )}
+
       {/* Mode Selector */}
       <div className="flex justify-center">
         <SegmentedControl
@@ -119,6 +142,7 @@ export function MealForm({ onClose, onSuccess }: MealFormProps) {
         onSubmit={handleSubmit}
         submitDisabled={!form.canSubmit}
         submitLoading={form.state.submitLoading}
+        editMode={form.state.editMode}
       />
     </div>
   );
