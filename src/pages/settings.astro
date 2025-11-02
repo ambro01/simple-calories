@@ -1,0 +1,16 @@
+---
+/**
+ * Settings Page
+ *
+ * Strona ustawień aplikacji.
+ * Pozwala użytkownikowi na zarządzanie celem kalorycznym, wyświetla informacje o koncie
+ * i umożliwia wylogowanie.
+ */
+
+import Layout from "@/layouts/Layout.astro";
+import { Settings } from "@/components/settings";
+---
+
+<Layout title="Ustawienia - Szybkie Kalorie">
+  <Settings client:load />
+</Layout>

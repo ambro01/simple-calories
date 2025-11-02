@@ -2,11 +2,13 @@
  * GET /api/v1/calorie-goals/current
  *
  * Returns the current calorie goal for the authenticated user on a specific date.
- * Implements goal historization - returns the most recent goal with
- * effective_from <= target_date.
+ * Implements smart fallback logic:
+ * 1. Returns current goal (effective_from <= target_date) if exists
+ * 2. Returns next future goal (effective_from > target_date) if no current goal
+ * 3. Returns default goal (2000 kcal) if no goals exist at all
  *
- * If no goal exists for the target date, returns 404 with a message suggesting
- * the default 2000 kcal (frontend should handle this fallback).
+ * This ensures the endpoint always returns a valid goal, even for new users
+ * or when a goal is set for tomorrow but queried today.
  *
  * Authentication: Uses DEFAULT_USER_ID for MVP (no JWT yet)
  *
@@ -16,7 +18,7 @@
  * @example GET Request (specific date)
  * GET /api/v1/calorie-goals/current?date=2025-01-27
  *
- * @example GET Response (200 OK)
+ * @example GET Response (200 OK - current goal)
  * {
  *   "id": "uuid",
  *   "user_id": "uuid",
@@ -26,10 +28,14 @@
  *   "updated_at": "2025-01-19T10:00:00Z"
  * }
  *
- * @example GET Response (404 Not Found)
+ * @example GET Response (200 OK - default goal)
  * {
- *   "error": "Not Found",
- *   "message": "No calorie goal found. Using default: 2000 kcal"
+ *   "id": "default",
+ *   "user_id": "uuid",
+ *   "daily_goal": 2000,
+ *   "effective_from": "2025-01-27",
+ *   "created_at": "2025-01-27T10:00:00Z",
+ *   "updated_at": "2025-01-27T10:00:00Z"
  * }
  *
  * @example GET Response (400 Bad Request - invalid date)
@@ -52,26 +58,28 @@ import type {
 export const prerender = false;
 
 /**
- * GET handler - Get current calorie goal for a specific date
+ * GET handler - Get current, next, or default calorie goal
  *
- * Returns the goal with the latest effective_from <= target_date.
- * This implements historization: past dates return goals that were active then.
+ * Smart fallback logic:
+ * 1. Try current goal (effective_from <= target_date)
+ * 2. Try next future goal (effective_from > target_date)
+ * 3. Return default goal (2000 kcal) if no goals exist
  *
  * Process:
  * 1. Get user ID (currently DEFAULT_USER_ID for MVP)
  * 2. Parse and validate date query parameter (default: today)
- * 3. Fetch current goal from service
- * 4. Return goal or 404 with default message
+ * 3. Fetch goal using smart fallback from service
+ * 4. Always return 200 OK with a valid goal
  *
  * Query Parameters:
  * - date: YYYY-MM-DD format (optional, default: today)
  *
  * Business Logic Examples:
  * - Goal 1: effective_from = 2025-01-01, daily_goal = 2000
- * - Goal 2: effective_from = 2025-01-15, daily_goal = 2500
- * - GET current?date=2025-01-10 => Goal 1 (2000 kcal)
- * - GET current?date=2025-01-20 => Goal 2 (2500 kcal)
- * - GET current?date=2024-12-31 => 404 (no goal before first goal)
+ * - Goal 2: effective_from = 2025-01-30, daily_goal = 2500
+ * - GET current?date=2025-01-10 => Goal 1 (2000 kcal - current)
+ * - GET current?date=2025-01-27 => Goal 2 (2500 kcal - next future goal)
+ * - GET current (no goals) => Default (2000 kcal)
  *
  * RLS Policy: Users can view only their own goals
  */
@@ -102,31 +110,16 @@ export const GET: APIRoute = async ({ url, locals }) => {
       );
     }
 
-    // Step 3: Fetch current goal for the target date
+    // Step 3: Fetch goal with smart fallback (current -> next -> default 2000)
     const calorieGoalService = new CalorieGoalService(locals.supabase);
-    const currentGoal = await calorieGoalService.getCurrentCalorieGoal(
+    const goal = await calorieGoalService.getCurrentOrNextCalorieGoal(
       userId,
       targetDate
     );
 
-    // Step 4: Handle not found case
-    if (!currentGoal) {
-      // This is a normal situation for:
-      // - New users who haven't set a goal yet
-      // - Dates before the user's first goal
-      // Frontend should use the default 2000 kcal fallback
-      return new Response(
-        JSON.stringify({
-          error: 'Not Found',
-          message: 'No calorie goal found. Using default: 2000 kcal',
-        } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Step 5: Return current goal
+    // Step 4: Return goal (always succeeds, fallback to default 2000 kcal)
     return new Response(
-      JSON.stringify(currentGoal as CalorieGoalResponseDTO),
+      JSON.stringify(goal as CalorieGoalResponseDTO),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
