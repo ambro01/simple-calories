@@ -15,10 +15,10 @@ export interface OpenRouterRequest {
   model: string;
 
   /** Array of messages forming the conversation */
-  messages: Array<{
-    role: 'system' | 'user' | 'assistant';
+  messages: {
+    role: "system" | "user" | "assistant";
     content: string;
-  }>;
+  }[];
 
   /** Sampling temperature (0-2). Lower = more deterministic */
   temperature?: number;
@@ -38,13 +38,13 @@ export interface OpenRouterResponse {
   model: string;
 
   /** Generated completions */
-  choices: Array<{
+  choices: {
     message: {
       role: string;
       content: string;
     };
     finish_reason: string;
-  }>;
+  }[];
 
   /** Token usage statistics */
   usage: {

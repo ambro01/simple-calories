@@ -7,11 +7,7 @@
  * @module OpenRouterService
  */
 
-import type {
-  OpenRouterRequest,
-  OpenRouterResponse,
-  NutritionalEstimate,
-} from './openrouter.types';
+import type { OpenRouterRequest, OpenRouterResponse, NutritionalEstimate } from "./openrouter-mock.types";
 
 /**
  * System prompt that instructs the AI model how to analyze nutritional content.
@@ -59,7 +55,7 @@ const MOCK_RESPONSES: Record<string, NutritionalEstimate> = {
     carbs: 60,
     fats: 18,
     assumptions:
-      'Założenia: 200g grillowanego piersi kurczaka (ok. 330 kcal), 150g ugotowanego białego ryżu (ok. 195 kcal), łyżeczka oleju (ok. 125 kcal). Typowa porcja dla osoby dorosłej.',
+      "Założenia: 200g grillowanego piersi kurczaka (ok. 330 kcal), 150g ugotowanego białego ryżu (ok. 195 kcal), łyżeczka oleju (ok. 125 kcal). Typowa porcja dla osoby dorosłej.",
   },
 
   // Vague description - too general
@@ -69,8 +65,7 @@ const MOCK_RESPONSES: Record<string, NutritionalEstimate> = {
     carbs: null,
     fats: null,
     assumptions: null,
-    error:
-      'Opis jest zbyt ogólny. Proszę podać konkretne danie lub produkty, które zjadłeś/aś.',
+    error: "Opis jest zbyt ogólny. Proszę podać konkretne danie lub produkty, które zjadłeś/aś.",
   },
 
   // Complex meal - multiple items
@@ -80,7 +75,7 @@ const MOCK_RESPONSES: Record<string, NutritionalEstimate> = {
     carbs: 120,
     fats: 42,
     assumptions:
-      'Założenia: burger wołowy (ok. 250g, 600 kcal), średnia porcja frytek (150g, 450 kcal), sałatka coleslaw (100g, 150 kcal). Typowa porcja fast-food.',
+      "Założenia: burger wołowy (ok. 250g, 600 kcal), średnia porcja frytek (150g, 450 kcal), sałatka coleslaw (100g, 150 kcal). Typowa porcja fast-food.",
   },
 };
 
@@ -92,15 +87,15 @@ function getMockResponseForPrompt(prompt: string): NutritionalEstimate {
 
   // Check for vague descriptions
   const vagueKeywords = [
-    'lunch',
-    'dinner',
-    'breakfast',
-    'obiad',
-    'śniadanie',
-    'kolacja',
-    'something',
-    'coś',
-    'posiłek',
+    "lunch",
+    "dinner",
+    "breakfast",
+    "obiad",
+    "śniadanie",
+    "kolacja",
+    "something",
+    "coś",
+    "posiłek",
   ];
 
   if (vagueKeywords.some((keyword) => lowerPrompt === keyword)) {
@@ -108,7 +103,7 @@ function getMockResponseForPrompt(prompt: string): NutritionalEstimate {
   }
 
   // Check for complex meals
-  const complexKeywords = ['burger', 'pizza', 'kebab', 'zestaw', 'menu'];
+  const complexKeywords = ["burger", "pizza", "kebab", "zestaw", "menu"];
 
   if (complexKeywords.some((keyword) => lowerPrompt.includes(keyword))) {
     return MOCK_RESPONSES.complex;
@@ -129,14 +124,14 @@ function generateMockOpenRouterResponse(prompt: string): OpenRouterResponse {
 
   return {
     id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    model: 'mock-gpt-4',
+    model: "mock-gpt-4",
     choices: [
       {
         message: {
-          role: 'assistant',
+          role: "assistant",
           content: JSON.stringify(estimate, null, 2),
         },
-        finish_reason: 'stop',
+        finish_reason: "stop",
       },
     ],
     usage: {
@@ -161,9 +156,8 @@ export class OpenRouterService {
 
   constructor(config: Partial<OpenRouterConfig> = {}) {
     this.config = {
-      model: config.model || import.meta.env.OPENROUTER_MODEL || 'mock-gpt-4',
-      timeout:
-        config.timeout || parseInt(import.meta.env.OPENROUTER_TIMEOUT) || 30000,
+      model: config.model || import.meta.env.OPENROUTER_MODEL || "mock-gpt-4",
+      timeout: config.timeout || parseInt(import.meta.env.OPENROUTER_TIMEOUT) || 30000,
     };
   }
 
@@ -174,19 +168,17 @@ export class OpenRouterService {
    * @returns Nutritional estimate with macros and assumptions
    * @throws Error if API communication fails or response is invalid
    */
-  async generateNutritionEstimate(
-    prompt: string
-  ): Promise<NutritionalEstimate> {
+  async generateNutritionEstimate(prompt: string): Promise<NutritionalEstimate> {
     // Construct request payload
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: SYSTEM_PROMPT,
         },
         {
-          role: 'user',
+          role: "user",
           content: prompt,
         },
       ],
@@ -204,8 +196,8 @@ export class OpenRouterService {
       // Parse and validate response
       return this.parseNutritionalEstimate(response);
     } catch (error) {
-      console.error('OpenRouter API Error:', error);
-      throw new Error('Failed to generate nutritional estimate from AI service');
+      console.error("OpenRouter API Error:", error);
+      throw new Error("Failed to generate nutritional estimate from AI service");
     }
   }
 
@@ -216,13 +208,11 @@ export class OpenRouterService {
    * @returns Parsed and validated nutritional estimate
    * @throws Error if response format is invalid
    */
-  private parseNutritionalEstimate(
-    response: OpenRouterResponse
-  ): NutritionalEstimate {
+  private parseNutritionalEstimate(response: OpenRouterResponse): NutritionalEstimate {
     const content = response.choices[0]?.message?.content;
 
     if (!content) {
-      throw new Error('No content in AI response');
+      throw new Error("No content in AI response");
     }
 
     try {
@@ -242,18 +232,18 @@ export class OpenRouterService {
 
       // Validate nutritional values
       if (
-        typeof parsed.calories !== 'number' ||
-        typeof parsed.protein !== 'number' ||
-        typeof parsed.carbs !== 'number' ||
-        typeof parsed.fats !== 'number'
+        typeof parsed.calories !== "number" ||
+        typeof parsed.protein !== "number" ||
+        typeof parsed.carbs !== "number" ||
+        typeof parsed.fats !== "number"
       ) {
-        throw new Error('Invalid nutritional values in AI response');
+        throw new Error("Invalid nutritional values in AI response");
       }
 
       return parsed;
     } catch (error) {
-      console.error('Failed to parse AI response:', content, error);
-      throw new Error('Invalid JSON response from AI service');
+      console.error("Failed to parse AI response:", content, error);
+      throw new Error("Invalid JSON response from AI service");
     }
   }
 

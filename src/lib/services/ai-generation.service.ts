@@ -10,11 +10,11 @@
  * @module AIGenerationService
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../db/database.types';
-import type { AIGenerationResponseDTO } from '../../types';
-import { openRouterService } from '../ai/openrouter.service';
-import type { NutritionalEstimate } from '../ai/openrouter.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
+import type { AIGenerationResponseDTO } from "../../types";
+import { openRouterService } from "./openrouter/adapter";
+import type { NutritionalEstimate } from "./openrouter";
 
 /**
  * Result of creating an AI generation
@@ -48,30 +48,27 @@ export class AIGenerationService {
    * @param prompt - User's meal description
    * @returns Created AI generation record with final status
    */
-  async createAIGeneration(
-    userId: string,
-    prompt: string
-  ): Promise<CreateAIGenerationResult> {
+  async createAIGeneration(userId: string, prompt: string): Promise<CreateAIGenerationResult> {
     const startTime = Date.now();
 
     try {
       // Step 1: Create initial pending record
       const { data: pendingRecord, error: insertError } = await this.supabase
-        .from('ai_generations')
+        .from("ai_generations")
         .insert({
           user_id: userId,
           prompt: prompt,
-          status: 'pending',
+          status: "pending",
           // All other fields are nullable and will be updated after AI processing
         })
         .select()
         .single();
 
       if (insertError || !pendingRecord) {
-        console.error('Failed to create pending AI generation:', insertError);
+        console.error("Failed to create pending AI generation:", insertError);
         return {
           success: false,
-          error: 'Failed to initialize AI generation',
+          error: "Failed to initialize AI generation",
         };
       }
 
@@ -84,20 +81,17 @@ export class AIGenerationService {
         const generationDuration = Date.now() - startTime;
 
         await this.supabase
-          .from('ai_generations')
+          .from("ai_generations")
           .update({
-            status: 'failed',
-            error_message:
-              apiError instanceof Error
-                ? apiError.message
-                : 'Unknown error during AI generation',
+            status: "failed",
+            error_message: apiError instanceof Error ? apiError.message : "Unknown error during AI generation",
             generation_duration: generationDuration,
           })
-          .eq('id', pendingRecord.id);
+          .eq("id", pendingRecord.id);
 
         return {
           success: false,
-          error: 'AI service temporarily unavailable. Please try again later.',
+          error: "AI service temporarily unavailable. Please try again later.",
         };
       }
 
@@ -107,22 +101,22 @@ export class AIGenerationService {
       // Check if AI returned an error (e.g., too vague description)
       if (estimate.error) {
         const { data: failedRecord, error: updateError } = await this.supabase
-          .from('ai_generations')
+          .from("ai_generations")
           .update({
-            status: 'failed',
+            status: "failed",
             error_message: estimate.error,
             generation_duration: generationDuration,
-            model_used: import.meta.env.OPENROUTER_MODEL || 'mock-gpt-4',
+            model_used: import.meta.env.OPENROUTER_MODEL || "mock-gpt-4",
           })
-          .eq('id', pendingRecord.id)
+          .eq("id", pendingRecord.id)
           .select()
           .single();
 
         if (updateError || !failedRecord) {
-          console.error('Failed to update AI generation record:', updateError);
+          console.error("Failed to update AI generation record:", updateError);
           return {
             success: false,
-            error: 'Failed to save AI generation results',
+            error: "Failed to save AI generation results",
           };
         }
 
@@ -135,26 +129,26 @@ export class AIGenerationService {
 
       // AI successfully generated estimates
       const { data: completedRecord, error: updateError } = await this.supabase
-        .from('ai_generations')
+        .from("ai_generations")
         .update({
-          status: 'completed',
+          status: "completed",
           generated_calories: estimate.calories,
           generated_protein: estimate.protein,
           generated_carbs: estimate.carbs,
           generated_fats: estimate.fats,
           assumptions: estimate.assumptions,
           generation_duration: generationDuration,
-          model_used: import.meta.env.OPENROUTER_MODEL || 'mock-gpt-4',
+          model_used: import.meta.env.OPENROUTER_MODEL || "mock-gpt-4",
         })
-        .eq('id', pendingRecord.id)
+        .eq("id", pendingRecord.id)
         .select()
         .single();
 
       if (updateError || !completedRecord) {
-        console.error('Failed to update AI generation record:', updateError);
+        console.error("Failed to update AI generation record:", updateError);
         return {
           success: false,
-          error: 'Failed to save AI generation results',
+          error: "Failed to save AI generation results",
         };
       }
 
@@ -163,10 +157,10 @@ export class AIGenerationService {
         data: completedRecord,
       };
     } catch (error) {
-      console.error('Unexpected error in createAIGeneration:', error);
+      console.error("Unexpected error in createAIGeneration:", error);
       return {
         success: false,
-        error: 'An unexpected error occurred. Please try again.',
+        error: "An unexpected error occurred. Please try again.",
       };
     }
   }
@@ -180,15 +174,12 @@ export class AIGenerationService {
    * @param userId - User ID from JWT token
    * @returns AI generation record or null if not found/unauthorized
    */
-  async getAIGeneration(
-    generationId: string,
-    userId: string
-  ): Promise<AIGenerationResponseDTO | null> {
+  async getAIGeneration(generationId: string, userId: string): Promise<AIGenerationResponseDTO | null> {
     const { data, error } = await this.supabase
-      .from('ai_generations')
-      .select('*')
-      .eq('id', generationId)
-      .eq('user_id', userId)
+      .from("ai_generations")
+      .select("*")
+      .eq("id", generationId)
+      .eq("user_id", userId)
       .single();
 
     if (error || !data) {
@@ -206,20 +197,16 @@ export class AIGenerationService {
    * @param offset - Number of records to skip
    * @returns Array of AI generations ordered by creation date (newest first)
    */
-  async listAIGenerations(
-    userId: string,
-    limit: number = 20,
-    offset: number = 0
-  ): Promise<AIGenerationResponseDTO[]> {
+  async listAIGenerations(userId: string, limit = 20, offset = 0): Promise<AIGenerationResponseDTO[]> {
     const { data, error } = await this.supabase
-      .from('ai_generations')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .from("ai_generations")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error || !data) {
-      console.error('Failed to list AI generations:', error);
+      console.error("Failed to list AI generations:", error);
       return [];
     }
 
@@ -236,12 +223,12 @@ export class AIGenerationService {
    */
   async countAIGenerations(userId: string): Promise<number> {
     const { count, error } = await this.supabase
-      .from('ai_generations')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
+      .from("ai_generations")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
 
     if (error) {
-      console.error('Failed to count AI generations:', error);
+      console.error("Failed to count AI generations:", error);
       return 0;
     }
 
