@@ -1,42 +1,59 @@
 import type { ResponseFormat } from './openrouter.types';
 
 // Schema dla analizy posiłku - kompatybilny z NutritionalEstimate
-// Uwaga: strict mode nie obsługuje nullable fields bezpośrednio,
-// więc używamy non-strict mode dla większej elastyczności
+// Używamy nullable types poprzez anyOf z type null
 export const nutritionalEstimateSchema: ResponseFormat = {
   type: 'json_schema',
   json_schema: {
     name: 'nutritional_estimate',
-    strict: false,
+    strict: true,
     schema: {
       type: 'object',
       properties: {
         calories: {
-          type: 'number',
+          anyOf: [
+            { type: 'number' },
+            { type: 'null' }
+          ],
           description: 'Estimated calories (can be null if estimation failed)',
         },
         protein: {
-          type: 'number',
+          anyOf: [
+            { type: 'number' },
+            { type: 'null' }
+          ],
           description: 'Estimated protein in grams (can be null if estimation failed)',
         },
         carbs: {
-          type: 'number',
+          anyOf: [
+            { type: 'number' },
+            { type: 'null' }
+          ],
           description: 'Estimated carbohydrates in grams (can be null if estimation failed)',
         },
         fats: {
-          type: 'number',
+          anyOf: [
+            { type: 'number' },
+            { type: 'null' }
+          ],
           description: 'Estimated fats in grams (can be null if estimation failed)',
         },
         assumptions: {
-          type: 'string',
+          anyOf: [
+            { type: 'string' },
+            { type: 'null' }
+          ],
           description: 'AI assumptions about the meal (can be null if estimation failed)',
         },
         error: {
-          type: 'string',
+          anyOf: [
+            { type: 'string' },
+            { type: 'null' }
+          ],
           description: 'Error message if AI could not estimate (only present if estimation failed)',
         },
       },
-      required: [],
+      required: ['calories', 'protein', 'carbs', 'fats', 'assumptions', 'error'],
       additionalProperties: false,
     },
   },
