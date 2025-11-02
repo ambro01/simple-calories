@@ -11,16 +11,16 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ onAddMeal }: DashboardHeaderProps) {
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="bg-background border-b border-border sticky top-0 z-10">
       <div className="max-w-4xl mx-auto p-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Kalendarz posiłków
           </h1>
           <div className="flex items-center gap-2">
             <button
               onClick={onAddMeal}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
               aria-label="Dodaj posiłek"
             >
               <svg
@@ -40,7 +40,7 @@ export function DashboardHeader({ onAddMeal }: DashboardHeaderProps) {
             </button>
             <a
               href="/settings"
-              className="p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+              className="p-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg shadow-sm hover:shadow-md transition-all"
               aria-label="Ustawienia"
             >
               <svg

@@ -22,15 +22,15 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
   const formattedDate = dateFormatter.format(progress.date, "full");
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="bg-background border-b border-border sticky top-0 z-10">
       <div className="max-w-4xl mx-auto p-4">
         {/* Date and action buttons */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">{formattedDate}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{formattedDate}</h1>
           <div className="flex items-center gap-2">
             <button
               onClick={onBack || (() => (window.location.href = "/"))}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
               aria-label="Powrót do dashboard"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +41,7 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
             {onAddMeal && (
               <button
                 onClick={onAddMeal}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
                 aria-label="Dodaj posiłek"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
             )}
             <a
               href="/settings"
-              className="p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all"
+              className="p-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg shadow-sm hover:shadow-md transition-all"
               aria-label="Ustawienia"
             >
               <svg
@@ -81,29 +81,29 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
         {/* Calories and Macros summary in one row */}
         <div className="flex gap-3">
           {/* Calories summary - 1/3 width */}
-          <div className="flex-1 bg-gray-50 rounded-lg p-3">
+          <div className="flex-1 bg-muted rounded-lg p-3">
             <div className="flex justify-between items-baseline mb-2">
-              <div className="text-lg font-bold text-gray-900">
+              <div className="text-lg font-bold text-foreground">
                 {progress.total_calories} / {progress.calorie_goal} kcal
               </div>
-              <div className="text-sm text-gray-600">{progress.percentage.toFixed(0)}%</div>
+              <div className="text-sm text-muted-foreground">{progress.percentage.toFixed(0)}%</div>
             </div>
             <CalorieProgressBar percentage={progress.percentage} status={progress.status} size="sm" />
           </div>
 
           {/* Macros summary - 2/3 width */}
           <div className="flex-[2] grid grid-cols-3 gap-2">
-            <div className="bg-blue-50 rounded-lg p-3 text-center">
-              <div className="text-xs text-gray-600 mb-1">Białko</div>
-              <div className="text-lg font-semibold text-gray-900">{progress.total_protein}g</div>
+            <div className="bg-blue-500/10 dark:bg-blue-500/20 rounded-lg p-3 text-center">
+              <div className="text-xs text-muted-foreground mb-1">Białko</div>
+              <div className="text-lg font-semibold text-foreground">{progress.total_protein}g</div>
             </div>
-            <div className="bg-orange-50 rounded-lg p-3 text-center">
-              <div className="text-xs text-gray-600 mb-1">Węglowodany</div>
-              <div className="text-lg font-semibold text-gray-900">{progress.total_carbs}g</div>
+            <div className="bg-orange-500/10 dark:bg-orange-500/20 rounded-lg p-3 text-center">
+              <div className="text-xs text-muted-foreground mb-1">Węglowodany</div>
+              <div className="text-lg font-semibold text-foreground">{progress.total_carbs}g</div>
             </div>
-            <div className="bg-yellow-50 rounded-lg p-3 text-center">
-              <div className="text-xs text-gray-600 mb-1">Tłuszcze</div>
-              <div className="text-lg font-semibold text-gray-900">{progress.total_fats}g</div>
+            <div className="bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg p-3 text-center">
+              <div className="text-xs text-muted-foreground mb-1">Tłuszcze</div>
+              <div className="text-lg font-semibold text-foreground">{progress.total_fats}g</div>
             </div>
           </div>
         </div>

@@ -65,7 +65,7 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-sm border border-gray-200 p-3 transition-opacity ${
+      className={`bg-card rounded-lg shadow-sm border border-border p-3 transition-opacity ${
         isDeleting ? "opacity-50 pointer-events-none" : ""
       }`}
     >
@@ -79,7 +79,7 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
         </span>
         <div className="flex items-center gap-2">
           {meal.input_method === "ai" && (
-            <span className="inline-flex items-center gap-1 text-xs text-gray-500">
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M13 7H7v6h6V7z" />
                 <path
@@ -91,19 +91,19 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
               Wygenerowane przez AI
             </span>
           )}
-          <span className="text-sm text-gray-600">{mealTime}</span>
+          <span className="text-sm text-muted-foreground">{mealTime}</span>
         </div>
       </div>
 
       {/* Description line */}
-      <p className="text-gray-900 font-medium mb-2">{meal.description}</p>
+      <p className="text-foreground font-medium mb-2">{meal.description}</p>
 
       {/* Calories, macros & actions line */}
       {!showDeleteConfirm ? (
         <div className="flex items-center gap-3">
-          <div className="text-lg font-bold text-gray-900 whitespace-nowrap">{meal.calories} kcal</div>
+          <div className="text-lg font-bold text-foreground whitespace-nowrap">{meal.calories} kcal</div>
           {(meal.protein !== null || meal.carbs !== null || meal.fats !== null) && (
-            <div className="flex gap-2 text-xs text-gray-600 whitespace-nowrap">
+            <div className="flex gap-2 text-xs text-muted-foreground whitespace-nowrap">
               {meal.protein !== null && (
                 <span>
                   <span className="font-medium">Białko:</span> {meal.protein}g
@@ -127,7 +127,7 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
             <button
               onClick={() => onEdit(meal)}
               disabled={isDeleting}
-              className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Edytuj posiłek"
             >
               Edytuj
@@ -135,7 +135,7 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
             <button
               onClick={handleDeleteClick}
               disabled={isDeleting}
-              className="px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Usuń posiłek"
             >
               Usuń
@@ -143,19 +143,19 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
           </div>
         </div>
       ) : (
-        <div className="bg-red-50 border border-red-200 rounded-md p-3">
-          <p className="text-sm text-red-900 mb-2">Czy na pewno chcesz usunąć ten posiłek?</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
+          <p className="text-sm text-destructive mb-2">Czy na pewno chcesz usunąć ten posiłek?</p>
           <div className="flex gap-2">
             <button
               onClick={handleDeleteConfirm}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-destructive-foreground bg-destructive hover:bg-destructive/90 rounded-md transition-colors"
               aria-label="Potwierdź usunięcie"
             >
               Usuń
             </button>
             <button
               onClick={handleDeleteCancel}
-              className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-foreground bg-secondary border border-border hover:bg-secondary/80 rounded-md transition-colors"
               aria-label="Anuluj usunięcie"
             >
               Anuluj

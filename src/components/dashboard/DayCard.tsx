@@ -25,21 +25,21 @@ export function DayCard({ day, onClick, isSelected = false }: DayCardProps) {
     <button
       onClick={onClick}
       className={`
-        w-full bg-white rounded-lg shadow-sm border border-gray-200 p-4
-        text-left transition-all hover:shadow-md hover:border-gray-300
-        ${isSelected ? "ring-2 ring-blue-500 border-blue-500" : ""}
+        w-full bg-card rounded-lg shadow-sm border border-border p-4
+        text-left transition-all hover:shadow-md hover:border-accent
+        ${isSelected ? "ring-2 ring-primary border-primary" : ""}
       `}
       aria-label={`Pokaż szczegóły dla ${formattedDate}`}
     >
       {/* Date */}
-      <div className="text-sm font-medium text-gray-900 mb-3">{formattedDate}</div>
+      <div className="text-sm font-medium text-foreground mb-3">{formattedDate}</div>
 
       {/* Calories info */}
       <div className="flex justify-between items-baseline mb-2">
-        <div className="text-lg font-semibold text-gray-900">
+        <div className="text-lg font-semibold text-foreground">
           {day.total_calories} / {day.calorie_goal} kcal
         </div>
-        <div className="text-sm text-gray-600">{day.percentage.toFixed(0)}%</div>
+        <div className="text-sm text-muted-foreground">{day.percentage.toFixed(0)}%</div>
       </div>
 
       {/* Progress bar */}
@@ -48,7 +48,7 @@ export function DayCard({ day, onClick, isSelected = false }: DayCardProps) {
       </div>
 
       {/* Macros */}
-      <div className="flex gap-3 text-xs text-gray-600">
+      <div className="flex gap-3 text-xs text-muted-foreground">
         <div>
           <span className="font-medium">Białko:</span> {day.total_protein}g
         </div>

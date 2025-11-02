@@ -40,12 +40,9 @@ export interface StatusColorConfig {
   border: string;
 }
 
-export const STATUS_COLOR_MAP: Record<
-  "under" | "on_track" | "over",
-  StatusColorConfig
-> = {
+export const STATUS_COLOR_MAP: Record<"under" | "on_track" | "over", StatusColorConfig> = {
   under: {
-    bg: "bg-gray-400",
+    bg: "bg-sky-400",
     text: "text-gray-700",
     border: "border-gray-300",
   },

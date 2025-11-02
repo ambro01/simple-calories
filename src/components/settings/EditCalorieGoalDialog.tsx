@@ -23,12 +23,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { EditCalorieGoalDialogProps } from "@/types/settings.types";
 import { useCalorieGoalForm } from "@/hooks/useCalorieGoalForm";
 
-export function EditCalorieGoalDialog({
-  open,
-  onOpenChange,
-  currentGoal,
-  onSuccess,
-}: EditCalorieGoalDialogProps) {
+export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSuccess }: EditCalorieGoalDialogProps) {
   const form = useCalorieGoalForm(currentGoal);
 
   /**
@@ -78,9 +73,7 @@ export function EditCalorieGoalDialog({
   };
 
   // Wyświetl aktualny cel (jeśli istnieje)
-  const currentGoalDisplay = currentGoal
-    ? `${currentGoal.daily_goal} kcal`
-    : "Brak celu";
+  const currentGoalDisplay = currentGoal ? `${currentGoal.daily_goal} kcal` : "Brak celu";
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -97,8 +90,7 @@ export function EditCalorieGoalDialog({
           <Alert className="mb-4 border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-100">
             <Info className="h-4 w-4" />
             <AlertDescription className="text-sm">
-              Nowy cel będzie obowiązywał od <strong>jutra</strong>. Rekomendowany
-              zakres: 1200-3500 kcal dziennie.
+              Nowy cel będzie obowiązywał od jutra. Rekomendowany zakres: 1200-3500 kcal dziennie.
             </AlertDescription>
           </Alert>
 
@@ -119,15 +111,9 @@ export function EditCalorieGoalDialog({
                 onChange={(e) => form.updateGoalValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={form.state.isSaving}
-                className={
-                  form.state.validationError
-                    ? "border-destructive focus-visible:ring-destructive"
-                    : ""
-                }
+                className={form.state.validationError ? "border-destructive focus-visible:ring-destructive" : ""}
                 aria-invalid={!!form.state.validationError}
-                aria-describedby={
-                  form.state.validationError ? "goal-error" : undefined
-                }
+                aria-describedby={form.state.validationError ? "goal-error" : undefined}
                 autoFocus
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
@@ -137,11 +123,7 @@ export function EditCalorieGoalDialog({
 
             {/* Validation Error */}
             {form.state.validationError && (
-              <p
-                id="goal-error"
-                className="text-sm text-destructive"
-                role="alert"
-              >
+              <p id="goal-error" className="text-sm text-destructive" role="alert">
                 {form.state.validationError}
               </p>
             )}
@@ -156,18 +138,11 @@ export function EditCalorieGoalDialog({
 
           {/* Dialog Footer with Actions */}
           <DialogFooter className="mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={form.state.isSaving}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={form.state.isSaving}>
               Anuluj
             </Button>
             <Button type="submit" disabled={form.state.isSaving}>
-              {form.state.isSaving && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {form.state.isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {form.state.isSaving ? "Zapisywanie..." : "Zapisz"}
             </Button>
           </DialogFooter>

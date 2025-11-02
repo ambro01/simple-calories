@@ -35,7 +35,7 @@ export function CalorieProgressBar({
 
   return (
     <div className="w-full">
-      <div className={`w-full bg-gray-200 rounded-full overflow-hidden ${heightClass}`}>
+      <div className={`w-full bg-muted rounded-full overflow-hidden ${heightClass}`}>
         <div
           className={`${statusBgClass} h-full rounded-full transition-all duration-300 ease-in-out`}
           style={{ width: `${clampedPercentage}%` }}
@@ -47,7 +47,7 @@ export function CalorieProgressBar({
         />
       </div>
       {showLabel && (
-        <div className="mt-1 text-xs text-gray-600 text-right">
+        <div className="mt-1 text-xs text-muted-foreground text-right">
           {percentage.toFixed(0)}%
         </div>
       )}

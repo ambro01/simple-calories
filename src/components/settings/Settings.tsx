@@ -6,8 +6,9 @@
  * Obsługuje stany: loading, error, success.
  */
 
-import { Target, Mail, LogOut, Loader2, AlertCircle } from "lucide-react";
+import { Target, Mail, LogOut, Loader2, AlertCircle, Moon, Sun } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
+import { useTheme } from "@/hooks/useTheme";
 import { SettingsCard } from "./SettingsCard";
 import { EditCalorieGoalDialog } from "./EditCalorieGoalDialog";
 import { LogoutAlertDialog } from "./LogoutAlertDialog";
@@ -15,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function Settings() {
   const settings = useSettings();
+  const { theme, toggleTheme } = useTheme();
 
   /**
    * Obsługa sukcesu zapisania celu
@@ -107,6 +109,14 @@ export function Settings() {
                 subtitle={userEmailDisplay}
                 icon={<Mail className="h-5 w-5" />}
                 showChevron={false}
+              />
+
+              {/* Theme card */}
+              <SettingsCard
+                title="Motyw aplikacji"
+                subtitle={theme === "light" ? "Jasny" : "Ciemny"}
+                icon={theme === "light" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                onClick={toggleTheme}
               />
 
               {/* Logout card */}

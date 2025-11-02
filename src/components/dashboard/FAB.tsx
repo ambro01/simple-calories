@@ -14,7 +14,7 @@ export function FAB({ onClick, ariaLabel = "Dodaj posiłek" }: FABProps) {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-full shadow-lg flex items-center justify-center transition-colors z-50 lg:hidden"
+      className="fixed bottom-6 right-6 w-14 h-14 bg-primary hover:bg-primary/90 active:bg-primary/80 text-primary-foreground rounded-full shadow-lg flex items-center justify-center transition-colors z-50 lg:hidden"
       aria-label={ariaLabel}
     >
       <svg
