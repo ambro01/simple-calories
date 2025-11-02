@@ -163,7 +163,7 @@ Components use Tailwind CSS:
 ```typescript
 STATUS_COLOR_MAP = {
   under: {
-    bg: "bg-gray-400",
+    bg: "bg-sky-400",
     text: "text-gray-700",
     border: "border-gray-300"
   },

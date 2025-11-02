@@ -175,7 +175,7 @@ interface DayCardProps {
 **Główne elementy**:
 - Progress bar (HTML `<progress>` lub custom div z width %)
 - Kolorowanie tła wg statusu:
-  - `under`: bg-gray-400
+  - `under`: bg-sky-400
   - `on_track`: bg-green-500
   - `over`: bg-orange-500
 - Opcjonalnie: procent jako label
@@ -662,7 +662,7 @@ export interface DeleteConfirmationState {
  */
 export const STATUS_COLOR_MAP: Record<DailyProgressStatus, StatusColorConfig> = {
   under: {
-    bg: 'bg-gray-400',
+    bg: 'bg-sky-400',
     text: 'text-gray-700',
     border: 'border-gray-300',
   },
@@ -1951,7 +1951,7 @@ try {
 **Komponenty**: `CalorieProgressBar`
 
 **Warunki**:
-- `status === 'under'`: bg-gray-400
+- `status === 'under'`: bg-sky-400
 - `status === 'on_track'`: bg-green-500
 - `status === 'over'`: bg-orange-500
 
