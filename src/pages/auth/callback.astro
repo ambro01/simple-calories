@@ -1,0 +1,38 @@
+---
+/**
+ * Auth Callback Page
+ *
+ * Endpoint callback dla Supabase Auth.
+ * Obsługuje OAuth, magic links, email confirmation i password recovery.
+ */
+
+// SSR wymagane dla obsługi callback
+export const prerender = false;
+
+// TODO: Server-side logic po dodaniu backendu
+// 1. Supabase.auth.exchangeCodeForSession()
+//    - Przekształcenie kodu autoryzacyjnego w sesję
+//
+// const code = Astro.url.searchParams.get('code');
+// const type = Astro.url.searchParams.get('type');
+//
+// if (code) {
+//   const { error } = await Astro.locals.supabase.auth.exchangeCodeForSession(code);
+//
+//   if (error) {
+//     return Astro.redirect('/auth/login?error=auth_callback_failed');
+//   }
+//
+//   // 2. Routing użytkownika po callback:
+//   if (type === 'signup') {
+//     return Astro.redirect('/settings'); // Pierwsze ustawienie celu kalorycznego
+//   } else if (type === 'recovery') {
+//     return Astro.redirect('/auth/reset-password');
+//   } else {
+//     return Astro.redirect('/'); // Dashboard
+//   }
+// }
+
+// Tymczasowo - redirect na login
+return Astro.redirect("/auth/login");
+---

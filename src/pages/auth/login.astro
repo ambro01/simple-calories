@@ -1,0 +1,29 @@
+---
+/**
+ * Login Page
+ *
+ * Strona logowania użytkownika.
+ * Server-side sprawdza czy użytkownik już zalogowany (redirect na /).
+ */
+
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { LoginForm } from "@/components/auth";
+
+// SSR wymagane dla sprawdzenia sesji
+export const prerender = false;
+
+// TODO: Server-side logic po dodaniu backendu
+// const { data: { user }, error } = await Astro.locals.supabase.auth.getUser();
+//
+// if (user) {
+//   return Astro.redirect('/');
+// }
+
+// Obsługa params z URL
+// const errorParam = Astro.url.searchParams.get("error");
+// const successParam = Astro.url.searchParams.get("success");
+---
+
+<AuthLayout title="Logowanie - Szybkie Kalorie">
+  <LoginForm client:load />
+</AuthLayout>

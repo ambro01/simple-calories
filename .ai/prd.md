@@ -12,14 +12,15 @@ Głównym problemem, który rozwiązuje aplikacja, jest wysiłek i czas wymagany
 
 ### **3.1. System Kont i Ustawienia**
 
-* Użytkownik może założyć konto podając adres e-mail i hasło.  
-* Użytkownik może zalogować się na swoje konto.  
+* Użytkownik musi założyć konto podając adres e-mail i hasło.  
+* Użytkownik musi zalogować się na swoje konto.  
 * Użytkownik może skorzystać z funkcji "Zapomniałem hasła", która wysyła link do resetu na podany adres e-mail.  
+* Niezalogowany użytkownik nie ma dostępu do żadnego ekranu z biznesowymi funkcjonalnościami.
 * Hasła użytkowników muszą być przechowywane w formie zahaszowanej (np. bcrypt).  
 * Dane poszczególnych użytkowników muszą być od siebie w pełni odizolowane.  
 * Sesja użytkownika jest utrzymywana przez 30 dni.  
 * W panelu ustawień użytkownik może zarządzać swoim dziennym celem kalorycznym (w Kcal).  
-* Użytkownik może poprosić o usunięcie swojego konta poprzez wysłanie prośby na wskazany adres e-mail.
+* Użytkownik może poprosić o usunięcie swojego konta poprzez wysłanie prośby na wskazany adres e-mail zespołu wsparcia.
 
 ### **3.2. Dodawanie Posiłku (Główny Przepływ)**
 
@@ -113,6 +114,12 @@ Głównym problemem, który rozwiązuje aplikacja, jest wysiłek i czas wymagany
   2. Po podaniu adresu e-mail i kliknięciu przycisku, na moją skrzynkę zostaje wysłany link do resetu hasła.  
   3. Link jest unikalny i ma ograniczony czas ważności.  
   4. Po kliknięciu w link jestem przekierowany do formularza, gdzie mogę ustawić nowe hasło.  
+* ID: US-003a
+* Tytuł: Zmiana hasła  
+* Opis: Jako użytkownik, chcę móc zmienić aktualne hasło na nowe w ustawieniach, w panelu profilu użytkownika.  
+* Kryteria akceptacji:  
+  1. Na stronie "Ustawienia" w skecji konto jest widoczna możliwość zmiany aktualnego hasło.  
+  2. Po podaniu aktualnego i nowego hasła odblokowuje się przycisk zapisz. Jeśli aktualne hasło jest poprawne dochodzi do zmiany hasła.
 * ID: US-004  
 * Tytuł: Pierwsze ustawienie celu kalorycznego  
 * Opis: Jako nowy użytkownik, zaraz po rejestracji chcę ustawić mój dzienny cel kaloryczny, aby aplikacja mogła śledzić moje postępy.  

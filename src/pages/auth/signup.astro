@@ -1,0 +1,28 @@
+---
+/**
+ * Signup Page
+ *
+ * Strona rejestracji nowego użytkownika.
+ * Server-side sprawdza czy użytkownik już zalogowany (redirect na /).
+ */
+
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { SignupForm } from "@/components/auth";
+
+// SSR wymagane dla sprawdzenia sesji
+export const prerender = false;
+
+// TODO: Server-side logic po dodaniu backendu
+// const { data: { user }, error } = await Astro.locals.supabase.auth.getUser();
+//
+// if (user) {
+//   return Astro.redirect('/');
+// }
+
+// Obsługa error params z URL (np. ?error=registration_failed)
+// const errorParam = Astro.url.searchParams.get("error");
+---
+
+<AuthLayout title="Rejestracja - Szybkie Kalorie">
+  <SignupForm client:load />
+</AuthLayout>
