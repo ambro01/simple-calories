@@ -1,4 +1,4 @@
-import { OpenRouterService } from './openrouter.service';
+import { OpenRouterService } from "./openrouter.service";
 
 let instance: OpenRouterService | null = null;
 

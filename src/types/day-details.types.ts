@@ -5,11 +5,7 @@
  * including state management, component props, and view models.
  */
 
-import type {
-  DailyProgressResponseDTO,
-  MealResponseDTO,
-  MealCategory,
-} from "../types";
+import type { DailyProgressResponseDTO, MealResponseDTO, MealCategory } from "../types";
 
 /**
  * Stan szczegółów dnia

@@ -48,9 +48,7 @@ async function fetchDayProgress(date: string): Promise<DailyProgressResponseDTO>
  */
 async function fetchDayMeals(date: string): Promise<MealResponseDTO[]> {
   // API endpoint: GET /api/v1/meals?date=YYYY-MM-DD&limit=100&offset=0
-  const response = await fetch(
-    `/api/v1/meals?date=${date}&limit=100&offset=0`
-  );
+  const response = await fetch(`/api/v1/meals?date=${date}&limit=100&offset=0`);
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -107,10 +105,7 @@ export function useDayDetails({ date }: UseDayDetailsParams): UseDayDetailsRetur
 
     try {
       // Równoległe pobranie progress i meals
-      const [progress, meals] = await Promise.all([
-        fetchDayProgress(date),
-        fetchDayMeals(date),
-      ]);
+      const [progress, meals] = await Promise.all([fetchDayProgress(date), fetchDayMeals(date)]);
 
       setState((prev) => ({
         ...prev,
@@ -157,10 +152,7 @@ export function useDayDetails({ date }: UseDayDetailsParams): UseDayDetailsRetur
    */
   const refreshAfterMealChange = useCallback(async () => {
     try {
-      const [progress, meals] = await Promise.all([
-        fetchDayProgress(date),
-        fetchDayMeals(date),
-      ]);
+      const [progress, meals] = await Promise.all([fetchDayProgress(date), fetchDayMeals(date)]);
 
       setState((prev) => ({
         ...prev,

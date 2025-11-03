@@ -14,8 +14,8 @@
  * <LoadingState stage={1} />
  */
 
-import type { LoadingStateProps } from '../../types/add-meal.types';
-import { AI_LOADING_STAGES } from '../../lib/constants/meal-form.constants';
+import type { LoadingStateProps } from "../../types/add-meal.types";
+import { AI_LOADING_STAGES } from "../../lib/constants/meal-form.constants";
 
 export function LoadingState({ stage }: LoadingStateProps) {
   const stageText = AI_LOADING_STAGES[stage];
@@ -34,10 +34,10 @@ export function LoadingState({ stage }: LoadingStateProps) {
             key={dotIndex}
             className={`h-2 w-2 rounded-full transition-all duration-300 ${
               dotIndex === stage
-                ? 'bg-primary scale-125'
+                ? "bg-primary scale-125"
                 : dotIndex < stage
-                  ? 'bg-primary/60'
-                  : 'bg-muted-foreground/30'
+                  ? "bg-primary/60"
+                  : "bg-muted-foreground/30"
             }`}
           />
         ))}

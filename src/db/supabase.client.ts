@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient as SupabaseClientBase } from "@supabase/supabase-js";
 
 import type { Database } from "../db/database.types.ts";
 
@@ -6,6 +6,12 @@ const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPAB
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY || import.meta.env.SUPABASE_KEY;
 
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+
+/**
+ * Type alias for SupabaseClient with our Database schema
+ * Use this type instead of importing from @supabase/supabase-js directly
+ */
+export type SupabaseClient = SupabaseClientBase<Database>;
 
 /**
  * Default User ID for MVP development

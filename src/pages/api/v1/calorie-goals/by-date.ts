@@ -42,15 +42,12 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { CalorieGoalService } from '../../../../lib/services/calorie-goal.service';
-import { dateQueryParamSchema } from '../../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../../lib/helpers/error-logger';
-import type {
-  CalorieGoalResponseDTO,
-  ErrorResponseDTO,
-} from '../../../../types';
+import type { APIRoute } from "astro";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
+import { dateQueryParamSchema } from "../../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../../lib/helpers/error-logger";
+import type { CalorieGoalResponseDTO, ErrorResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -80,16 +77,16 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 2: Parse and validate date parameter
-    const dateParam = url.searchParams.get('date');
+    const dateParam = url.searchParams.get("date");
 
     // Date is required for this endpoint
     if (!dateParam) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Date parameter is required',
+          error: "Bad Request",
+          message: "Date parameter is required",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -98,36 +95,30 @@ export const GET: APIRoute = async ({ url, locals }) => {
     if (!dateValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid date format. Expected YYYY-MM-DD',
+          error: "Bad Request",
+          message: "Invalid date format. Expected YYYY-MM-DD",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 3: Fetch goal by exact date
     const calorieGoalService = new CalorieGoalService(locals.supabase);
-    const goal = await calorieGoalService.getCalorieGoalByDate(
-      userId,
-      dateParam
-    );
+    const goal = await calorieGoalService.getCalorieGoalByDate(userId, dateParam);
 
     // Step 4: Return goal or 404
     if (!goal) {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'No calorie goal found for the specified date',
+          error: "Not Found",
+          message: "No calorie goal found for the specified date",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 5: Check if goal is immutable (has started or is being used)
-    const isImmutable = await calorieGoalService.isGoalImmutable(
-      goal.id,
-      userId
-    );
+    const isImmutable = await calorieGoalService.isGoalImmutable(goal.id, userId);
 
     // Step 6: Return goal with immutability flag
     return new Response(
@@ -135,30 +126,30 @@ export const GET: APIRoute = async ({ url, locals }) => {
         ...goal,
         is_immutable: isImmutable,
       } as CalorieGoalResponseDTO & { is_immutable: boolean }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error fetching calorie goal by date:', error);
+    console.error("Error fetching calorie goal by date:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_by_date_error',
+      error_type: "calorie_goal_by_date_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'GET /api/v1/calorie-goals/by-date',
-        date_param: url.searchParams.get('date'),
+        endpoint: "GET /api/v1/calorie-goals/by-date",
+        date_param: url.searchParams.get("date"),
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };

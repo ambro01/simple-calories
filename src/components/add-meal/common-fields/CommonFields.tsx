@@ -20,12 +20,12 @@
  * />
  */
 
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, AlertTriangle } from 'lucide-react';
-import type { CommonFieldsProps } from '../../../types/add-meal.types';
-import { CategorySelector } from './CategorySelector';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, AlertTriangle } from "lucide-react";
+import type { CommonFieldsProps } from "../../../types/add-meal.types";
+import { CategorySelector } from "./CategorySelector";
 
 export function CommonFields({
   category,
@@ -36,8 +36,8 @@ export function CommonFields({
   onDateChange,
   onTimeChange,
 }: CommonFieldsProps) {
-  const isFutureDate = dateWarning?.type === 'future';
-  const isOldDate = dateWarning?.type === 'old';
+  const isFutureDate = dateWarning?.type === "future";
+  const isOldDate = dateWarning?.type === "old";
 
   return (
     <div className="space-y-4">
@@ -60,16 +60,14 @@ export function CommonFields({
           type="date"
           value={date}
           onChange={(e) => onDateChange(e.target.value)}
-          className={isFutureDate ? 'border-destructive' : ''}
+          className={isFutureDate ? "border-destructive" : ""}
         />
 
         {/* Date Warning - Future (Error) */}
         {isFutureDate && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-sm">
-              {dateWarning.message}
-            </AlertDescription>
+            <AlertDescription className="text-sm">{dateWarning.message}</AlertDescription>
           </Alert>
         )}
 
@@ -89,12 +87,7 @@ export function CommonFields({
         <Label htmlFor="meal-time" className="text-sm font-medium">
           Godzina
         </Label>
-        <Input
-          id="meal-time"
-          type="time"
-          value={time}
-          onChange={(e) => onTimeChange(e.target.value)}
-        />
+        <Input id="meal-time" type="time" value={time} onChange={(e) => onTimeChange(e.target.value)} />
       </div>
     </div>
   );

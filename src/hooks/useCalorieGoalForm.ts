@@ -6,15 +6,8 @@
  */
 
 import { useState, useCallback, useEffect } from "react";
-import type {
-  EditCalorieGoalViewModel,
-  CalorieGoalFormData,
-} from "@/types/settings.types";
-import type {
-  CalorieGoalResponseDTO,
-  CreateCalorieGoalRequestDTO,
-  ErrorResponseDTO,
-} from "@/types";
+import type { EditCalorieGoalViewModel, CalorieGoalFormData } from "@/types/settings.types";
+import type { CalorieGoalResponseDTO, CreateCalorieGoalRequestDTO, ErrorResponseDTO } from "@/types";
 
 // Stałe walidacji (zgodne z backendem - createCalorieGoalSchema)
 const VALIDATION_LIMITS = {
@@ -33,9 +26,7 @@ interface UseCalorieGoalFormReturn {
 /**
  * Tworzy początkowy stan formularza
  */
-function getInitialState(
-  currentGoal: CalorieGoalResponseDTO | null
-): EditCalorieGoalViewModel {
+function getInitialState(currentGoal: CalorieGoalResponseDTO | null): EditCalorieGoalViewModel {
   return {
     goalValue: currentGoal?.daily_goal?.toString() || "",
     isSaving: false,
@@ -95,12 +86,8 @@ function validateGoalValue(value: string): {
   return { valid: true, error: null };
 }
 
-export function useCalorieGoalForm(
-  currentGoal: CalorieGoalResponseDTO | null
-): UseCalorieGoalFormReturn {
-  const [state, setState] = useState<EditCalorieGoalViewModel>(() =>
-    getInitialState(currentGoal)
-  );
+export function useCalorieGoalForm(currentGoal: CalorieGoalResponseDTO | null): UseCalorieGoalFormReturn {
+  const [state, setState] = useState<EditCalorieGoalViewModel>(() => getInitialState(currentGoal));
 
   /**
    * Synchronizuje wartość początkową gdy currentGoal się zmieni
@@ -188,9 +175,7 @@ export function useCalorieGoalForm(
       const tomorrowStr = tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
 
       // Step 1: Check if goal for tomorrow already exists
-      const checkResponse = await fetch(
-        `/api/v1/calorie-goals/by-date?date=${tomorrowStr}`
-      );
+      const checkResponse = await fetch(`/api/v1/calorie-goals/by-date?date=${tomorrowStr}`);
 
       let method: "POST" | "PATCH";
       let url: string;
@@ -198,8 +183,7 @@ export function useCalorieGoalForm(
 
       if (checkResponse.status === 200) {
         // Goal exists - check if it's immutable
-        const existingGoal: CalorieGoalResponseDTO & { is_immutable?: boolean } =
-          await checkResponse.json();
+        const existingGoal: CalorieGoalResponseDTO & { is_immutable?: boolean } = await checkResponse.json();
 
         if (existingGoal.is_immutable) {
           // Goal is immutable (already started/used) - create new goal with POST
@@ -262,8 +246,7 @@ export function useCalorieGoalForm(
         setState((prev) => ({
           ...prev,
           isSaving: false,
-          apiError:
-            "Cel został usunięty. Odśwież stronę i spróbuj ponownie.",
+          apiError: "Cel został usunięty. Odśwież stronę i spróbuj ponownie.",
         }));
 
         throw new Error("Goal not found");
@@ -274,8 +257,7 @@ export function useCalorieGoalForm(
         setState((prev) => ({
           ...prev,
           isSaving: false,
-          apiError:
-            "Cel na jutro został już utworzony. Odśwież stronę i spróbuj ponownie.",
+          apiError: "Cel na jutro został już utworzony. Odśwież stronę i spróbuj ponownie.",
         }));
 
         throw new Error("Conflict error");

@@ -14,12 +14,12 @@
  * Authorization: Row Level Security ensures users can only access their own meals
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { supabaseClient, DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { UpdateMealSchema } from '../../../../lib/validation/meal.schemas';
-import { MealsService } from '../../../../lib/services/meals.service';
-import type { ErrorResponseDTO, MealResponseDTO, UpdateMealResponseDTO } from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { UpdateMealSchema } from "../../../../lib/validation/meal.schemas";
+import { MealsService } from "../../../../lib/services/meals.service";
+import type { ErrorResponseDTO, MealResponseDTO, UpdateMealResponseDTO } from "../../../../types";
 
 /**
  * Validates if a string is a valid UUID format
@@ -64,33 +64,33 @@ function isValidUUID(uuid: string): boolean {
  *   "message": "Meal not found"
  * }
  */
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
   try {
     // Step 1: Parse meal ID from URL params
     const mealId = params.id;
 
     if (!mealId) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Meal ID is required',
+        error: "VALIDATION_ERROR",
+        message: "Meal ID is required",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // Step 2: Validate UUID format
     if (!isValidUUID(mealId)) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Invalid meal ID format',
+        error: "VALIDATION_ERROR",
+        message: "Invalid meal ID format",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -108,19 +108,19 @@ export const GET: APIRoute = async ({ params }) => {
     // const userId = session.user.id;
 
     // Step 4: Fetch meal from service
-    const mealsService = new MealsService(supabaseClient);
+    const mealsService = new MealsService(locals.supabase);
     const meal = await mealsService.getMealById(mealId, userId);
 
     // Step 5: Handle not found
     if (!meal) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'NOT_FOUND',
-        message: 'Meal not found',
+        error: "NOT_FOUND",
+        message: "Meal not found",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -129,20 +129,20 @@ export const GET: APIRoute = async ({ params }) => {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error
-    console.error('Unexpected error in GET /api/v1/meals/:id:', error);
+    console.error("Unexpected error in GET /api/v1/meals/:id:", error);
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
@@ -191,33 +191,33 @@ export const GET: APIRoute = async ({ params }) => {
  *   }
  * }
  */
-export const PATCH: APIRoute = async ({ params, request }) => {
+export const PATCH: APIRoute = async ({ params, request, locals }) => {
   try {
     // Step 1: Parse meal ID from URL params
     const mealId = params.id;
 
     if (!mealId) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Meal ID is required',
+        error: "VALIDATION_ERROR",
+        message: "Meal ID is required",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // Step 2: Validate UUID format
     if (!isValidUUID(mealId)) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Invalid meal ID format',
+        error: "VALIDATION_ERROR",
+        message: "Invalid meal ID format",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -233,19 +233,19 @@ export const PATCH: APIRoute = async ({ params, request }) => {
         // Validation failed - return 400 with details
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         const errorResponse: ErrorResponseDTO = {
-          error: 'VALIDATION_ERROR',
-          message: 'Invalid update data',
+          error: "VALIDATION_ERROR",
+          message: "Invalid update data",
           details,
         };
 
         return new Response(JSON.stringify(errorResponse), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       }
       throw error; // Re-throw if not a Zod error
@@ -255,18 +255,18 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 6: Fetch current meal
-    const mealsService = new MealsService(supabaseClient);
+    const mealsService = new MealsService(locals.supabase);
     const currentMeal = await mealsService.getMealById(mealId, userId);
 
     if (!currentMeal) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'NOT_FOUND',
-        message: 'Meal not found',
+        error: "NOT_FOUND",
+        message: "Meal not found",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -276,13 +276,13 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
     if (!result.success || !result.data) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'INTERNAL_SERVER_ERROR',
-        message: result.error || 'Failed to update meal',
+        error: "INTERNAL_SERVER_ERROR",
+        message: result.error || "Failed to update meal",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: result.statusCode || 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -291,20 +291,20 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error
-    console.error('Unexpected error in PATCH /api/v1/meals/:id:', error);
+    console.error("Unexpected error in PATCH /api/v1/meals/:id:", error);
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
@@ -327,33 +327,33 @@ export const PATCH: APIRoute = async ({ params, request }) => {
  *   "message": "Meal not found"
  * }
  */
-export const DELETE: APIRoute = async ({ params }) => {
+export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
     // Step 1: Parse meal ID from URL params
     const mealId = params.id;
 
     if (!mealId) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Meal ID is required',
+        error: "VALIDATION_ERROR",
+        message: "Meal ID is required",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // Step 2: Validate UUID format
     if (!isValidUUID(mealId)) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Invalid meal ID format',
+        error: "VALIDATION_ERROR",
+        message: "Invalid meal ID format",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -361,19 +361,19 @@ export const DELETE: APIRoute = async ({ params }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 4: Delete meal via service
-    const mealsService = new MealsService(supabaseClient);
+    const mealsService = new MealsService(locals.supabase);
     const deleted = await mealsService.deleteMeal(mealId, userId);
 
     // Step 5: Handle not found
     if (!deleted) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'NOT_FOUND',
-        message: 'Meal not found',
+        error: "NOT_FOUND",
+        message: "Meal not found",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -383,16 +383,16 @@ export const DELETE: APIRoute = async ({ params }) => {
     });
   } catch (error) {
     // Unexpected error
-    console.error('Unexpected error in DELETE /api/v1/meals/:id:', error);
+    console.error("Unexpected error in DELETE /api/v1/meals/:id:", error);
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

@@ -14,27 +14,15 @@ export function DashboardHeader({ onAddMeal }: DashboardHeaderProps) {
     <div className="bg-background border-b border-border sticky top-0 z-10">
       <div className="max-w-4xl mx-auto p-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            Kalendarz posiłków
-          </h1>
+          <h1 className="text-2xl font-bold text-foreground">Kalendarz posiłków</h1>
           <div className="flex items-center gap-2">
             <button
               onClick={onAddMeal}
               className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
               aria-label="Dodaj posiłek"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               <span className="hidden sm:inline">Dodaj posiłek</span>
             </button>
@@ -43,12 +31,7 @@ export function DashboardHeader({ onAddMeal }: DashboardHeaderProps) {
               className="p-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg shadow-sm hover:shadow-md transition-all"
               aria-label="Ustawienia"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

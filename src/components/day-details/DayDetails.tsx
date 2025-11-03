@@ -21,12 +21,7 @@ interface DayDetailsProps {
 }
 
 export function DayDetails({ date, onBack }: DayDetailsProps) {
-  const {
-    state,
-    deleteMeal,
-    refreshAfterMealChange,
-    setEditingMeal,
-  } = useDayDetails({ date });
+  const { state, deleteMeal, refreshAfterMealChange, setEditingMeal } = useDayDetails({ date });
 
   const [isAddMealModalOpen, setIsAddMealModalOpen] = useState(false);
   const [isEditMealModalOpen, setIsEditMealModalOpen] = useState(false);
@@ -36,9 +31,7 @@ export function DayDetails({ date, onBack }: DayDetailsProps) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
         <div className="text-6xl mb-4">⚠️</div>
-        <h2 className="text-xl font-semibold text-foreground mb-2">
-          Wystąpił błąd
-        </h2>
+        <h2 className="text-xl font-semibold text-foreground mb-2">Wystąpił błąd</h2>
         <p className="text-muted-foreground max-w-sm mb-4">{state.error}</p>
         <button
           onClick={() => window.location.reload()}
@@ -87,11 +80,7 @@ export function DayDetails({ date, onBack }: DayDetailsProps) {
     <>
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <DayHeader
-          progress={state.progress}
-          onBack={onBack}
-          onAddMeal={() => setIsAddMealModalOpen(true)}
-        />
+        <DayHeader progress={state.progress} onBack={onBack} onAddMeal={() => setIsAddMealModalOpen(true)} />
 
         {/* Meals list */}
         <div className="max-w-4xl mx-auto p-4">

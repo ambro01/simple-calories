@@ -48,13 +48,13 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { supabaseClient, DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { GetDailyProgressDateSchema } from '../../../../lib/validation/daily-progress.schemas';
-import { DailyProgressService } from '../../../../lib/services/daily-progress.service';
-import { logError, formatErrorForLogging } from '../../../../lib/helpers/error-logger';
-import type { ErrorResponseDTO, DailyProgressResponseDTO } from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { GetDailyProgressDateSchema } from "../../../../lib/validation/daily-progress.schemas";
+import { DailyProgressService } from "../../../../lib/services/daily-progress.service";
+import { logError, formatErrorForLogging } from "../../../../lib/helpers/error-logger";
+import type { ErrorResponseDTO, DailyProgressResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -79,23 +79,23 @@ export const prerender = false;
  * Note: This endpoint never returns 404. If no meals exist for the date,
  * it returns 200 with zero progress instead.
  */
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
   try {
     // Step 1: Extract date parameter from URL
     const dateParam = params.date;
 
     if (!dateParam) {
       const errorResponse: ErrorResponseDTO = {
-        error: 'VALIDATION_ERROR',
-        message: 'Date parameter is required',
+        error: "VALIDATION_ERROR",
+        message: "Date parameter is required",
         details: {
-          date: 'Date parameter is missing',
+          date: "Date parameter is missing",
         },
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -108,19 +108,19 @@ export const GET: APIRoute = async ({ params }) => {
         // Validation failed - return 400 with details
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.') || 'date';
+          const field = err.path.join(".") || "date";
           details[field] = err.message;
         });
 
         const errorResponse: ErrorResponseDTO = {
-          error: 'VALIDATION_ERROR',
-          message: 'Invalid date parameter',
+          error: "VALIDATION_ERROR",
+          message: "Invalid date parameter",
           details,
         };
 
         return new Response(JSON.stringify(errorResponse), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       }
       throw error; // Re-throw if not a Zod error
@@ -145,48 +145,45 @@ export const GET: APIRoute = async ({ params }) => {
 
     // Step 4: Fetch daily progress for the specific date
     // Service handles "zero progress" case automatically
-    const dailyProgressService = new DailyProgressService(supabaseClient);
-    const result = await dailyProgressService.getDailyProgressByDate(
-      userId,
-      validatedDate
-    );
+    const dailyProgressService = new DailyProgressService(locals.supabase);
+    const result = await dailyProgressService.getDailyProgressByDate(userId, validatedDate);
 
     // Step 5: Return success response
     const response: DailyProgressResponseDTO = result;
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Unexpected error in GET /api/v1/daily-progress/:date:', error);
+    console.error("Unexpected error in GET /api/v1/daily-progress/:date:", error);
 
     // Log error to database
     try {
       const errorLogParams = formatErrorForLogging(
         error,
-        'daily_progress_date_fetch_failed',
+        "daily_progress_date_fetch_failed",
         DEFAULT_USER_ID, // Use DEFAULT_USER_ID for MVP
         {
-          endpoint: 'GET /api/v1/daily-progress/:date',
+          endpoint: "GET /api/v1/daily-progress/:date",
           date: params.date,
         }
       );
-      await logError(supabaseClient, errorLogParams);
+      await logError(locals.supabase, errorLogParams);
     } catch (logErr) {
       // If logging fails, just log to console
-      console.error('Failed to log error to database:', logErr);
+      console.error("Failed to log error to database:", logErr);
     }
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

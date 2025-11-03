@@ -7,7 +7,7 @@
  * @module ProfileValidators
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Schema for PATCH /api/v1/profile request body

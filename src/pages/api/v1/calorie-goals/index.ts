@@ -55,17 +55,13 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { CalorieGoalService } from '../../../../lib/services/calorie-goal.service';
-import { createCalorieGoalSchema } from '../../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../../lib/helpers/error-logger';
-import type {
-  CalorieGoalsListResponseDTO,
-  ErrorResponseDTO,
-  CalorieGoalResponseDTO,
-} from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
+import { createCalorieGoalSchema } from "../../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../../lib/helpers/error-logger";
+import type { CalorieGoalsListResponseDTO, ErrorResponseDTO, CalorieGoalResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -96,17 +92,14 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 2: Parse query parameters with validation
-    const limitParam = url.searchParams.get('limit');
-    const offsetParam = url.searchParams.get('offset');
+    const limitParam = url.searchParams.get("limit");
+    const offsetParam = url.searchParams.get("offset");
 
     // Parse and constrain limit (default: 50, max: 100)
-    const limit = Math.min(
-      Math.max(parseInt(limitParam || '50'), 1),
-      100
-    );
+    const limit = Math.min(Math.max(parseInt(limitParam || "50"), 1), 100);
 
     // Parse and constrain offset (default: 0, min: 0)
-    const offset = Math.max(parseInt(offsetParam || '0'), 0);
+    const offset = Math.max(parseInt(offsetParam || "0"), 0);
 
     // Step 3: Fetch data from service (parallel execution for performance)
     const calorieGoalService = new CalorieGoalService(locals.supabase);
@@ -127,27 +120,27 @@ export const GET: APIRoute = async ({ url, locals }) => {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error listing calorie goals:', error);
+    console.error("Error listing calorie goals:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goals_list_error',
+      error_type: "calorie_goals_list_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
-      context: { endpoint: 'GET /api/v1/calorie-goals' },
+      context: { endpoint: "GET /api/v1/calorie-goals" },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -187,10 +180,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     } catch {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON body',
+          error: "Bad Request",
+          message: "Invalid JSON body",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -203,17 +196,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
         // Format validation errors to match ErrorResponseDTO
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         return new Response(
           JSON.stringify({
-            error: 'Bad Request',
-            message: 'Validation failed',
+            error: "Bad Request",
+            message: "Validation failed",
             details,
           } as ErrorResponseDTO),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
+          { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       // Unexpected validation error
@@ -224,27 +217,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const calorieGoalService = new CalorieGoalService(locals.supabase);
 
     try {
-      const newGoal = await calorieGoalService.createCalorieGoal(
-        userId,
-        validatedData.daily_goal
-      );
+      const newGoal = await calorieGoalService.createCalorieGoal(userId, validatedData.daily_goal);
 
       // Return 201 Created with the new goal
       return new Response(JSON.stringify(newGoal as CalorieGoalResponseDTO), {
         status: 201,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     } catch (createError: any) {
       // Handle UNIQUE constraint violation (PostgreSQL error code 23505)
       // This happens when user tries to create multiple goals for tomorrow
-      if (createError.code === '23505') {
+      if (createError.code === "23505") {
         return new Response(
           JSON.stringify({
-            error: 'Conflict',
-            message:
-              'A calorie goal for this date already exists. Use PATCH to update.',
+            error: "Conflict",
+            message: "A calorie goal for this date already exists. Use PATCH to update.",
           } as ErrorResponseDTO),
-          { status: 409, headers: { 'Content-Type': 'application/json' } }
+          { status: 409, headers: { "Content-Type": "application/json" } }
         );
       }
       // Re-throw for outer catch block
@@ -252,23 +241,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error creating calorie goal:', error);
+    console.error("Error creating calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_create_error',
+      error_type: "calorie_goal_create_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
-      context: { endpoint: 'POST /api/v1/calorie-goals' },
+      context: { endpoint: "POST /api/v1/calorie-goals" },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };

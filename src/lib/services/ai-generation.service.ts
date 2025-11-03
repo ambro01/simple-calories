@@ -10,8 +10,7 @@
  * @module AIGenerationService
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../db/database.types";
+import type { SupabaseClient } from "../../db/supabase.client";
 import type { AIGenerationResponseDTO } from "../../types";
 import { openRouterService } from "./openrouter/adapter";
 import type { NutritionalEstimate } from "./openrouter";
@@ -32,7 +31,7 @@ export interface CreateAIGenerationResult {
  * and database transaction management.
  */
 export class AIGenerationService {
-  constructor(private supabase: SupabaseClient<Database>) {}
+  constructor(private supabase: SupabaseClient) {}
 
   /**
    * Creates a new AI generation for nutritional estimation

@@ -45,15 +45,12 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { CalorieGoalService } from '../../../../lib/services/calorie-goal.service';
-import { dateQueryParamSchema } from '../../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../../lib/helpers/error-logger';
-import type {
-  CalorieGoalResponseDTO,
-  ErrorResponseDTO,
-} from '../../../../types';
+import type { APIRoute } from "astro";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
+import { dateQueryParamSchema } from "../../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../../lib/helpers/error-logger";
+import type { CalorieGoalResponseDTO, ErrorResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -92,58 +89,54 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 2: Parse and validate date parameter
-    const dateParam = url.searchParams.get('date');
+    const dateParam = url.searchParams.get("date");
 
     // Default to today if no date provided
-    const targetDate =
-      dateParam || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const targetDate = dateParam || new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
     // Validate date format (YYYY-MM-DD regex)
     const dateValidation = dateQueryParamSchema.safeParse(targetDate);
     if (!dateValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid date format. Expected YYYY-MM-DD',
+          error: "Bad Request",
+          message: "Invalid date format. Expected YYYY-MM-DD",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 3: Fetch goal with smart fallback (current -> next -> default 2000)
     const calorieGoalService = new CalorieGoalService(locals.supabase);
-    const goal = await calorieGoalService.getCurrentOrNextCalorieGoal(
-      userId,
-      targetDate
-    );
+    const goal = await calorieGoalService.getCurrentOrNextCalorieGoal(userId, targetDate);
 
     // Step 4: Return goal (always succeeds, fallback to default 2000 kcal)
-    return new Response(
-      JSON.stringify(goal as CalorieGoalResponseDTO),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify(goal as CalorieGoalResponseDTO), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error fetching current calorie goal:', error);
+    console.error("Error fetching current calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'current_calorie_goal_error',
+      error_type: "current_calorie_goal_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'GET /api/v1/calorie-goals/current',
-        date_param: url.searchParams.get('date'),
+        endpoint: "GET /api/v1/calorie-goals/current",
+        date_param: url.searchParams.get("date"),
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };

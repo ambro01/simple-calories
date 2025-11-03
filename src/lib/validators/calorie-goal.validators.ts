@@ -12,7 +12,7 @@
  * @module CalorieGoalValidators
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Schema for POST /api/v1/calorie-goals request body
@@ -32,12 +32,12 @@ import { z } from 'zod';
 export const createCalorieGoalSchema = z.object({
   daily_goal: z
     .number({
-      required_error: 'Daily goal is required',
-      invalid_type_error: 'Daily goal must be a number',
+      required_error: "Daily goal is required",
+      invalid_type_error: "Daily goal must be a number",
     })
-    .int('Daily goal must be an integer')
-    .min(1, 'Daily goal must be at least 1')
-    .max(10000, 'Daily goal cannot exceed 10000'),
+    .int("Daily goal must be an integer")
+    .min(1, "Daily goal must be at least 1")
+    .max(10000, "Daily goal cannot exceed 10000"),
 });
 
 /**
@@ -52,12 +52,12 @@ export const createCalorieGoalSchema = z.object({
 export const updateCalorieGoalSchema = z.object({
   daily_goal: z
     .number({
-      required_error: 'Daily goal is required',
-      invalid_type_error: 'Daily goal must be a number',
+      required_error: "Daily goal is required",
+      invalid_type_error: "Daily goal must be a number",
     })
-    .int('Daily goal must be an integer')
-    .min(1, 'Daily goal must be at least 1')
-    .max(10000, 'Daily goal cannot exceed 10000'),
+    .int("Daily goal must be an integer")
+    .min(1, "Daily goal must be at least 1")
+    .max(10000, "Daily goal cannot exceed 10000"),
 });
 
 /**
@@ -79,10 +79,7 @@ export const updateCalorieGoalSchema = z.object({
  */
 export const dateQueryParamSchema = z
   .string()
-  .regex(
-    /^\d{4}-\d{2}-\d{2}$/,
-    'Date must be in YYYY-MM-DD format'
-  )
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
   .optional();
 
 /**
@@ -98,9 +95,7 @@ export const dateQueryParamSchema = z
  * "not-a-uuid" // Rejected: invalid format
  * "123" // Rejected: invalid format
  */
-export const uuidParamSchema = z
-  .string()
-  .uuid('Invalid UUID format');
+export const uuidParamSchema = z.string().uuid("Invalid UUID format");
 
 /**
  * Inferred TypeScript types from Zod schemas

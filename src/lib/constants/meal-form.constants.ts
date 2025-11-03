@@ -5,37 +5,37 @@
  * including icons, loading stages, examples, and validation limits.
  */
 
-import type { MealCategory } from '../../types';
-import type { AILoadingStage } from '../../types/add-meal.types';
+import type { MealCategory } from "../../types";
+import type { AILoadingStage } from "../../types/add-meal.types";
 
 /**
  * Mapowanie kategorii na ikony
  */
 export const CATEGORY_ICONS: Record<MealCategory, string> = {
-  breakfast: '🍳',
-  lunch: '🍽️',
-  dinner: '🍲',
-  snack: '🍪',
-  other: '🍴',
+  breakfast: "🍳",
+  lunch: "🍽️",
+  dinner: "🍲",
+  snack: "🍪",
+  other: "🍴",
 };
 
 /**
  * Teksty dla etapów ładowania AI
  */
 export const AI_LOADING_STAGES: Record<AILoadingStage, string> = {
-  0: 'Analizuję opis...',
-  1: 'Szacuję kalorie...',
-  2: 'Obliczam makroskładniki...',
+  0: "Analizuję opis...",
+  1: "Szacuję kalorie...",
+  2: "Obliczam makroskładniki...",
 };
 
 /**
  * Przykłady opisów posiłków
  */
 export const MEAL_EXAMPLES = [
-  'Kanapka z szynką i serem',
-  'Kurczak z ryżem i warzywami',
-  'Jogurt naturalny z owocami',
-  'Jajecznica z trzech jajek',
+  "Kanapka z szynką i serem",
+  "Kurczak z ryżem i warzywami",
+  "Jogurt naturalny z owocami",
+  "Jajecznica z trzech jajek",
 ];
 
 /**

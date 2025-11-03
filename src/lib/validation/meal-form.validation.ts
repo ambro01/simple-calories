@@ -5,9 +5,9 @@
  * including field validation and date validation.
  */
 
-import type { FormValidationError, DateValidationWarning } from '../../types/add-meal.types';
-import { VALIDATION_LIMITS } from '../constants/meal-form.constants';
-import { getCurrentDate, getDaysDifference } from '../helpers/meal-form.utils';
+import type { FormValidationError, DateValidationWarning } from "../../types/add-meal.types";
+import { VALIDATION_LIMITS } from "../constants/meal-form.constants";
+import { getCurrentDate, getDaysDifference } from "../helpers/meal-form.utils";
 
 /**
  * Waliduje prompt AI
@@ -20,14 +20,14 @@ export function validatePrompt(prompt: string): FormValidationError | null {
 
   if (!trimmed) {
     return {
-      field: 'prompt',
-      message: 'Opis posiłku jest wymagany',
+      field: "prompt",
+      message: "Opis posiłku jest wymagany",
     };
   }
 
   if (trimmed.length > VALIDATION_LIMITS.PROMPT_MAX_LENGTH) {
     return {
-      field: 'prompt',
+      field: "prompt",
       message: `Maksymalnie ${VALIDATION_LIMITS.PROMPT_MAX_LENGTH} znaków`,
     };
   }
@@ -46,14 +46,14 @@ export function validateDescription(description: string): FormValidationError | 
 
   if (!trimmed) {
     return {
-      field: 'description',
-      message: 'Opis posiłku jest wymagany',
+      field: "description",
+      message: "Opis posiłku jest wymagany",
     };
   }
 
   if (trimmed.length > VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH) {
     return {
-      field: 'description',
+      field: "description",
       message: `Maksymalnie ${VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH} znaków`,
     };
   }
@@ -70,28 +70,28 @@ export function validateDescription(description: string): FormValidationError | 
 export function validateCalories(calories: number | null): FormValidationError | null {
   if (calories === null || calories === undefined) {
     return {
-      field: 'calories',
-      message: 'Kalorie są wymagane',
+      field: "calories",
+      message: "Kalorie są wymagane",
     };
   }
 
   if (!Number.isInteger(calories)) {
     return {
-      field: 'calories',
-      message: 'Wartość musi być liczbą całkowitą',
+      field: "calories",
+      message: "Wartość musi być liczbą całkowitą",
     };
   }
 
   if (calories < VALIDATION_LIMITS.CALORIES_MIN) {
     return {
-      field: 'calories',
+      field: "calories",
       message: `Minimalna wartość to ${VALIDATION_LIMITS.CALORIES_MIN} kcal`,
     };
   }
 
   if (calories > VALIDATION_LIMITS.CALORIES_MAX) {
     return {
-      field: 'calories',
+      field: "calories",
       message: `Maksymalna wartość to ${VALIDATION_LIMITS.CALORIES_MAX} kcal`,
     };
   }
@@ -106,26 +106,23 @@ export function validateCalories(calories: number | null): FormValidationError |
  * @param field - Nazwa pola (protein, carbs, fats, fiber)
  * @returns Błąd walidacji lub null jeśli poprawny
  */
-export function validateMacro(
-  value: number | null,
-  field: string
-): FormValidationError | null {
+export function validateMacro(value: number | null, field: string): FormValidationError | null {
   // Makro są opcjonalne
   if (value === null || value === undefined) {
     return null;
   }
 
-  if (typeof value !== 'number' || isNaN(value)) {
+  if (typeof value !== "number" || isNaN(value)) {
     return {
       field,
-      message: 'Wartość musi być liczbą',
+      message: "Wartość musi być liczbą",
     };
   }
 
   if (value < VALIDATION_LIMITS.MACRO_MIN) {
     return {
       field,
-      message: 'Wartość nie może być ujemna',
+      message: "Wartość nie może być ujemna",
     };
   }
 
@@ -156,8 +153,8 @@ export function validateDate(date: string): DateValidationWarning | null {
   // Przyszłość - error (blokuje submit)
   if (selectedDate > todayDate) {
     return {
-      type: 'future',
-      message: 'Data nie może być w przyszłości',
+      type: "future",
+      message: "Data nie może być w przyszłości",
     };
   }
 
@@ -165,7 +162,7 @@ export function validateDate(date: string): DateValidationWarning | null {
   const diffDays = getDaysDifference(date, today);
   if (diffDays > VALIDATION_LIMITS.DATE_WARNING_DAYS) {
     return {
-      type: 'old',
+      type: "old",
       message: `Data jest sprzed ${diffDays} dni`,
     };
   }
@@ -184,8 +181,8 @@ export function validateTime(time: string): FormValidationError | null {
 
   if (!timeRegex.test(time)) {
     return {
-      field: 'time',
-      message: 'Nieprawidłowy format czasu (wymagany: HH:MM)',
+      field: "time",
+      message: "Nieprawidłowy format czasu (wymagany: HH:MM)",
     };
   }
 
@@ -198,13 +195,11 @@ export function validateTime(time: string): FormValidationError | null {
  * @param aiGenerationId - ID generacji AI
  * @returns Błąd walidacji lub null jeśli poprawny
  */
-export function validateAIGenerationId(
-  aiGenerationId: string | null
-): FormValidationError | null {
+export function validateAIGenerationId(aiGenerationId: string | null): FormValidationError | null {
   if (!aiGenerationId) {
     return {
-      field: 'aiGenerationId',
-      message: 'Brak ID generacji AI. Wygeneruj posiłek ponownie.',
+      field: "aiGenerationId",
+      message: "Brak ID generacji AI. Wygeneruj posiłek ponownie.",
     };
   }
 

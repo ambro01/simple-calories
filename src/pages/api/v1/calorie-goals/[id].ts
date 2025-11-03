@@ -49,19 +49,13 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { CalorieGoalService } from '../../../../lib/services/calorie-goal.service';
-import {
-  updateCalorieGoalSchema,
-  uuidParamSchema,
-} from '../../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../../lib/helpers/error-logger';
-import type {
-  CalorieGoalResponseDTO,
-  ErrorResponseDTO,
-} from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
+import { updateCalorieGoalSchema, uuidParamSchema } from "../../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../../lib/helpers/error-logger";
+import type { CalorieGoalResponseDTO, ErrorResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -97,10 +91,10 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     if (!idValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid UUID format',
+          error: "Bad Request",
+          message: "Invalid UUID format",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -113,10 +107,10 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     } catch {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON body',
+          error: "Bad Request",
+          message: "Invalid JSON body",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -129,17 +123,17 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
         // Format validation errors to match ErrorResponseDTO
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         return new Response(
           JSON.stringify({
-            error: 'Bad Request',
-            message: 'Validation failed',
+            error: "Bad Request",
+            message: "Validation failed",
             details,
           } as ErrorResponseDTO),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
+          { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       // Unexpected validation error
@@ -148,11 +142,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
     // Step 5: Update calorie goal
     const calorieGoalService = new CalorieGoalService(locals.supabase);
-    const updatedGoal = await calorieGoalService.updateCalorieGoal(
-      userId,
-      goalId,
-      validatedData.daily_goal
-    );
+    const updatedGoal = await calorieGoalService.updateCalorieGoal(userId, goalId, validatedData.daily_goal);
 
     // Step 6: Handle not found case
     if (!updatedGoal) {
@@ -161,40 +151,40 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
       // - Goal exists but belongs to another user (IDOR protection)
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Calorie goal not found',
+          error: "Not Found",
+          message: "Calorie goal not found",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 7: Return updated goal
-    return new Response(
-      JSON.stringify(updatedGoal as CalorieGoalResponseDTO),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify(updatedGoal as CalorieGoalResponseDTO), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error updating calorie goal:', error);
+    console.error("Error updating calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_update_error',
+      error_type: "calorie_goal_update_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'PATCH /api/v1/calorie-goals/:id',
+        endpoint: "PATCH /api/v1/calorie-goals/:id",
         goal_id: params.id,
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -233,10 +223,10 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (!idValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid UUID format',
+          error: "Bad Request",
+          message: "Invalid UUID format",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -253,10 +243,10 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       // - Goal exists but belongs to another user (IDOR protection)
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Calorie goal not found',
+          error: "Not Found",
+          message: "Calorie goal not found",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -264,26 +254,26 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     return new Response(null, { status: 204 });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error deleting calorie goal:', error);
+    console.error("Error deleting calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_delete_error',
+      error_type: "calorie_goal_delete_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'DELETE /api/v1/calorie-goals/:id',
+        endpoint: "DELETE /api/v1/calorie-goals/:id",
         goal_id: params.id,
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };

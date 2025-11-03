@@ -58,13 +58,13 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { DEFAULT_USER_ID } from '../../../db/supabase.client';
-import { ProfileService } from '../../../lib/services/profile.service';
-import { updateProfileSchema } from '../../../lib/validators/profile.validators';
-import { logError } from '../../../lib/helpers/error-logger';
-import type { ProfileResponseDTO, ErrorResponseDTO } from '../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../db/supabase.client";
+import { ProfileService } from "../../../lib/services/profile.service";
+import { updateProfileSchema } from "../../../lib/validators/profile.validators";
+import { logError } from "../../../lib/helpers/error-logger";
+import type { ProfileResponseDTO, ErrorResponseDTO } from "../../../types";
 
 export const prerender = false;
 
@@ -109,49 +109,49 @@ export const GET: APIRoute = async ({ locals }) => {
       // Log this unexpected condition for debugging
       await logError(locals.supabase, {
         user_id: userId,
-        error_type: 'profile_not_found',
-        error_message: 'Profile not found despite user being authenticated',
+        error_type: "profile_not_found",
+        error_message: "Profile not found despite user being authenticated",
         context: {
-          endpoint: 'GET /api/v1/profile',
+          endpoint: "GET /api/v1/profile",
           user_id: userId,
         },
       });
 
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Profile not found',
+          error: "Not Found",
+          message: "Profile not found",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 4: Return profile
     return new Response(JSON.stringify(profile as ProfileResponseDTO), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error fetching profile:', error);
+    console.error("Error fetching profile:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'profile_fetch_error',
+      error_type: "profile_fetch_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'GET /api/v1/profile',
+        endpoint: "GET /api/v1/profile",
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -196,10 +196,10 @@ export const PATCH: APIRoute = async ({ request, locals }) => {
     } catch {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON body',
+          error: "Bad Request",
+          message: "Invalid JSON body",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -212,19 +212,19 @@ export const PATCH: APIRoute = async ({ request, locals }) => {
         // Format validation errors to match ErrorResponseDTO
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         const errorResponse: ErrorResponseDTO = {
-          error: 'Bad Request',
-          message: 'Validation failed',
+          error: "Bad Request",
+          message: "Validation failed",
           details,
         };
 
         return new Response(JSON.stringify(errorResponse), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       }
 
@@ -239,29 +239,29 @@ export const PATCH: APIRoute = async ({ request, locals }) => {
     // Step 5: Return updated profile
     return new Response(JSON.stringify(updatedProfile as ProfileResponseDTO), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Error updating profile:', error);
+    console.error("Error updating profile:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'profile_update_error',
+      error_type: "profile_update_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'PATCH /api/v1/profile',
+        endpoint: "PATCH /api/v1/profile",
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };

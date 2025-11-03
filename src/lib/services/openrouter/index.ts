@@ -1,5 +1,5 @@
 // Główna klasa usługi
-export { OpenRouterService } from './openrouter.service';
+export { OpenRouterService } from "./openrouter.service";
 
 // Typy
 export type {
@@ -11,7 +11,7 @@ export type {
   OpenRouterResponse,
   ChatCompletionOptions,
   ParsedResponse,
-} from './openrouter.types';
+} from "./openrouter.types";
 
 // Błędy
 export {
@@ -23,16 +23,12 @@ export {
   TimeoutError,
   ParseError,
   QuotaExceededError,
-} from './errors';
+} from "./errors";
 
 // Schematy
-export {
-  nutritionalEstimateSchema,
-  nutritionSuggestionSchema,
-  createCustomSchema,
-} from './schemas';
+export { nutritionalEstimateSchema, nutritionSuggestionSchema, createCustomSchema } from "./schemas";
 
-export type { NutritionalEstimate, NutritionSuggestion } from './schemas';
+export type { NutritionalEstimate, NutritionSuggestion } from "./schemas";
 
 // Konfiguracja
 export {
@@ -45,10 +41,10 @@ export {
   VALIDATION_LIMITS,
   validateModelParameters,
   isValidModel,
-} from './config';
+} from "./config";
 
 // Singleton instance
-export { getOpenRouterService, resetOpenRouterService } from './instance';
+export { getOpenRouterService, resetOpenRouterService } from "./instance";
 
 // Adapter kompatybilny z mock service
-export { OpenRouterAdapter, openRouterService } from './adapter';
+export { OpenRouterAdapter, openRouterService } from "./adapter";

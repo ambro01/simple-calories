@@ -8,8 +8,8 @@
  * @module MealsService
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables, Enums } from '../../db/database.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Tables, Enums } from "../../db/database.types";
 import type {
   MealResponseDTO,
   CreateMealRequestDTO,
@@ -17,8 +17,8 @@ import type {
   MealWarningDTO,
   CreateMealResponseDTO,
   UpdateMealResponseDTO,
-} from '../../types';
-import { validateMacronutrients, shouldChangeToAIEdited } from '../helpers/macronutrient-validator';
+} from "../../types";
+import { validateMacronutrients, shouldChangeToAIEdited } from "../helpers/macronutrient-validator";
 
 /**
  * Filter options for getMeals query
@@ -27,10 +27,10 @@ export interface GetMealsFilters {
   date?: string; // YYYY-MM-DD - single date filter
   date_from?: string; // YYYY-MM-DD - range start
   date_to?: string; // YYYY-MM-DD - range end
-  category?: Enums<'meal_category'>; // meal category
+  category?: Enums<"meal_category">; // meal category
   limit: number;
   offset: number;
-  sort: 'asc' | 'desc';
+  sort: "asc" | "desc";
 }
 
 /**
@@ -78,7 +78,7 @@ export class MealsService {
     try {
       // Build base query
       let query = this.supabase
-        .from('meals')
+        .from("meals")
         .select(
           `
           *,
@@ -91,33 +91,33 @@ export class MealsService {
           )
         `
         )
-        .eq('user_id', userId);
+        .eq("user_id", userId);
 
       // Apply date filters
       if (filters.date) {
         // Single date filter - use DATE() to compare only date part
         const startOfDay = `${filters.date}T00:00:00Z`;
         const endOfDay = `${filters.date}T23:59:59.999Z`;
-        query = query.gte('meal_timestamp', startOfDay).lte('meal_timestamp', endOfDay);
+        query = query.gte("meal_timestamp", startOfDay).lte("meal_timestamp", endOfDay);
       } else {
         // Date range filters
         if (filters.date_from) {
           const startOfDay = `${filters.date_from}T00:00:00Z`;
-          query = query.gte('meal_timestamp', startOfDay);
+          query = query.gte("meal_timestamp", startOfDay);
         }
         if (filters.date_to) {
           const endOfDay = `${filters.date_to}T23:59:59.999Z`;
-          query = query.lte('meal_timestamp', endOfDay);
+          query = query.lte("meal_timestamp", endOfDay);
         }
       }
 
       // Apply category filter
       if (filters.category) {
-        query = query.eq('category', filters.category);
+        query = query.eq("category", filters.category);
       }
 
       // Apply sorting
-      query = query.order('meal_timestamp', { ascending: filters.sort === 'asc' });
+      query = query.order("meal_timestamp", { ascending: filters.sort === "asc" });
 
       // Apply pagination
       query = query.range(filters.offset, filters.offset + filters.limit - 1);
@@ -125,14 +125,14 @@ export class MealsService {
       const { data, error } = await query;
 
       if (error) {
-        console.error('Failed to fetch meals:', error);
+        console.error("Failed to fetch meals:", error);
         return [];
       }
 
       // Format meals with AI generation info
       return (data || []).map((meal) => this.formatMealWithAIGeneration(meal));
     } catch (error) {
-      console.error('Unexpected error in getMeals:', error);
+      console.error("Unexpected error in getMeals:", error);
       return [];
     }
   }
@@ -149,42 +149,39 @@ export class MealsService {
   async countMeals(userId: string, filters: GetMealsFilters): Promise<number> {
     try {
       // Build base query
-      let query = this.supabase
-        .from('meals')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId);
+      let query = this.supabase.from("meals").select("*", { count: "exact", head: true }).eq("user_id", userId);
 
       // Apply date filters (same logic as getMeals)
       if (filters.date) {
         const startOfDay = `${filters.date}T00:00:00Z`;
         const endOfDay = `${filters.date}T23:59:59.999Z`;
-        query = query.gte('meal_timestamp', startOfDay).lte('meal_timestamp', endOfDay);
+        query = query.gte("meal_timestamp", startOfDay).lte("meal_timestamp", endOfDay);
       } else {
         if (filters.date_from) {
           const startOfDay = `${filters.date_from}T00:00:00Z`;
-          query = query.gte('meal_timestamp', startOfDay);
+          query = query.gte("meal_timestamp", startOfDay);
         }
         if (filters.date_to) {
           const endOfDay = `${filters.date_to}T23:59:59.999Z`;
-          query = query.lte('meal_timestamp', endOfDay);
+          query = query.lte("meal_timestamp", endOfDay);
         }
       }
 
       // Apply category filter
       if (filters.category) {
-        query = query.eq('category', filters.category);
+        query = query.eq("category", filters.category);
       }
 
       const { count, error } = await query;
 
       if (error) {
-        console.error('Failed to count meals:', error);
+        console.error("Failed to count meals:", error);
         return 0;
       }
 
       return count || 0;
     } catch (error) {
-      console.error('Unexpected error in countMeals:', error);
+      console.error("Unexpected error in countMeals:", error);
       return 0;
     }
   }
@@ -202,7 +199,7 @@ export class MealsService {
   async getMealById(mealId: string, userId: string): Promise<MealResponseDTO | null> {
     try {
       const { data, error } = await this.supabase
-        .from('meals')
+        .from("meals")
         .select(
           `
           *,
@@ -215,8 +212,8 @@ export class MealsService {
           )
         `
         )
-        .eq('id', mealId)
-        .eq('user_id', userId)
+        .eq("id", mealId)
+        .eq("user_id", userId)
         .single();
 
       if (error || !data) {
@@ -225,7 +222,7 @@ export class MealsService {
 
       return this.formatMealWithAIGeneration(data);
     } catch (error) {
-      console.error('Unexpected error in getMealById:', error);
+      console.error("Unexpected error in getMealById:", error);
       return null;
     }
   }
@@ -247,7 +244,7 @@ export class MealsService {
   async createMeal(userId: string, mealData: CreateMealRequestDTO): Promise<CreateMealResult> {
     try {
       // Step 1: Validate AI generation if needed
-      if (mealData.input_method === 'ai') {
+      if (mealData.input_method === "ai") {
         const validationResult = await this.validateAIGeneration(mealData.ai_generation_id, userId);
 
         if (!validationResult.valid) {
@@ -260,16 +257,11 @@ export class MealsService {
       }
 
       // Step 2: Calculate macronutrient warnings
-      const warnings = validateMacronutrients(
-        mealData.calories,
-        mealData.protein,
-        mealData.carbs,
-        mealData.fats
-      );
+      const warnings = validateMacronutrients(mealData.calories, mealData.protein, mealData.carbs, mealData.fats);
 
       // Step 3: Insert meal into database
       const { data: meal, error: insertError } = await this.supabase
-        .from('meals')
+        .from("meals")
         .insert({
           user_id: userId,
           description: mealData.description,
@@ -285,20 +277,17 @@ export class MealsService {
         .single();
 
       if (insertError || !meal) {
-        console.error('Failed to create meal:', insertError);
+        console.error("Failed to create meal:", insertError);
         return {
           success: false,
-          error: 'Failed to create meal',
+          error: "Failed to create meal",
           statusCode: 500,
         };
       }
 
       // Step 4: Update ai_generations.meal_id if applicable
-      if (mealData.input_method === 'ai') {
-        await this.supabase
-          .from('ai_generations')
-          .update({ meal_id: meal.id })
-          .eq('id', mealData.ai_generation_id);
+      if (mealData.input_method === "ai") {
+        await this.supabase.from("ai_generations").update({ meal_id: meal.id }).eq("id", mealData.ai_generation_id);
       }
 
       // Step 5: Return meal with warnings
@@ -310,10 +299,10 @@ export class MealsService {
         },
       };
     } catch (error) {
-      console.error('Unexpected error in createMeal:', error);
+      console.error("Unexpected error in createMeal:", error);
       return {
         success: false,
-        error: 'An unexpected error occurred',
+        error: "An unexpected error occurred",
         statusCode: 500,
       };
     }
@@ -340,7 +329,7 @@ export class MealsService {
     mealId: string,
     userId: string,
     updateData: UpdateMealRequestDTO,
-    currentMeal: Tables<'meals'>
+    currentMeal: Tables<"meals">
   ): Promise<UpdateMealResult> {
     try {
       // Step 1: Determine if input_method should change
@@ -349,7 +338,7 @@ export class MealsService {
       // Step 2: Merge update data with automatic input_method change
       const finalUpdateData = {
         ...updateData,
-        ...(shouldChange && { input_method: 'ai-edited' as const }),
+        ...(shouldChange && { input_method: "ai-edited" as const }),
       };
 
       // Step 3: Calculate warnings (using merged values)
@@ -362,16 +351,16 @@ export class MealsService {
 
       // Step 4: Update meal in database
       const { error: updateError } = await this.supabase
-        .from('meals')
+        .from("meals")
         .update(finalUpdateData)
-        .eq('id', mealId)
-        .eq('user_id', userId);
+        .eq("id", mealId)
+        .eq("user_id", userId);
 
       if (updateError) {
-        console.error('Failed to update meal:', updateError);
+        console.error("Failed to update meal:", updateError);
         return {
           success: false,
-          error: 'Failed to update meal',
+          error: "Failed to update meal",
           statusCode: 500,
         };
       }
@@ -382,7 +371,7 @@ export class MealsService {
       if (!updatedMeal) {
         return {
           success: false,
-          error: 'Failed to fetch updated meal',
+          error: "Failed to fetch updated meal",
           statusCode: 500,
         };
       }
@@ -391,15 +380,15 @@ export class MealsService {
       return {
         success: true,
         data: {
-          ...(updatedMeal as Tables<'meals'>),
+          ...(updatedMeal as Tables<"meals">),
           warnings,
         },
       };
     } catch (error) {
-      console.error('Unexpected error in updateMeal:', error);
+      console.error("Unexpected error in updateMeal:", error);
       return {
         success: false,
-        error: 'An unexpected error occurred',
+        error: "An unexpected error occurred",
         statusCode: 500,
       };
     }
@@ -417,20 +406,16 @@ export class MealsService {
    */
   async deleteMeal(mealId: string, userId: string): Promise<boolean> {
     try {
-      const { error } = await this.supabase
-        .from('meals')
-        .delete()
-        .eq('id', mealId)
-        .eq('user_id', userId);
+      const { error } = await this.supabase.from("meals").delete().eq("id", mealId).eq("user_id", userId);
 
       if (error) {
-        console.error('Failed to delete meal:', error);
+        console.error("Failed to delete meal:", error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Unexpected error in deleteMeal:', error);
+      console.error("Unexpected error in deleteMeal:", error);
       return false;
     }
   }
@@ -453,34 +438,34 @@ export class MealsService {
   ): Promise<{ valid: boolean; error?: string; statusCode?: number }> {
     try {
       const { data, error } = await this.supabase
-        .from('ai_generations')
-        .select('id, status, user_id')
-        .eq('id', aiGenerationId)
-        .eq('user_id', userId)
+        .from("ai_generations")
+        .select("id, status, user_id")
+        .eq("id", aiGenerationId)
+        .eq("user_id", userId)
         .single();
 
       if (error || !data) {
         return {
           valid: false,
-          error: 'AI generation not found',
+          error: "AI generation not found",
           statusCode: 404,
         };
       }
 
-      if (data.status !== 'completed') {
+      if (data.status !== "completed") {
         return {
           valid: false,
-          error: 'AI generation must be completed before creating a meal',
+          error: "AI generation must be completed before creating a meal",
           statusCode: 400,
         };
       }
 
       return { valid: true };
     } catch (error) {
-      console.error('Unexpected error in validateAIGeneration:', error);
+      console.error("Unexpected error in validateAIGeneration:", error);
       return {
         valid: false,
-        error: 'Failed to validate AI generation',
+        error: "Failed to validate AI generation",
         statusCode: 500,
       };
     }

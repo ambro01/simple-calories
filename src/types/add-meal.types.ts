@@ -5,21 +5,17 @@
  * including form state, validation errors, and UI-specific types.
  */
 
-import type {
-  AIGenerationResponseDTO,
-  CreateMealResponseDTO,
-  MealCategory,
-} from '../types';
+import type { AIGenerationResponseDTO, CreateMealResponseDTO, MealCategory } from "../types";
 
 /**
  * Tryb formularza dodawania posiłku
  */
-export type MealFormMode = 'ai' | 'manual';
+export type MealFormMode = "ai" | "manual";
 
 /**
  * Tryb edycji formularza
  */
-export type MealFormEditMode = 'create' | 'edit';
+export type MealFormEditMode = "create" | "edit";
 
 /**
  * Etap ładowania AI (0-2)
@@ -51,7 +47,7 @@ export interface FormValidationError {
  * Ostrzeżenie dotyczące daty
  */
 export interface DateValidationWarning {
-  type: 'future' | 'old';
+  type: "future" | "old";
   message: string;
 }
 
@@ -110,7 +106,7 @@ export interface AIGenerationResult {
   carbs: number | null;
   fats: number | null;
   assumptions: string | null;
-  status: 'completed' | 'failed';
+  status: "completed" | "failed";
   errorMessage: string | null;
 }
 
@@ -215,7 +211,7 @@ export interface MacroInputsProps {
   carbs: number | null;
   fats: number | null;
   fiber: number | null;
-  onChange: (field: 'protein' | 'carbs' | 'fats' | 'fiber', value: number | null) => void;
+  onChange: (field: "protein" | "carbs" | "fats" | "fiber", value: number | null) => void;
   errors?: Record<string, string>;
 }
 

@@ -26,14 +26,14 @@
  */
 
 import type { APIRoute } from "astro";
-import { supabaseClient, DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
 import { AIGenerationService } from "../../../../lib/services/ai-generation.service";
 import type { ErrorResponseDTO } from "../../../../types";
 
 /**
  * GET handler - Retrieve single AI generation by ID
  */
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
   try {
     // Step 1: Extract ID from params
     const { id } = params;
@@ -54,7 +54,7 @@ export const GET: APIRoute = async ({ params }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 3: Fetch from service
-    const aiGenerationService = new AIGenerationService(supabaseClient);
+    const aiGenerationService = new AIGenerationService(locals.supabase);
     const data = await aiGenerationService.getAIGeneration(id, userId);
 
     if (!data) {

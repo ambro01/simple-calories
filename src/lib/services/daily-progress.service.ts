@@ -14,13 +14,9 @@
  * @module DailyProgressService
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../db/database.types';
-import type {
-  DailyProgressResponseDTO,
-  DailyProgressListResponseDTO,
-  DailyProgressStatus,
-} from '../../types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
+import type { DailyProgressResponseDTO, DailyProgressListResponseDTO, DailyProgressStatus } from "../../types";
 
 /**
  * Query parameters for listing daily progress records
@@ -74,17 +70,14 @@ export class DailyProgressService {
    * calculateStatus(2000, 2000) // "on_track"
    * calculateStatus(2250, 2000) // "over"
    */
-  private calculateStatus(
-    totalCalories: number,
-    calorieGoal: number
-  ): DailyProgressStatus {
+  private calculateStatus(totalCalories: number, calorieGoal: number): DailyProgressStatus {
     if (totalCalories < calorieGoal - 100) {
-      return 'under';
+      return "under";
     }
     if (totalCalories > calorieGoal + 100) {
-      return 'over';
+      return "over";
     }
-    return 'on_track';
+    return "on_track";
   }
 
   /**
@@ -95,9 +88,7 @@ export class DailyProgressService {
    * @param row - Raw row from daily_progress view
    * @returns Formatted DTO ready for API response
    */
-  private transformViewRowToDTO(
-    row: DailyProgressViewRow
-  ): DailyProgressResponseDTO {
+  private transformViewRowToDTO(row: DailyProgressViewRow): DailyProgressResponseDTO {
     const totalCalories = row.total_calories ?? 0;
     const totalProtein = row.total_protein ?? 0;
     const totalCarbs = row.total_carbs ?? 0;
@@ -129,24 +120,22 @@ export class DailyProgressService {
    * @param params - Query parameters including filters and pagination
    * @returns List of daily progress records with pagination metadata
    */
-  async getDailyProgressList(
-    params: GetDailyProgressListParams
-  ): Promise<DailyProgressListResponseDTO> {
+  async getDailyProgressList(params: GetDailyProgressListParams): Promise<DailyProgressListResponseDTO> {
     const { userId, dateFrom, dateTo, limit, offset } = params;
 
     // Build query with filters
     let query = this.supabase
-      .from('daily_progress')
-      .select('*', { count: 'exact' })
-      .eq('user_id', userId)
-      .order('date', { ascending: false });
+      .from("daily_progress")
+      .select("*", { count: "exact" })
+      .eq("user_id", userId)
+      .order("date", { ascending: false });
 
     // Apply date range filters if provided
     if (dateFrom) {
-      query = query.gte('date', dateFrom);
+      query = query.gte("date", dateFrom);
     }
     if (dateTo) {
-      query = query.lte('date', dateTo);
+      query = query.lte("date", dateTo);
     }
 
     // Apply pagination
@@ -157,9 +146,7 @@ export class DailyProgressService {
     if (error) throw error;
 
     // Transform results and add status
-    const transformedData = (data || []).map((row) =>
-      this.transformViewRowToDTO(row as DailyProgressViewRow)
-    );
+    const transformedData = (data || []).map((row) => this.transformViewRowToDTO(row as DailyProgressViewRow));
 
     return {
       data: transformedData,
@@ -183,20 +170,17 @@ export class DailyProgressService {
    * @param date - Date in YYYY-MM-DD format
    * @returns Daily progress for the specified date
    */
-  async getDailyProgressByDate(
-    userId: string,
-    date: string
-  ): Promise<DailyProgressResponseDTO> {
+  async getDailyProgressByDate(userId: string, date: string): Promise<DailyProgressResponseDTO> {
     const { data, error } = await this.supabase
-      .from('daily_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('date', date)
+      .from("daily_progress")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("date", date)
       .single();
 
     if (error) {
       // PGRST116 = Row not found - this means no meals for this date
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return await this.getZeroProgress(userId, date);
       }
       throw error;
@@ -215,18 +199,12 @@ export class DailyProgressService {
    * @param date - Date in YYYY-MM-DD format
    * @returns Zero progress object with user's calorie goal
    */
-  private async getZeroProgress(
-    userId: string,
-    date: string
-  ): Promise<DailyProgressResponseDTO> {
+  private async getZeroProgress(userId: string, date: string): Promise<DailyProgressResponseDTO> {
     // Call the database function to get calorie goal for this date
-    const { data, error } = await this.supabase.rpc(
-      'get_current_calorie_goal',
-      {
-        user_uuid: userId,
-        target_date: date,
-      }
-    );
+    const { data, error } = await this.supabase.rpc("get_current_calorie_goal", {
+      user_uuid: userId,
+      target_date: date,
+    });
 
     if (error) throw error;
 
@@ -242,7 +220,7 @@ export class DailyProgressService {
       total_fats: 0,
       calorie_goal: calorieGoal,
       percentage: 0,
-      status: 'under',
+      status: "under",
     };
   }
 }

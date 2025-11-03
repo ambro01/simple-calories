@@ -7,8 +7,8 @@
  * @module DailyProgressSchemas
  */
 
-import { z } from 'zod';
-import { isValidDateFormat, isDateInFuture, isDateRangeValid } from '../helpers/date';
+import { z } from "zod";
+import { isValidDateFormat, isDateInFuture, isDateRangeValid } from "../helpers/date";
 
 /**
  * Query parameters schema for GET /api/v1/daily-progress
@@ -26,26 +26,17 @@ export const GetDailyProgressQuerySchema = z
     date_from: z
       .string()
       .refine(isValidDateFormat, {
-        message: 'Date must be in YYYY-MM-DD format',
+        message: "Date must be in YYYY-MM-DD format",
       })
       .optional(),
     date_to: z
       .string()
       .refine(isValidDateFormat, {
-        message: 'Date must be in YYYY-MM-DD format',
+        message: "Date must be in YYYY-MM-DD format",
       })
       .optional(),
-    limit: z
-      .number()
-      .int()
-      .min(1, 'Limit must be at least 1')
-      .max(100, 'Limit must be at most 100')
-      .default(30),
-    offset: z
-      .number()
-      .int()
-      .min(0, 'Offset must be at least 0')
-      .default(0),
+    limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit must be at most 100").default(30),
+    offset: z.number().int().min(0, "Offset must be at least 0").default(0),
   })
   .refine(
     (data) => {
@@ -56,8 +47,8 @@ export const GetDailyProgressQuerySchema = z
       return true;
     },
     {
-      message: 'date_from must be less than or equal to date_to',
-      path: ['date_from'], // Show error on date_from field
+      message: "date_from must be less than or equal to date_to",
+      path: ["date_from"], // Show error on date_from field
     }
   );
 
@@ -73,10 +64,10 @@ export const GetDailyProgressQuerySchema = z
 export const GetDailyProgressDateSchema = z
   .string()
   .refine(isValidDateFormat, {
-    message: 'Date must be in YYYY-MM-DD format',
+    message: "Date must be in YYYY-MM-DD format",
   })
   .refine((date) => !isDateInFuture(date), {
-    message: 'Date cannot be in the future',
+    message: "Date cannot be in the future",
   });
 
 /**

@@ -10,7 +10,7 @@
  * @module MacronutrientValidator
  */
 
-import type { MealWarningDTO } from '../../types';
+import type { MealWarningDTO } from "../../types";
 
 /**
  * Validates macronutrient consistency
@@ -68,7 +68,7 @@ export function validateMacronutrients(
     // Add warning if difference exceeds 5% threshold
     if (percentage > 5) {
       warnings.push({
-        field: 'macronutrients',
+        field: "macronutrients",
         message: `The calculated calories from macronutrients (${Math.round(calculatedCalories)} kcal) differs by more than 5% from the provided calories (${calories} kcal). Please verify your input.`,
       });
     }
@@ -125,13 +125,13 @@ export function shouldChangeToAIEdited(
   }
 ): boolean {
   // Only change if current method is 'ai'
-  if (currentMeal.input_method !== 'ai') {
+  if (currentMeal.input_method !== "ai") {
     return false;
   }
 
   // Check if any nutritional value changed
   // Note: category and meal_timestamp changes alone do NOT trigger this
-  const nutritionalFields = ['description', 'calories', 'protein', 'carbs', 'fats'] as const;
+  const nutritionalFields = ["description", "calories", "protein", "carbs", "fats"] as const;
 
   for (const field of nutritionalFields) {
     if (field in updateData && updateData[field] !== currentMeal[field]) {

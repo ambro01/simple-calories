@@ -13,11 +13,7 @@ interface InfiniteScrollTriggerProps {
   loading: boolean;
 }
 
-export function InfiniteScrollTrigger({
-  onIntersect,
-  hasMore,
-  loading,
-}: InfiniteScrollTriggerProps) {
+export function InfiniteScrollTrigger({ onIntersect, hasMore, loading }: InfiniteScrollTriggerProps) {
   const triggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

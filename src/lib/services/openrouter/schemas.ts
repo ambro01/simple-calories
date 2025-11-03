@@ -1,59 +1,41 @@
-import type { ResponseFormat } from './openrouter.types';
+import type { ResponseFormat } from "./openrouter.types";
 
 // Schema dla analizy posiłku - kompatybilny z NutritionalEstimate
 // Używamy nullable types poprzez anyOf z type null
 export const nutritionalEstimateSchema: ResponseFormat = {
-  type: 'json_schema',
+  type: "json_schema",
   json_schema: {
-    name: 'nutritional_estimate',
+    name: "nutritional_estimate",
     strict: true,
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         calories: {
-          anyOf: [
-            { type: 'number' },
-            { type: 'null' }
-          ],
-          description: 'Estimated calories (can be null if estimation failed)',
+          anyOf: [{ type: "number" }, { type: "null" }],
+          description: "Estimated calories (can be null if estimation failed)",
         },
         protein: {
-          anyOf: [
-            { type: 'number' },
-            { type: 'null' }
-          ],
-          description: 'Estimated protein in grams (can be null if estimation failed)',
+          anyOf: [{ type: "number" }, { type: "null" }],
+          description: "Estimated protein in grams (can be null if estimation failed)",
         },
         carbs: {
-          anyOf: [
-            { type: 'number' },
-            { type: 'null' }
-          ],
-          description: 'Estimated carbohydrates in grams (can be null if estimation failed)',
+          anyOf: [{ type: "number" }, { type: "null" }],
+          description: "Estimated carbohydrates in grams (can be null if estimation failed)",
         },
         fats: {
-          anyOf: [
-            { type: 'number' },
-            { type: 'null' }
-          ],
-          description: 'Estimated fats in grams (can be null if estimation failed)',
+          anyOf: [{ type: "number" }, { type: "null" }],
+          description: "Estimated fats in grams (can be null if estimation failed)",
         },
         assumptions: {
-          anyOf: [
-            { type: 'string' },
-            { type: 'null' }
-          ],
-          description: 'AI assumptions about the meal (can be null if estimation failed)',
+          anyOf: [{ type: "string" }, { type: "null" }],
+          description: "AI assumptions about the meal (can be null if estimation failed)",
         },
         error: {
-          anyOf: [
-            { type: 'string' },
-            { type: 'null' }
-          ],
-          description: 'Error message if AI could not estimate (only present if estimation failed)',
+          anyOf: [{ type: "string" }, { type: "null" }],
+          description: "Error message if AI could not estimate (only present if estimation failed)",
         },
       },
-      required: ['calories', 'protein', 'carbs', 'fats', 'assumptions', 'error'],
+      required: ["calories", "protein", "carbs", "fats", "assumptions", "error"],
       additionalProperties: false,
     },
   },
@@ -61,50 +43,44 @@ export const nutritionalEstimateSchema: ResponseFormat = {
 
 // Schema dla sugestii żywieniowych
 export const nutritionSuggestionSchema: ResponseFormat = {
-  type: 'json_schema',
+  type: "json_schema",
   json_schema: {
-    name: 'nutrition_suggestion',
+    name: "nutrition_suggestion",
     strict: true,
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         suggestion: {
-          type: 'string',
-          description: 'Główna sugestia żywieniowa',
+          type: "string",
+          description: "Główna sugestia żywieniowa",
         },
         reasoning: {
-          type: 'string',
-          description: 'Uzasadnienie sugestii',
+          type: "string",
+          description: "Uzasadnienie sugestii",
         },
         priority: {
-          type: 'string',
-          enum: ['high', 'medium', 'low'],
-          description: 'Priorytet sugestii',
+          type: "string",
+          enum: ["high", "medium", "low"],
+          description: "Priorytet sugestii",
         },
         category: {
-          type: 'string',
-          enum: ['macros', 'calories', 'timing', 'hydration', 'variety', 'general'],
-          description: 'Kategoria sugestii',
+          type: "string",
+          enum: ["macros", "calories", "timing", "hydration", "variety", "general"],
+          description: "Kategoria sugestii",
         },
         action_items: {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'string',
+            type: "string",
           },
-          description: 'Konkretne działania do podjęcia',
+          description: "Konkretne działania do podjęcia",
         },
         expected_impact: {
-          type: 'string',
-          description: 'Oczekiwany wpływ na zdrowie/cele',
+          type: "string",
+          description: "Oczekiwany wpływ na zdrowie/cele",
         },
       },
-      required: [
-        'suggestion',
-        'reasoning',
-        'priority',
-        'category',
-        'action_items',
-      ],
+      required: ["suggestion", "reasoning", "priority", "category", "action_items"],
       additionalProperties: false,
     },
   },
@@ -118,12 +94,12 @@ export function createCustomSchema(
   strict = true
 ): ResponseFormat {
   return {
-    type: 'json_schema',
+    type: "json_schema",
     json_schema: {
       name,
       strict,
       schema: {
-        type: 'object',
+        type: "object",
         properties,
         required,
         additionalProperties: false,
@@ -146,8 +122,8 @@ export interface NutritionalEstimate {
 export interface NutritionSuggestion {
   suggestion: string;
   reasoning: string;
-  priority: 'high' | 'medium' | 'low';
-  category: 'macros' | 'calories' | 'timing' | 'hydration' | 'variety' | 'general';
+  priority: "high" | "medium" | "low";
+  category: "macros" | "calories" | "timing" | "hydration" | "variety" | "general";
   action_items: string[];
   expected_impact?: string;
 }

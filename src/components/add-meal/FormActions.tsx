@@ -15,18 +15,18 @@
  * />
  */
 
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import type { FormActionsProps } from '../../types/add-meal.types';
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import type { FormActionsProps } from "../../types/add-meal.types";
 
 export function FormActions({
   onCancel,
   onSubmit,
   submitDisabled,
   submitLoading,
-  editMode = 'create',
+  editMode = "create",
 }: FormActionsProps) {
-  const buttonText = editMode === 'edit' ? 'Zapisz zmiany' : 'Dodaj posiłek';
+  const buttonText = editMode === "edit" ? "Zapisz zmiany" : "Dodaj posiłek";
 
   return (
     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

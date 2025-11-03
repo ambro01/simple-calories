@@ -22,20 +22,14 @@ interface UseDashboardReturn {
 /**
  * Pobiera daily progress z API
  */
-async function fetchDailyProgress(
-  limit: number,
-  offset: number
-): Promise<DailyProgressResponseDTO[]> {
-  const response = await fetch(
-    `/api/v1/daily-progress?limit=${limit}&offset=${offset}`,
-    {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
-      }
-    }
-  );
+async function fetchDailyProgress(limit: number, offset: number): Promise<DailyProgressResponseDTO[]> {
+  const response = await fetch(`/api/v1/daily-progress?limit=${limit}&offset=${offset}`, {
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+  });
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -161,16 +155,16 @@ export function useDashboard(): UseDashboardReturn {
    * Odświeża dane bez pokazywania loading spinner
    */
   const refetchAfterMealChange = useCallback(async () => {
-    console.log('🔄 [useDashboard] refetchAfterMealChange START');
+    console.log("🔄 [useDashboard] refetchAfterMealChange START");
     setState((prev) => {
-      console.log('🔄 [useDashboard] Setting isRefetchingAfterChange: true', { prevDaysLength: prev.days.length });
+      console.log("🔄 [useDashboard] Setting isRefetchingAfterChange: true", { prevDaysLength: prev.days.length });
       return { ...prev, isRefetchingAfterChange: true };
     });
 
     try {
-      console.log('🔄 [useDashboard] Fetching daily progress...');
+      console.log("🔄 [useDashboard] Fetching daily progress...");
       const days = await fetchDailyProgress(PAGINATION_LIMITS.DASHBOARD_DAYS_LIMIT, 0);
-      console.log('✅ [useDashboard] refetchAfterMealChange SUCCESS', { daysReceived: days.length, days });
+      console.log("✅ [useDashboard] refetchAfterMealChange SUCCESS", { daysReceived: days.length, days });
 
       setState((prev) => ({
         ...prev,

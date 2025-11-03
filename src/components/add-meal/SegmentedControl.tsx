@@ -13,12 +13,12 @@
  * />
  */
 
-import type { SegmentedControlProps } from '../../types/add-meal.types';
+import type { SegmentedControlProps } from "../../types/add-meal.types";
 
 export function SegmentedControl({ value, onChange, disabled }: SegmentedControlProps) {
   const options = [
-    { value: 'ai' as const, label: 'AI' },
-    { value: 'manual' as const, label: 'Ręcznie' },
+    { value: "ai" as const, label: "AI" },
+    { value: "manual" as const, label: "Ręcznie" },
   ];
 
   return (
@@ -39,11 +39,7 @@ export function SegmentedControl({ value, onChange, disabled }: SegmentedControl
               focus-visible:outline-none focus-visible:ring-2
               focus-visible:ring-ring focus-visible:ring-offset-2
               disabled:pointer-events-none disabled:opacity-50
-              ${
-                isSelected
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'hover:bg-background/50 hover:text-foreground'
-              }
+              ${isSelected ? "bg-background text-foreground shadow-sm" : "hover:bg-background/50 hover:text-foreground"}
             `}
           >
             {option.label}

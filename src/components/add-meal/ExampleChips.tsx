@@ -13,8 +13,8 @@
  * />
  */
 
-import { Button } from '@/components/ui/button';
-import type { ExampleChipsProps } from '../../types/add-meal.types';
+import { Button } from "@/components/ui/button";
+import type { ExampleChipsProps } from "../../types/add-meal.types";
 
 export function ExampleChips({ examples, onSelect, disabled }: ExampleChipsProps) {
   return (

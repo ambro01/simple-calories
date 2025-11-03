@@ -16,11 +16,11 @@
  * />
  */
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
-import type { MacroWarningProps } from '../../../types/add-meal.types';
-import { formatPercentDifference } from '../../../lib/helpers/meal-form.utils';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
+import type { MacroWarningProps } from "../../../types/add-meal.types";
+import { formatPercentDifference } from "../../../lib/helpers/meal-form.utils";
 
 export function MacroWarning({
   calculatedCalories,
@@ -33,9 +33,9 @@ export function MacroWarning({
       <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-500" />
       <AlertDescription className="space-y-3">
         <p className="text-sm text-yellow-800 dark:text-yellow-200">
-          Suma kalorii z makroskładników ({calculatedCalories} kcal) różni się o{' '}
-          {formatPercentDifference(differencePercent)} od podanych kalorii ({providedCalories}{' '}
-          kcal). Sprawdź wprowadzone wartości.
+          Suma kalorii z makroskładników ({calculatedCalories} kcal) różni się o{" "}
+          {formatPercentDifference(differencePercent)} od podanych kalorii ({providedCalories} kcal). Sprawdź
+          wprowadzone wartości.
         </p>
         <Button
           type="button"

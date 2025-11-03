@@ -42,9 +42,7 @@ export function Settings() {
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
         <AlertCircle className="h-12 w-12 text-destructive mb-4" />
         <h2 className="text-xl font-semibold mb-2">Wystąpił błąd</h2>
-        <p className="text-muted-foreground max-w-sm mb-4">
-          {settings.state.error}
-        </p>
+        <p className="text-muted-foreground max-w-sm mb-4">{settings.state.error}</p>
         <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"

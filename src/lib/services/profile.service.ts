@@ -10,9 +10,9 @@
  * @module ProfileService
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../db/database.types';
-import type { ProfileResponseDTO, UpdateProfileRequestDTO } from '../../types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
+import type { ProfileResponseDTO, UpdateProfileRequestDTO } from "../../types";
 
 /**
  * Profile Service Class
@@ -33,15 +33,11 @@ export class ProfileService {
    * @returns User profile or null if not found
    */
   async getProfile(userId: string): Promise<ProfileResponseDTO | null> {
-    const { data, error } = await this.supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    const { data, error } = await this.supabase.from("profiles").select("*").eq("id", userId).single();
 
     if (error) {
       // PGRST116 = Row not found (404 equivalent in PostgREST)
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null;
       }
       throw error;
@@ -61,16 +57,8 @@ export class ProfileService {
    * @param updates - Fields to update (currently empty object)
    * @returns Updated profile record
    */
-  async updateProfile(
-    userId: string,
-    updates: UpdateProfileRequestDTO
-  ): Promise<ProfileResponseDTO> {
-    const { data, error } = await this.supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', userId)
-      .select()
-      .single();
+  async updateProfile(userId: string, updates: UpdateProfileRequestDTO): Promise<ProfileResponseDTO> {
+    const { data, error } = await this.supabase.from("profiles").update(updates).eq("id", userId).select().single();
 
     if (error) throw error;
 

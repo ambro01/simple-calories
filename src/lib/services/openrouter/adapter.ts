@@ -5,10 +5,10 @@
  * Implementuje ten sam interfejs co openrouter-mock.service.ts
  */
 
-import { getOpenRouterService } from './instance';
-import { nutritionalEstimateSchema } from './schemas';
-import type { NutritionalEstimate } from './schemas';
-import { ParseError, OpenRouterError } from './errors';
+import { getOpenRouterService } from "./instance";
+import { nutritionalEstimateSchema } from "./schemas";
+import type { NutritionalEstimate } from "./schemas";
+import { ParseError, OpenRouterError } from "./errors";
 
 /**
  * System prompt używany przez mock service - zachowujemy dla kompatybilności
@@ -36,7 +36,6 @@ Przykłady:
 - Poprawny opis: "pierś z kurczaka z grilla 200g z ryżem" → podaj oszacowania z założeniami po polsku
 - Zbyt ogólny: "obiad" → zwróć błąd: "Opis zbyt ogólny. Proszę sprecyzować, co jadłeś/aś."`;
 
-
 /**
  * Configuration for OpenRouter adapter
  */
@@ -59,7 +58,7 @@ export class OpenRouterAdapter {
 
   constructor(config: Partial<OpenRouterAdapterConfig> = {}) {
     this.config = {
-      model: config.model || import.meta.env.OPENROUTER_MODEL || 'openai/gpt-3.5-turbo',
+      model: config.model || import.meta.env.OPENROUTER_MODEL || "openai/gpt-3.5-turbo",
       timeout: config.timeout || parseInt(import.meta.env.OPENROUTER_TIMEOUT) || 30000,
     };
   }
@@ -108,17 +107,17 @@ export class OpenRouterAdapter {
 
       // Walidacja wartości numerycznych
       if (
-        typeof result.calories !== 'number' ||
-        typeof result.protein !== 'number' ||
-        typeof result.carbs !== 'number' ||
-        typeof result.fats !== 'number'
+        typeof result.calories !== "number" ||
+        typeof result.protein !== "number" ||
+        typeof result.carbs !== "number" ||
+        typeof result.fats !== "number"
       ) {
-        throw new ParseError('Invalid nutritional values in AI response');
+        throw new ParseError("Invalid nutritional values in AI response");
       }
 
       return result;
     } catch (error) {
-      console.error('OpenRouter API Error:', error);
+      console.error("OpenRouter API Error:", error);
 
       // Jeśli to błąd OpenRouter, rzuć oryginalny błąd
       if (error instanceof OpenRouterError) {
@@ -126,7 +125,7 @@ export class OpenRouterAdapter {
       }
 
       // W przeciwnym razie rzuć generyczny błąd
-      throw new Error('Failed to generate nutritional estimate from AI service');
+      throw new Error("Failed to generate nutritional estimate from AI service");
     }
   }
 }

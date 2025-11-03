@@ -10,35 +10,27 @@
  * Authentication: Required (uses DEFAULT_USER_ID for MVP)
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { supabaseClient, DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { GetMealsQuerySchema, CreateMealSchema } from '../../../../lib/validation/meal.schemas';
-import { MealsService } from '../../../../lib/services/meals.service';
-import type {
-  ErrorResponseDTO,
-  MealsListResponseDTO,
-  CreateMealResponseDTO,
-} from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { GetMealsQuerySchema, CreateMealSchema } from "../../../../lib/validation/meal.schemas";
+import { MealsService } from "../../../../lib/services/meals.service";
+import type { ErrorResponseDTO, MealsListResponseDTO, CreateMealResponseDTO } from "../../../../types";
 
 /**
  * GET handler - List meals with filtering and pagination
  */
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   try {
     // Step 1: Parse query parameters
     const rawParams = {
-      date: url.searchParams.get('date') || undefined,
-      date_from: url.searchParams.get('date_from') || undefined,
-      date_to: url.searchParams.get('date_to') || undefined,
-      category: url.searchParams.get('category') || undefined,
-      limit: url.searchParams.get('limit')
-        ? parseInt(url.searchParams.get('limit')!)
-        : undefined,
-      offset: url.searchParams.get('offset')
-        ? parseInt(url.searchParams.get('offset')!)
-        : undefined,
-      sort: url.searchParams.get('sort') || undefined,
+      date: url.searchParams.get("date") || undefined,
+      date_from: url.searchParams.get("date_from") || undefined,
+      date_to: url.searchParams.get("date_to") || undefined,
+      category: url.searchParams.get("category") || undefined,
+      limit: url.searchParams.get("limit") ? parseInt(url.searchParams.get("limit")!) : undefined,
+      offset: url.searchParams.get("offset") ? parseInt(url.searchParams.get("offset")!) : undefined,
+      sort: url.searchParams.get("sort") || undefined,
     };
 
     // Step 2: Validate query parameters with Zod
@@ -50,19 +42,19 @@ export const GET: APIRoute = async ({ url }) => {
         // Validation failed - return 400 with details
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         const errorResponse: ErrorResponseDTO = {
-          error: 'VALIDATION_ERROR',
-          message: 'Invalid query parameters',
+          error: "VALIDATION_ERROR",
+          message: "Invalid query parameters",
           details,
         };
 
         return new Response(JSON.stringify(errorResponse), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       }
       throw error; // Re-throw if not a Zod error
@@ -82,7 +74,7 @@ export const GET: APIRoute = async ({ url }) => {
     // const userId = session.user.id;
 
     // Step 4: Fetch meals and count from service
-    const mealsService = new MealsService(supabaseClient);
+    const mealsService = new MealsService(locals.supabase);
 
     const filters = {
       date: validatedParams.date,
@@ -111,20 +103,20 @@ export const GET: APIRoute = async ({ url }) => {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error
-    console.error('Unexpected error in GET /api/v1/meals:', error);
+    console.error("Unexpected error in GET /api/v1/meals:", error);
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
@@ -234,7 +226,7 @@ export const GET: APIRoute = async ({ url }) => {
  *   "message": "AI generation not found"
  * }
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Step 1: Parse request body
     const body = await request.json();
@@ -248,19 +240,19 @@ export const POST: APIRoute = async ({ request }) => {
         // Validation failed - return 400 with details
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         const errorResponse: ErrorResponseDTO = {
-          error: 'VALIDATION_ERROR',
-          message: 'Invalid meal data',
+          error: "VALIDATION_ERROR",
+          message: "Invalid meal data",
           details,
         };
 
         return new Response(JSON.stringify(errorResponse), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       }
       throw error; // Re-throw if not a Zod error
@@ -284,7 +276,7 @@ export const POST: APIRoute = async ({ request }) => {
     // - Validate AI generation if input_method is 'ai'
     // - Calculate macronutrient warnings
     // - Insert meal and update ai_generations.meal_id
-    const mealsService = new MealsService(supabaseClient);
+    const mealsService = new MealsService(locals.supabase);
     const result = await mealsService.createMeal(userId, validatedData);
 
     if (!result.success || !result.data) {
@@ -292,16 +284,16 @@ export const POST: APIRoute = async ({ request }) => {
       const errorResponse: ErrorResponseDTO = {
         error:
           result.statusCode === 404
-            ? 'NOT_FOUND'
+            ? "NOT_FOUND"
             : result.statusCode === 400
-              ? 'VALIDATION_ERROR'
-              : 'INTERNAL_SERVER_ERROR',
-        message: result.error || 'Failed to create meal',
+              ? "VALIDATION_ERROR"
+              : "INTERNAL_SERVER_ERROR",
+        message: result.error || "Failed to create meal",
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: result.statusCode || 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -312,20 +304,20 @@ export const POST: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify(response), {
       status: 201,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Unexpected error
-    console.error('Unexpected error in POST /api/v1/meals:', error);
+    console.error("Unexpected error in POST /api/v1/meals:", error);
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

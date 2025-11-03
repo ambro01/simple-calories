@@ -18,22 +18,16 @@
  * />
  */
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
-import type { AIResultProps } from '../../../types/add-meal.types';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import type { AIResultProps } from "../../../types/add-meal.types";
 
-export function AIResult({
-  result,
-  onAccept,
-  onRegenerate,
-  onEditManually,
-  regenerateLoading = false,
-}: AIResultProps) {
+export function AIResult({ result, onAccept, onRegenerate, onEditManually, regenerateLoading = false }: AIResultProps) {
   const macros = [
-    { label: 'Białko', value: result.generated_protein, unit: 'g' },
-    { label: 'Węglowodany', value: result.generated_carbs, unit: 'g' },
-    { label: 'Tłuszcze', value: result.generated_fats, unit: 'g' },
+    { label: "Białko", value: result.generated_protein, unit: "g" },
+    { label: "Węglowodany", value: result.generated_carbs, unit: "g" },
+    { label: "Tłuszcze", value: result.generated_fats, unit: "g" },
   ];
 
   return (
@@ -41,9 +35,7 @@ export function AIResult({
       <CardContent className="space-y-6 pt-6">
         {/* Calories Display */}
         <div className="text-center">
-          <div className="text-5xl font-bold text-primary">
-            {result.generated_calories ?? '—'}
-          </div>
+          <div className="text-5xl font-bold text-primary">{result.generated_calories ?? "—"}</div>
           <div className="mt-1 text-sm text-muted-foreground">kcal</div>
         </div>
 
@@ -52,7 +44,7 @@ export function AIResult({
           {macros.map((macro) => (
             <div key={macro.label} className="text-center">
               <div className="text-2xl font-semibold">
-                {macro.value !== null && macro.value !== undefined ? macro.value : '—'}
+                {macro.value !== null && macro.value !== undefined ? macro.value : "—"}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
                 {macro.label}

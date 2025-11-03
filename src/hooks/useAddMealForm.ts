@@ -16,22 +16,35 @@
  * />
  */
 
-import { useState, useCallback } from 'react';
-import type { MealFormState, AILoadingStage, MacroWarningInfo, FormValidationError } from '../types/add-meal.types';
-import type { AIGenerationResponseDTO, CreateMealResponseDTO } from '../types';
-import { getCurrentDate, getCurrentTime, calculateMacroCalories, calculateMacroDifference, detectCategoryFromTime } from '../lib/helpers/meal-form.utils';
-import { validatePrompt, validateDescription, validateCalories, validateMacro, validateDate, validateAIGenerationId } from '../lib/validation/meal-form.validation';
-import { VALIDATION_LIMITS } from '../lib/constants/meal-form.constants';
+import { useState, useCallback } from "react";
+import type { MealFormState, AILoadingStage, MacroWarningInfo, FormValidationError } from "../types/add-meal.types";
+import type { AIGenerationResponseDTO, CreateMealResponseDTO } from "../types";
+import {
+  getCurrentDate,
+  getCurrentTime,
+  calculateMacroCalories,
+  calculateMacroDifference,
+  detectCategoryFromTime,
+} from "../lib/helpers/meal-form.utils";
+import {
+  validatePrompt,
+  validateDescription,
+  validateCalories,
+  validateMacro,
+  validateDate,
+  validateAIGenerationId,
+} from "../lib/validation/meal-form.validation";
+import { VALIDATION_LIMITS } from "../lib/constants/meal-form.constants";
 
 /**
  * Initial state for the form
  */
 function getInitialState(initialDate?: string): MealFormState {
   return {
-    mode: 'ai',
-    editMode: 'create',
+    mode: "ai",
+    editMode: "create",
     editingMealId: null,
-    description: '',
+    description: "",
     calories: null,
     protein: null,
     carbs: null,
@@ -40,7 +53,7 @@ function getInitialState(initialDate?: string): MealFormState {
     category: null,
     date: initialDate || getCurrentDate(),
     time: getCurrentTime(),
-    aiPrompt: '',
+    aiPrompt: "",
     aiGenerationId: null,
     aiResult: null,
     aiLoading: false,
@@ -63,7 +76,7 @@ export interface UseAddMealFormReturn {
   state: MealFormState;
 
   // Mode switching
-  setMode: (mode: 'ai' | 'manual') => void;
+  setMode: (mode: "ai" | "manual") => void;
   switchToManual: (prepopulate: boolean) => void;
   switchToAI: () => void;
 
@@ -103,60 +116,60 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Generic field update
   const updateField = useCallback(<K extends keyof MealFormState>(field: K, value: MealFormState[K]) => {
-    setState(prev => ({ ...prev, [field]: value }));
+    setState((prev) => ({ ...prev, [field]: value }));
 
     // Auto-calculate macro warning when relevant fields change
-    if (field === 'calories' || field === 'protein' || field === 'carbs' || field === 'fats') {
+    if (field === "calories" || field === "protein" || field === "carbs" || field === "fats") {
       setTimeout(() => calculateMacroWarning(), 0);
     }
 
     // Auto-validate date when it changes
-    if (field === 'date') {
+    if (field === "date") {
       setTimeout(() => validateDateField(value as string), 0);
     }
 
     // Auto-detect category when time changes
-    if (field === 'time') {
+    if (field === "time") {
       setTimeout(() => autoDetectCategory(value as string), 0);
     }
 
     // Clear validation errors when user modifies fields
-    if (field === 'description') {
-      setState(prev => ({
+    if (field === "description") {
+      setState((prev) => ({
         ...prev,
-        validationErrors: prev.validationErrors.filter(err => err.field !== 'description')
+        validationErrors: prev.validationErrors.filter((err) => err.field !== "description"),
       }));
     }
 
-    if (field === 'calories') {
-      setState(prev => ({
+    if (field === "calories") {
+      setState((prev) => ({
         ...prev,
-        validationErrors: prev.validationErrors.filter(err => err.field !== 'calories')
+        validationErrors: prev.validationErrors.filter((err) => err.field !== "calories"),
       }));
     }
 
-    if (field === 'protein' || field === 'carbs' || field === 'fats' || field === 'fiber') {
-      setState(prev => ({
+    if (field === "protein" || field === "carbs" || field === "fats" || field === "fiber") {
+      setState((prev) => ({
         ...prev,
-        validationErrors: prev.validationErrors.filter(err => err.field !== field)
+        validationErrors: prev.validationErrors.filter((err) => err.field !== field),
       }));
     }
   }, []);
 
   // Update prompt (AI mode)
   const updatePrompt = useCallback((prompt: string) => {
-    setState(prev => ({ ...prev, aiPrompt: prompt }));
+    setState((prev) => ({ ...prev, aiPrompt: prompt }));
   }, []);
 
   // Switch to manual mode
   const switchToManual = useCallback((prepopulate: boolean) => {
-    setState(prev => {
+    setState((prev) => {
       const newState: Partial<MealFormState> = {
-        mode: 'manual',
+        mode: "manual",
         aiError: null,
       };
 
-      if (prepopulate && prev.aiResult && prev.aiResult.status === 'completed') {
+      if (prepopulate && prev.aiResult && prev.aiResult.status === "completed") {
         // Prepopulate with AI result
         newState.description = prev.aiPrompt;
         newState.calories = prev.aiResult.generated_calories;
@@ -177,33 +190,36 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Switch to AI mode
   const switchToAI = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      mode: 'ai',
+      mode: "ai",
       aiPrompt: prev.description || prev.aiPrompt,
       aiError: null,
     }));
   }, []);
 
   // Set mode directly
-  const setMode = useCallback((mode: 'ai' | 'manual') => {
-    if (mode === 'manual') {
-      switchToManual(false);
-    } else {
-      switchToAI();
-    }
-  }, [switchToManual, switchToAI]);
+  const setMode = useCallback(
+    (mode: "ai" | "manual") => {
+      if (mode === "manual") {
+        switchToManual(false);
+      } else {
+        switchToAI();
+      }
+    },
+    [switchToManual, switchToAI]
+  );
 
   // Generate AI meal estimation
   const generateAI = useCallback(async () => {
     const promptError = validatePrompt(state.aiPrompt);
     if (promptError) {
-      setState(prev => ({ ...prev, aiError: promptError.message }));
+      setState((prev) => ({ ...prev, aiError: promptError.message }));
       return;
     }
 
     // Reset AI state
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       aiLoading: true,
       aiLoadingStage: 0,
@@ -214,17 +230,17 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
     // Multi-stage loading simulation
     const stageTimer1 = setTimeout(() => {
-      setState(prev => ({ ...prev, aiLoadingStage: 1 }));
+      setState((prev) => ({ ...prev, aiLoadingStage: 1 }));
     }, 1000);
 
     const stageTimer2 = setTimeout(() => {
-      setState(prev => ({ ...prev, aiLoadingStage: 2 }));
+      setState((prev) => ({ ...prev, aiLoadingStage: 2 }));
     }, 2000);
 
     try {
-      const response = await fetch('/api/v1/ai-generations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/v1/ai-generations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: state.aiPrompt }),
       });
 
@@ -232,7 +248,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       if (response.status === 429) {
         const errorData = await response.json();
         const retryAfter = errorData.retry_after || 60;
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           aiLoading: false,
           aiError: `Zbyt wiele żądań. Spróbuj ponownie za ${retryAfter}s`,
@@ -243,20 +259,20 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       }
 
       if (!response.ok) {
-        throw new Error('API error');
+        throw new Error("API error");
       }
 
       const result: AIGenerationResponseDTO = await response.json();
 
-      if (result.status === 'failed') {
-        setState(prev => ({
+      if (result.status === "failed") {
+        setState((prev) => ({
           ...prev,
           aiLoading: false,
           aiResult: result,
           aiError: null,
         }));
       } else {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           aiLoading: false,
           aiResult: result,
@@ -265,10 +281,10 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
         }));
       }
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         aiLoading: false,
-        aiError: 'Wystąpił błąd połączenia. Spróbuj ponownie.',
+        aiError: "Wystąpił błąd połączenia. Spróbuj ponownie.",
       }));
     } finally {
       clearTimeout(stageTimer1);
@@ -278,9 +294,9 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Accept AI result and prepopulate form
   const acceptAIResult = useCallback(() => {
-    if (!state.aiResult || state.aiResult.status !== 'completed') return;
+    if (!state.aiResult || state.aiResult.status !== "completed") return;
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       description: prev.aiPrompt,
       calories: prev.aiResult?.generated_calories || null,
@@ -295,11 +311,11 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Load meal for editing
   const loadMealForEdit = useCallback(async (mealId: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       loadingMeal: true,
       loadMealError: null,
-      editMode: 'edit',
+      editMode: "edit",
       editingMealId: mealId,
     }));
 
@@ -307,31 +323,31 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       const response = await fetch(`/api/v1/meals/${mealId}`);
 
       if (response.status === 404) {
-        throw new Error('Meal not found');
+        throw new Error("Meal not found");
       }
 
       if (!response.ok) {
-        throw new Error('Failed to load meal');
+        throw new Error("Failed to load meal");
       }
 
       const meal = await response.json();
 
       // Parse meal_timestamp to date and time
       const mealDate = new Date(meal.meal_timestamp);
-      const date = mealDate.toISOString().split('T')[0]; // YYYY-MM-DD
-      const hours = mealDate.getHours().toString().padStart(2, '0');
-      const minutes = mealDate.getMinutes().toString().padStart(2, '0');
+      const date = mealDate.toISOString().split("T")[0]; // YYYY-MM-DD
+      const hours = mealDate.getHours().toString().padStart(2, "0");
+      const minutes = mealDate.getMinutes().toString().padStart(2, "0");
       const time = `${hours}:${minutes}`; // HH:MM
 
       // Set mode based on input_method
       // If meal was generated by AI, show AI mode; otherwise show manual mode
-      const mode: 'ai' | 'manual' = meal.input_method === 'ai' ? 'ai' : 'manual';
+      const mode: "ai" | "manual" = meal.input_method === "ai" ? "ai" : "manual";
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         mode,
         description: meal.description,
-        aiPrompt: mode === 'ai' ? meal.description : '', // Set aiPrompt for AI mode
+        aiPrompt: mode === "ai" ? meal.description : "", // Set aiPrompt for AI mode
         calories: meal.calories,
         protein: meal.protein,
         carbs: meal.carbs,
@@ -348,11 +364,12 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       setTimeout(() => calculateMacroWarning(), 0);
       setTimeout(() => validateDateField(date), 0);
     } catch (error) {
-      const errorMessage = error instanceof Error && error.message === 'Meal not found'
-        ? 'Posiłek nie został znaleziony'
-        : 'Nie udało się wczytać posiłku. Spróbuj ponownie.';
+      const errorMessage =
+        error instanceof Error && error.message === "Meal not found"
+          ? "Posiłek nie został znaleziony"
+          : "Nie udało się wczytać posiłku. Spróbuj ponownie.";
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         loadingMeal: false,
         loadMealError: errorMessage,
@@ -363,7 +380,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Calculate macro warning
   const calculateMacroWarning = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       const { calories, protein, carbs, fats } = prev;
 
       // Need all values to calculate
@@ -391,12 +408,12 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
   // Validate date field
   const validateDateField = useCallback((date: string) => {
     const warning = validateDate(date);
-    setState(prev => ({ ...prev, dateWarning: warning }));
+    setState((prev) => ({ ...prev, dateWarning: warning }));
   }, []);
 
   // Auto-calculate calories from macros
   const autoCalculateCalories = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       const calculated = calculateMacroCalories(prev.protein, prev.carbs, prev.fats);
       return { ...prev, calories: calculated, macroWarning: null };
     });
@@ -404,7 +421,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Auto-detect category from time
   const autoDetectCategory = useCallback((time: string) => {
-    setState(prev => {
+    setState((prev) => {
       // Don't override if already manually selected
       if (prev.category !== null) return prev;
 
@@ -417,17 +434,17 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
   const validateForm = useCallback((): boolean => {
     const errors: FormValidationError[] = [];
 
-    if (state.mode === 'ai') {
+    if (state.mode === "ai") {
       // AI mode validation - only check if we have AI result
       const aiIdError = validateAIGenerationId(state.aiGenerationId);
       if (aiIdError) errors.push(aiIdError);
 
       // Description and calories will be taken from aiResult during submit
       // So we only validate if aiResult exists
-      if (!state.aiResult || state.aiResult.status !== 'completed') {
+      if (!state.aiResult || state.aiResult.status !== "completed") {
         errors.push({
-          field: 'aiResult',
-          message: 'Najpierw wygeneruj posiłek',
+          field: "aiResult",
+          message: "Najpierw wygeneruj posiłek",
         });
       }
     } else {
@@ -440,32 +457,32 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
       // Validate macros if provided
       if (state.protein !== null) {
-        const proteinError = validateMacro(state.protein, 'protein');
+        const proteinError = validateMacro(state.protein, "protein");
         if (proteinError) errors.push(proteinError);
       }
       if (state.carbs !== null) {
-        const carbsError = validateMacro(state.carbs, 'carbs');
+        const carbsError = validateMacro(state.carbs, "carbs");
         if (carbsError) errors.push(carbsError);
       }
       if (state.fats !== null) {
-        const fatsError = validateMacro(state.fats, 'fats');
+        const fatsError = validateMacro(state.fats, "fats");
         if (fatsError) errors.push(fatsError);
       }
       if (state.fiber !== null) {
-        const fiberError = validateMacro(state.fiber, 'fiber');
+        const fiberError = validateMacro(state.fiber, "fiber");
         if (fiberError) errors.push(fiberError);
       }
     }
 
     // Date validation (blocks submit if future)
-    if (state.dateWarning?.type === 'future') {
+    if (state.dateWarning?.type === "future") {
       errors.push({
-        field: 'date',
+        field: "date",
         message: state.dateWarning.message,
       });
     }
 
-    setState(prev => ({ ...prev, validationErrors: errors }));
+    setState((prev) => ({ ...prev, validationErrors: errors }));
     return errors.length === 0;
   }, [state]);
 
@@ -478,7 +495,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
     let carbs = state.carbs;
     let fats = state.fats;
 
-    if (state.mode === 'ai' && state.aiResult?.status === 'completed') {
+    if (state.mode === "ai" && state.aiResult?.status === "completed") {
       // Use AI result values if form fields are empty
       if (!description) description = state.aiPrompt;
       if (calories === null) calories = state.aiResult.generated_calories;
@@ -490,7 +507,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
     // Validate with actual values
     const errors: FormValidationError[] = [];
 
-    if (state.mode === 'ai') {
+    if (state.mode === "ai") {
       const aiIdError = validateAIGenerationId(state.aiGenerationId);
       if (aiIdError) errors.push(aiIdError);
 
@@ -507,37 +524,37 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       if (calError) errors.push(calError);
 
       if (protein !== null) {
-        const proteinError = validateMacro(protein, 'protein');
+        const proteinError = validateMacro(protein, "protein");
         if (proteinError) errors.push(proteinError);
       }
       if (carbs !== null) {
-        const carbsError = validateMacro(carbs, 'carbs');
+        const carbsError = validateMacro(carbs, "carbs");
         if (carbsError) errors.push(carbsError);
       }
       if (fats !== null) {
-        const fatsError = validateMacro(fats, 'fats');
+        const fatsError = validateMacro(fats, "fats");
         if (fatsError) errors.push(fatsError);
       }
       if (state.fiber !== null) {
-        const fiberError = validateMacro(state.fiber, 'fiber');
+        const fiberError = validateMacro(state.fiber, "fiber");
         if (fiberError) errors.push(fiberError);
       }
     }
 
     // Date validation
-    if (state.dateWarning?.type === 'future') {
+    if (state.dateWarning?.type === "future") {
       errors.push({
-        field: 'date',
+        field: "date",
         message: state.dateWarning.message,
       });
     }
 
     if (errors.length > 0) {
-      setState(prev => ({ ...prev, validationErrors: errors }));
-      throw new Error('Formularz zawiera błędy');
+      setState((prev) => ({ ...prev, validationErrors: errors }));
+      throw new Error("Formularz zawiera błędy");
     }
 
-    setState(prev => ({ ...prev, submitLoading: true, submitError: null, validationErrors: [] }));
+    setState((prev) => ({ ...prev, submitLoading: true, submitError: null, validationErrors: [] }));
 
     try {
       // Tworzymy timestamp w lokalnej strefie czasowej i konwertujemy na ISO
@@ -545,9 +562,9 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       const timestamp = localDateTime.toISOString();
 
       // Determine if we're in edit mode
-      const isEditMode = state.editMode === 'edit';
-      const url = isEditMode ? `/api/v1/meals/${state.editingMealId}` : '/api/v1/meals';
-      const method = isEditMode ? 'PATCH' : 'POST';
+      const isEditMode = state.editMode === "edit";
+      const url = isEditMode ? `/api/v1/meals/${state.editingMealId}` : "/api/v1/meals";
+      const method = isEditMode ? "PATCH" : "POST";
 
       // Prepare request data
       let requestData: any;
@@ -565,79 +582,80 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
         };
       } else {
         // POST - include input_method and ai_generation_id (CreateMealRequestDTO)
-        requestData = state.mode === 'ai'
-          ? {
-              description: description,
-              calories: calories!,
-              protein: protein,
-              carbs: carbs,
-              fats: fats,
-              category: state.category,
-              input_method: 'ai' as const,
-              ai_generation_id: state.aiGenerationId!,
-              meal_timestamp: timestamp,
-            }
-          : {
-              description: description,
-              calories: calories!,
-              protein: protein,
-              carbs: carbs,
-              fats: fats,
-              category: state.category,
-              input_method: 'manual' as const,
-              meal_timestamp: timestamp,
-            };
+        requestData =
+          state.mode === "ai"
+            ? {
+                description: description,
+                calories: calories!,
+                protein: protein,
+                carbs: carbs,
+                fats: fats,
+                category: state.category,
+                input_method: "ai" as const,
+                ai_generation_id: state.aiGenerationId!,
+                meal_timestamp: timestamp,
+              }
+            : {
+                description: description,
+                calories: calories!,
+                protein: protein,
+                carbs: carbs,
+                fats: fats,
+                category: state.category,
+                input_method: "manual" as const,
+                meal_timestamp: timestamp,
+              };
       }
 
       console.log(`Sending ${method} request to ${url}:`, requestData);
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData),
       });
 
       if (response.status === 400) {
         const errorData = await response.json();
-        console.error('API validation error:', errorData);
+        console.error("API validation error:", errorData);
         const errors = Object.entries(errorData.details || {}).map(([field, message]) => ({
           field,
           message: message as string,
         }));
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           submitLoading: false,
           validationErrors: errors,
         }));
-        throw new Error('Błędy walidacji');
+        throw new Error("Błędy walidacji");
       }
 
       if (response.status === 404) {
         const errorMessage = isEditMode
-          ? 'Posiłek nie został znaleziony. Możliwe że został usunięty.'
-          : 'Nie znaleziono generacji AI. Spróbuj wygenerować ponownie.';
-        setState(prev => ({
+          ? "Posiłek nie został znaleziony. Możliwe że został usunięty."
+          : "Nie znaleziono generacji AI. Spróbuj wygenerować ponownie.";
+        setState((prev) => ({
           ...prev,
           submitLoading: false,
           submitError: errorMessage,
         }));
-        throw new Error(isEditMode ? 'Meal not found' : 'AI generation not found');
+        throw new Error(isEditMode ? "Meal not found" : "AI generation not found");
       }
 
       if (!response.ok) {
-        throw new Error('API error');
+        throw new Error("API error");
       }
 
       const result: CreateMealResponseDTO = await response.json();
 
-      setState(prev => ({ ...prev, submitLoading: false }));
+      setState((prev) => ({ ...prev, submitLoading: false }));
 
       return result;
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         submitLoading: false,
-        submitError: 'Nie udało się zapisać posiłku. Spróbuj ponownie.',
+        submitError: "Nie udało się zapisać posiłku. Spróbuj ponownie.",
       }));
       throw error;
     }
@@ -649,10 +667,10 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
   }, []);
 
   // Computed values
-  const isAIMode = state.mode === 'ai';
-  const isManualMode = state.mode === 'manual';
-  const canSubmit = !state.submitLoading && state.validationErrors.length === 0 && state.dateWarning?.type !== 'future';
-  const hasAIResult = state.aiResult !== null && state.aiResult.status === 'completed';
+  const isAIMode = state.mode === "ai";
+  const isManualMode = state.mode === "manual";
+  const canSubmit = !state.submitLoading && state.validationErrors.length === 0 && state.dateWarning?.type !== "future";
+  const hasAIResult = state.aiResult !== null && state.aiResult.status === "completed";
 
   return {
     state,

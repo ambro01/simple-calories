@@ -10,8 +10,8 @@
  * @module ErrorLogger
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../db/database.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
 
 /**
  * Parameters for logging an error to the database
@@ -85,13 +85,10 @@ export interface ErrorLogParams {
  * }
  * ```
  */
-export async function logError(
-  supabase: SupabaseClient<Database>,
-  params: ErrorLogParams
-): Promise<void> {
+export async function logError(supabase: SupabaseClient<Database>, params: ErrorLogParams): Promise<void> {
   try {
     // Insert error log into database
-    const { error } = await supabase.from('error_logs').insert({
+    const { error } = await supabase.from("error_logs").insert({
       user_id: params.user_id ?? null,
       error_type: params.error_type,
       error_message: params.error_message,
@@ -101,13 +98,13 @@ export async function logError(
 
     if (error) {
       // If insert failed, log to console as fallback
-      console.error('Failed to insert error log into database:', error);
-      console.error('Original error:', params);
+      console.error("Failed to insert error log into database:", error);
+      console.error("Original error:", params);
     }
   } catch (logError) {
     // If the entire logging process failed, log to console as fallback
-    console.error('Failed to log error to database:', logError);
-    console.error('Original error:', params);
+    console.error("Failed to log error to database:", logError);
+    console.error("Original error:", params);
   }
 }
 
@@ -145,8 +142,7 @@ export function formatErrorForLogging(
   context?: Record<string, unknown>
 ): ErrorLogParams {
   // Extract error message
-  const errorMessage =
-    error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error);
 
   // Extract error details
   const errorDetails: Record<string, unknown> = {};
@@ -157,7 +153,7 @@ export function formatErrorForLogging(
 
     // Include any additional properties from the error object
     Object.keys(error).forEach((key) => {
-      if (key !== 'message' && key !== 'name' && key !== 'stack') {
+      if (key !== "message" && key !== "name" && key !== "stack") {
         errorDetails[key] = (error as any)[key];
       }
     });

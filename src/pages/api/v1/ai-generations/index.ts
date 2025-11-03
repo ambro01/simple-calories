@@ -66,7 +66,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { supabaseClient, DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
 import { CreateAIGenerationSchema } from "../../../../lib/validation/ai-generation.schemas";
 import { AIGenerationService } from "../../../../lib/services/ai-generation.service";
 import { aiGenerationRateLimiter } from "../../../../lib/services/rate-limit.service";
@@ -79,7 +79,7 @@ import type { ErrorResponseDTO, RateLimitErrorResponseDTO, AIGenerationsListResp
  * - limit: number of records (default: 20, max: 100)
  * - offset: number of records to skip (default: 0)
  */
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   try {
     // Step 1: Parse query parameters
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
@@ -89,7 +89,7 @@ export const GET: APIRoute = async ({ url }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 3: Fetch data from service
-    const aiGenerationService = new AIGenerationService(supabaseClient);
+    const aiGenerationService = new AIGenerationService(locals.supabase);
     const [data, total] = await Promise.all([
       aiGenerationService.listAIGenerations(userId, limit, offset),
       aiGenerationService.countAIGenerations(userId),
@@ -127,7 +127,7 @@ export const GET: APIRoute = async ({ url }) => {
 /**
  * POST handler - Create new AI generation
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Step 1: Parse and validate request body
     const body = await request.json();
@@ -194,7 +194,7 @@ export const POST: APIRoute = async ({ request }) => {
     aiGenerationRateLimiter.incrementRateLimit(userId);
 
     // Step 5: Create AI generation via service
-    const aiGenerationService = new AIGenerationService(supabaseClient);
+    const aiGenerationService = new AIGenerationService(locals.supabase);
     const result = await aiGenerationService.createAIGeneration(userId, validatedData.prompt);
 
     if (!result.success || !result.data) {

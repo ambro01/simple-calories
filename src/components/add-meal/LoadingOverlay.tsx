@@ -9,7 +9,7 @@
  * {form.state.loadingMeal && <LoadingOverlay />}
  */
 
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
 export function LoadingOverlay() {
   return (

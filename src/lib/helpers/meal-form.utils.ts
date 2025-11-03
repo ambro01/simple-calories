@@ -5,8 +5,8 @@
  * including date/time formatting, macro calculations, and category detection.
  */
 
-import type { MealCategory } from '../../types';
-import { MACRO_CALORIES } from '../constants/meal-form.constants';
+import type { MealCategory } from "../../types";
+import { MACRO_CALORIES } from "../constants/meal-form.constants";
 
 /**
  * Łączy datę i czas w ISO 8601 timestamp
@@ -27,11 +27,7 @@ export function formatDateTime(date: string, time: string): string {
  * @param fats - Ilość tłuszczów w gramach
  * @returns Obliczona liczba kalorii (zaokrąglona do całości)
  */
-export function calculateMacroCalories(
-  protein: number | null,
-  carbs: number | null,
-  fats: number | null
-): number {
+export function calculateMacroCalories(protein: number | null, carbs: number | null, fats: number | null): number {
   const proteinCal = (protein ?? 0) * MACRO_CALORIES.PROTEIN;
   const carbsCal = (carbs ?? 0) * MACRO_CALORIES.CARBS;
   const fatsCal = (fats ?? 0) * MACRO_CALORIES.FATS;
@@ -46,19 +42,19 @@ export function calculateMacroCalories(
  * @returns Wykryta kategoria lub null
  */
 export function detectCategoryFromTime(time: string): MealCategory | null {
-  const [hoursStr] = time.split(':');
+  const [hoursStr] = time.split(":");
   const hours = parseInt(hoursStr, 10);
 
   if (isNaN(hours)) return null;
 
   // 06:00-10:00 → breakfast
-  if (hours >= 6 && hours < 10) return 'breakfast';
+  if (hours >= 6 && hours < 10) return "breakfast";
 
   // 12:00-15:00 → lunch
-  if (hours >= 12 && hours < 15) return 'lunch';
+  if (hours >= 12 && hours < 15) return "lunch";
 
   // 18:00-21:00 → dinner
-  if (hours >= 18 && hours < 21) return 'dinner';
+  if (hours >= 18 && hours < 21) return "dinner";
 
   // Inne → null (użytkownik może wybrać ręcznie)
   return null;
@@ -71,10 +67,7 @@ export function detectCategoryFromTime(time: string): MealCategory | null {
  * @param provided - Kalorie podane przez użytkownika
  * @returns Różnica procentowa (0-1, np. 0.05 = 5%)
  */
-export function calculateMacroDifference(
-  calculated: number,
-  provided: number
-): number {
+export function calculateMacroDifference(calculated: number, provided: number): number {
   if (provided === 0) return 0;
   return Math.abs(calculated - provided) / provided;
 }
@@ -97,8 +90,8 @@ export function formatPercentDifference(difference: number): string {
 export function getCurrentDate(): string {
   const now = new Date();
   const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const day = now.getDate().toString().padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -109,8 +102,8 @@ export function getCurrentDate(): string {
  */
 export function getCurrentTime(): string {
   const now = new Date();
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 }
 

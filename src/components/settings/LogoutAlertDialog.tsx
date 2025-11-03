@@ -19,11 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { LogoutAlertDialogProps } from "@/types/settings.types";
 
-export function LogoutAlertDialog({
-  open,
-  onOpenChange,
-  onConfirm,
-}: LogoutAlertDialogProps) {
+export function LogoutAlertDialog({ open, onOpenChange, onConfirm }: LogoutAlertDialogProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   /**
@@ -66,22 +62,17 @@ export function LogoutAlertDialog({
             Wyloguj się
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Czy na pewno chcesz się wylogować? Zostaniesz przekierowany na stronę
-            logowania.
+            Czy na pewno chcesz się wylogować? Zostaniesz przekierowany na stronę logowania.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoggingOut}>
-            Anuluj
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoggingOut}>Anuluj</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoggingOut}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isLoggingOut && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isLoggingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoggingOut ? "Wylogowywanie..." : "Wyloguj"}
           </AlertDialogAction>
         </AlertDialogFooter>

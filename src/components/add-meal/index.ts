@@ -5,6 +5,6 @@
  * Export modal components and types as the public API.
  */
 
-export { MealModal } from './MealModal';
-export { AddMealModal } from './AddMealModal'; // Legacy - backward compatibility
-export type { AddMealModalProps } from '../../types/add-meal.types';
+export { MealModal } from "./MealModal";
+export { AddMealModal } from "./AddMealModal"; // Legacy - backward compatibility
+export type { AddMealModalProps } from "../../types/add-meal.types";

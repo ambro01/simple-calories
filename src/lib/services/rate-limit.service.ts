@@ -89,9 +89,7 @@ export class RateLimitService {
     const userRequests = this.requestStore.get(userId) || [];
 
     // Filter to only requests within the current window
-    const recentRequests = userRequests.filter(
-      (timestamp) => timestamp > windowStart
-    );
+    const recentRequests = userRequests.filter((timestamp) => timestamp > windowStart);
 
     // Update store with filtered requests
     if (recentRequests.length > 0) {
@@ -173,9 +171,7 @@ export class RateLimitService {
     const windowStart = now - this.config.windowMs;
 
     for (const [userId, requests] of this.requestStore.entries()) {
-      const recentRequests = requests.filter(
-        (timestamp) => timestamp > windowStart
-      );
+      const recentRequests = requests.filter((timestamp) => timestamp > windowStart);
 
       if (recentRequests.length === 0) {
         this.requestStore.delete(userId);

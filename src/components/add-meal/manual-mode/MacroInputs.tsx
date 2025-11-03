@@ -21,23 +21,23 @@
  * />
  */
 
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import type { MacroInputsProps } from '../../../types/add-meal.types';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import type { MacroInputsProps } from "../../../types/add-meal.types";
 
 const MACRO_FIELDS = [
-  { key: 'protein' as const, label: 'Białko', unit: 'g' },
-  { key: 'carbs' as const, label: 'Węglowodany', unit: 'g' },
-  { key: 'fats' as const, label: 'Tłuszcze', unit: 'g' },
-  { key: 'fiber' as const, label: 'Błonnik', unit: 'g' },
+  { key: "protein" as const, label: "Białko", unit: "g" },
+  { key: "carbs" as const, label: "Węglowodany", unit: "g" },
+  { key: "fats" as const, label: "Tłuszcze", unit: "g" },
+  { key: "fiber" as const, label: "Błonnik", unit: "g" },
 ];
 
 export function MacroInputs({ protein, carbs, fats, fiber, onChange, errors }: MacroInputsProps) {
   const values = { protein, carbs, fats, fiber };
 
-  const handleChange = (field: 'protein' | 'carbs' | 'fats' | 'fiber', rawValue: string) => {
+  const handleChange = (field: "protein" | "carbs" | "fats" | "fiber", rawValue: string) => {
     // Handle empty input
-    if (rawValue === '') {
+    if (rawValue === "") {
       onChange(field, null);
       return;
     }
@@ -73,10 +73,10 @@ export function MacroInputs({ protein, carbs, fats, fiber, onChange, errors }: M
                 step="0.01"
                 min="0"
                 max="1000"
-                value={value ?? ''}
+                value={value ?? ""}
                 onChange={(e) => handleChange(field.key, e.target.value)}
                 placeholder="0"
-                className={hasError ? 'border-destructive' : ''}
+                className={hasError ? "border-destructive" : ""}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                 {field.unit}

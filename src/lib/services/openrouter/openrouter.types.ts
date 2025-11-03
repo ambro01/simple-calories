@@ -1,5 +1,5 @@
 // Rola w konwersacji
-export type MessageRole = 'system' | 'user' | 'assistant';
+export type MessageRole = "system" | "user" | "assistant";
 
 // Pojedyncza wiadomość
 export interface Message {
@@ -9,22 +9,22 @@ export interface Message {
 
 // Parametry modelu
 export interface ModelParameters {
-  temperature?: number;           // 0-2, default: 1
-  max_tokens?: number;           // Max tokens w odpowiedzi
-  top_p?: number;                // 0-1, default: 1
-  frequency_penalty?: number;    // -2 do 2, default: 0
-  presence_penalty?: number;     // -2 do 2, default: 0
-  stop?: string[];               // Stop sequences
+  temperature?: number; // 0-2, default: 1
+  max_tokens?: number; // Max tokens w odpowiedzi
+  top_p?: number; // 0-1, default: 1
+  frequency_penalty?: number; // -2 do 2, default: 0
+  presence_penalty?: number; // -2 do 2, default: 0
+  stop?: string[]; // Stop sequences
 }
 
 // JSON Schema format dla ustrukturyzowanych odpowiedzi
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
     name: string;
     strict: boolean;
     schema: {
-      type: 'object';
+      type: "object";
       properties: Record<string, any>;
       required: string[];
       additionalProperties?: boolean;

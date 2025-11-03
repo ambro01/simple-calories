@@ -15,12 +15,7 @@ interface CalorieProgressBarProps {
   size?: "sm" | "md" | "lg";
 }
 
-export function CalorieProgressBar({
-  percentage,
-  status,
-  showLabel = false,
-  size = "md",
-}: CalorieProgressBarProps) {
+export function CalorieProgressBar({ percentage, status, showLabel = false, size = "md" }: CalorieProgressBarProps) {
   // Ograniczenie do 0-100% dla UI (może być > 100 w danych)
   const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
 
@@ -46,11 +41,7 @@ export function CalorieProgressBar({
           aria-label="Postęp realizacji celu kalorycznego"
         />
       </div>
-      {showLabel && (
-        <div className="mt-1 text-xs text-muted-foreground text-right">
-          {percentage.toFixed(0)}%
-        </div>
-      )}
+      {showLabel && <div className="mt-1 text-xs text-muted-foreground text-right">{percentage.toFixed(0)}%</div>}
     </div>
   );
 }

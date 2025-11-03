@@ -33,7 +33,7 @@ export function isValidDateFormat(date: string): boolean {
 
   // Verify that the parsed date matches the input string
   // This catches cases like "2025-02-30" which JavaScript would parse as "2025-03-02"
-  const [year, month, day] = date.split('-').map(Number);
+  const [year, month, day] = date.split("-").map(Number);
   return (
     parsedDate.getFullYear() === year &&
     parsedDate.getMonth() === month - 1 && // getMonth() is 0-indexed

@@ -23,14 +23,14 @@
  * />
  */
 
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import type { ManualModeProps } from '../../../types/add-meal.types';
-import { CharacterCounter } from '../CharacterCounter';
-import { MacroInputs } from './MacroInputs';
-import { MacroWarning } from './MacroWarning';
-import { VALIDATION_LIMITS } from '../../../lib/constants/meal-form.constants';
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import type { ManualModeProps } from "../../../types/add-meal.types";
+import { CharacterCounter } from "../CharacterCounter";
+import { MacroInputs } from "./MacroInputs";
+import { MacroWarning } from "./MacroWarning";
+import { VALIDATION_LIMITS } from "../../../lib/constants/meal-form.constants";
 
 export function ManualMode({
   description,
@@ -49,14 +49,14 @@ export function ManualMode({
     return validationErrors.find((err) => err.field === fieldName)?.message;
   };
 
-  const descriptionError = getFieldError('description');
-  const caloriesError = getFieldError('calories');
+  const descriptionError = getFieldError("description");
+  const caloriesError = getFieldError("calories");
 
   const macroErrors: Record<string, string> = {};
-  const proteinError = getFieldError('protein');
-  const carbsError = getFieldError('carbs');
-  const fatsError = getFieldError('fats');
-  const fiberError = getFieldError('fiber');
+  const proteinError = getFieldError("protein");
+  const carbsError = getFieldError("carbs");
+  const fatsError = getFieldError("fats");
+  const fiberError = getFieldError("fiber");
 
   if (proteinError) macroErrors.protein = proteinError;
   if (carbsError) macroErrors.carbs = carbsError;
@@ -73,20 +73,15 @@ export function ManualMode({
         <Textarea
           id="manual-description"
           value={description}
-          onChange={(e) => onFieldChange('description', e.target.value)}
+          onChange={(e) => onFieldChange("description", e.target.value)}
           placeholder="np. Kurczak z ryżem i warzywami"
           maxLength={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH}
           rows={3}
-          className={`resize-none ${descriptionError ? 'border-destructive' : ''}`}
+          className={`resize-none ${descriptionError ? "border-destructive" : ""}`}
         />
         <div className="flex items-center justify-between">
-          <CharacterCounter
-            current={description.length}
-            max={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH}
-          />
-          {descriptionError && (
-            <span className="text-xs text-destructive">{descriptionError}</span>
-          )}
+          <CharacterCounter current={description.length} max={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH} />
+          {descriptionError && <span className="text-xs text-destructive">{descriptionError}</span>}
         </div>
       </div>
 
@@ -101,17 +96,15 @@ export function ManualMode({
             type="number"
             min={VALIDATION_LIMITS.CALORIES_MIN}
             max={VALIDATION_LIMITS.CALORIES_MAX}
-            value={calories ?? ''}
+            value={calories ?? ""}
             onChange={(e) => {
-              const value = e.target.value === '' ? null : parseInt(e.target.value, 10);
-              onFieldChange('calories', value);
+              const value = e.target.value === "" ? null : parseInt(e.target.value, 10);
+              onFieldChange("calories", value);
             }}
             placeholder="0"
-            className={caloriesError ? 'border-destructive' : ''}
+            className={caloriesError ? "border-destructive" : ""}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-            kcal
-          </span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">kcal</span>
         </div>
         {caloriesError && <p className="text-xs text-destructive">{caloriesError}</p>}
       </div>

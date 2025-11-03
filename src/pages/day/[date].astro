@@ -33,8 +33,8 @@ const formattedDate = new Intl.DateTimeFormat("pl-PL", {
     date={date}
     onBack={() => {
       // Client-side navigation back to dashboard
-      if (typeof window !== 'undefined') {
-        window.location.href = '/';
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
       }
     }}
     client:load

@@ -14,8 +14,7 @@
  * @module CalorieGoalService
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../db/database.types";
+import type { SupabaseClient } from "../../db/supabase.client";
 import type { CalorieGoalResponseDTO } from "../../types";
 
 /**
@@ -25,7 +24,7 @@ import type { CalorieGoalResponseDTO } from "../../types";
  * pagination support, and RLS policy enforcement.
  */
 export class CalorieGoalService {
-  constructor(private supabase: SupabaseClient<Database>) {}
+  constructor(private supabase: SupabaseClient) {}
 
   /**
    * List calorie goals for a user with pagination
@@ -283,10 +282,7 @@ export class CalorieGoalService {
    * @param userId - User ID from JWT token (auth.uid())
    * @returns true if goal is immutable (has started or is used), false if it can be safely modified
    */
-  async isGoalImmutable(
-    goalId: string,
-    userId: string
-  ): Promise<boolean> {
+  async isGoalImmutable(goalId: string, userId: string): Promise<boolean> {
     // Get the goal to check its effective_from date
     const { data: goal, error: goalError } = await this.supabase
       .from("calorie_goals")

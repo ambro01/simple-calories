@@ -5,7 +5,7 @@
  * Used to ensure data integrity before processing.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Schema for creating a new AI generation request
@@ -17,12 +17,12 @@ import { z } from 'zod';
 export const CreateAIGenerationSchema = z.object({
   prompt: z
     .string({
-      required_error: 'Prompt is required',
-      invalid_type_error: 'Prompt must be a string',
+      required_error: "Prompt is required",
+      invalid_type_error: "Prompt must be a string",
     })
     .trim()
-    .min(1, 'Prompt is required and cannot be empty')
-    .max(1000, 'Prompt cannot exceed 1000 characters'),
+    .min(1, "Prompt is required and cannot be empty")
+    .max(1000, "Prompt cannot exceed 1000 characters"),
 });
 
 /**

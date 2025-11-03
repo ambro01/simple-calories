@@ -46,13 +46,13 @@
  * }
  */
 
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { supabaseClient, DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { GetDailyProgressQuerySchema } from '../../../../lib/validation/daily-progress.schemas';
-import { DailyProgressService } from '../../../../lib/services/daily-progress.service';
-import { logError, formatErrorForLogging } from '../../../../lib/helpers/error-logger';
-import type { ErrorResponseDTO, DailyProgressListResponseDTO } from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { GetDailyProgressQuerySchema } from "../../../../lib/validation/daily-progress.schemas";
+import { DailyProgressService } from "../../../../lib/services/daily-progress.service";
+import { logError, formatErrorForLogging } from "../../../../lib/helpers/error-logger";
+import type { ErrorResponseDTO, DailyProgressListResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -77,18 +77,14 @@ export const prerender = false;
  * - 401: Unauthorized (not implemented in MVP)
  * - 500: Internal server error
  */
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   try {
     // Step 1: Parse query parameters
     const rawParams = {
-      date_from: url.searchParams.get('date_from') || undefined,
-      date_to: url.searchParams.get('date_to') || undefined,
-      limit: url.searchParams.get('limit')
-        ? parseInt(url.searchParams.get('limit')!)
-        : undefined,
-      offset: url.searchParams.get('offset')
-        ? parseInt(url.searchParams.get('offset')!)
-        : undefined,
+      date_from: url.searchParams.get("date_from") || undefined,
+      date_to: url.searchParams.get("date_to") || undefined,
+      limit: url.searchParams.get("limit") ? parseInt(url.searchParams.get("limit")!) : undefined,
+      offset: url.searchParams.get("offset") ? parseInt(url.searchParams.get("offset")!) : undefined,
     };
 
     // Step 2: Validate query parameters with Zod
@@ -100,19 +96,19 @@ export const GET: APIRoute = async ({ url }) => {
         // Validation failed - return 400 with details
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         const errorResponse: ErrorResponseDTO = {
-          error: 'VALIDATION_ERROR',
-          message: 'Invalid query parameters',
+          error: "VALIDATION_ERROR",
+          message: "Invalid query parameters",
           details,
         };
 
         return new Response(JSON.stringify(errorResponse), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         });
       }
       throw error; // Re-throw if not a Zod error
@@ -136,7 +132,7 @@ export const GET: APIRoute = async ({ url }) => {
     // const userId = user.id;
 
     // Step 4: Fetch daily progress from service
-    const dailyProgressService = new DailyProgressService(supabaseClient);
+    const dailyProgressService = new DailyProgressService(locals.supabase);
 
     const result = await dailyProgressService.getDailyProgressList({
       userId,
@@ -152,41 +148,41 @@ export const GET: APIRoute = async ({ url }) => {
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
       },
     });
   } catch (error) {
     // Unexpected error - log to database and return 500
-    console.error('Unexpected error in GET /api/v1/daily-progress:', error);
+    console.error("Unexpected error in GET /api/v1/daily-progress:", error);
 
     // Log error to database
     try {
       const errorLogParams = formatErrorForLogging(
         error,
-        'daily_progress_list_fetch_failed',
+        "daily_progress_list_fetch_failed",
         DEFAULT_USER_ID, // Use DEFAULT_USER_ID for MVP
         {
-          endpoint: 'GET /api/v1/daily-progress',
+          endpoint: "GET /api/v1/daily-progress",
           url: url.toString(),
         }
       );
-      await logError(supabaseClient, errorLogParams);
+      await logError(locals.supabase, errorLogParams);
     } catch (logErr) {
       // If logging fails, just log to console
-      console.error('Failed to log error to database:', logErr);
+      console.error("Failed to log error to database:", logErr);
     }
 
     const errorResponse: ErrorResponseDTO = {
-      error: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      error: "INTERNAL_SERVER_ERROR",
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

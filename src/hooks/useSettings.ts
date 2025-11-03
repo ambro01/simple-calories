@@ -7,11 +7,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabaseClient } from "@/db/supabase.client";
-import type {
-  ProfileResponseDTO,
-  CalorieGoalResponseDTO,
-  ErrorResponseDTO,
-} from "@/types";
+import type { ProfileResponseDTO, CalorieGoalResponseDTO, ErrorResponseDTO } from "@/types";
 import type { SettingsViewModel } from "@/types/settings.types";
 
 interface UseSettingsReturn {

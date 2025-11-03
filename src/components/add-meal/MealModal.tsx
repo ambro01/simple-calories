@@ -39,10 +39,10 @@ import { MealForm } from "./MealForm";
 
 export function MealModal({ isOpen, onClose, onSuccess, mealId, initialDate }: AddMealModalProps) {
   const isEditMode = Boolean(mealId);
-  const title = isEditMode ? 'Edytuj posiłek' : 'Dodaj posiłek';
+  const title = isEditMode ? "Edytuj posiłek" : "Dodaj posiłek";
   const description = isEditMode
-    ? 'Wprowadź zmiany w danych posiłku'
-    : 'Użyj AI aby wygenerować wartości odżywcze lub wprowadź je ręcznie';
+    ? "Wprowadź zmiany w danych posiłku"
+    : "Użyj AI aby wygenerować wartości odżywcze lub wprowadź je ręcznie";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

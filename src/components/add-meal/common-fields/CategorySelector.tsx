@@ -12,17 +12,17 @@
  * />
  */
 
-import { Button } from '@/components/ui/button';
-import type { CategorySelectorProps } from '../../../types/add-meal.types';
-import type { MealCategory } from '../../../types';
-import { CATEGORY_ICONS } from '../../../lib/constants/meal-form.constants';
+import { Button } from "@/components/ui/button";
+import type { CategorySelectorProps } from "../../../types/add-meal.types";
+import type { MealCategory } from "../../../types";
+import { CATEGORY_ICONS } from "../../../lib/constants/meal-form.constants";
 
 const CATEGORIES: Array<{ value: MealCategory; label: string }> = [
-  { value: 'breakfast', label: 'Śniadanie' },
-  { value: 'lunch', label: 'Obiad' },
-  { value: 'dinner', label: 'Kolacja' },
-  { value: 'snack', label: 'Przekąska' },
-  { value: 'other', label: 'Inne' },
+  { value: "breakfast", label: "Śniadanie" },
+  { value: "lunch", label: "Obiad" },
+  { value: "dinner", label: "Kolacja" },
+  { value: "snack", label: "Przekąska" },
+  { value: "other", label: "Inne" },
 ];
 
 export function CategorySelector({ value, onChange }: CategorySelectorProps) {
@@ -45,7 +45,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
           <Button
             key={category.value}
             type="button"
-            variant={isSelected ? 'default' : 'outline'}
+            variant={isSelected ? "default" : "outline"}
             size="sm"
             onClick={() => handleClick(category.value)}
             className="gap-2"
