@@ -52,6 +52,19 @@ This application is designed for health-conscious individuals who value their ti
   - Cost optimization through model selection
   - API key budget limits
 
+### Testing
+- **[Vitest](https://vitest.dev/)** - Unit and integration testing
+  - Fast test runner built for Vite
+  - Compatible with Jest API
+  - Code coverage reporting with c8
+- **[React Testing Library](https://testing-library.com/react)** - Component testing
+  - User-centric testing approach
+  - Integration with Vitest
+- **[Playwright](https://playwright.dev/)** - End-to-end testing
+  - Cross-browser testing (Chromium, Firefox, WebKit)
+  - Auto-wait and retry mechanisms
+  - Built-in accessibility testing with axe-core
+
 ### CI/CD & Hosting
 - **GitHub Actions** - Continuous integration and deployment
 - **DigitalOcean** - Application hosting via Docker containers
@@ -121,13 +134,16 @@ This application is designed for health-conscious individuals who value their ti
 | `npm run lint:fix` | Automatically fix linting errors |
 | `npm run format` | Format code with Prettier |
 
-### Code Quality
+### Code Quality & Testing
 
 This project uses:
 - **ESLint** for code linting with TypeScript, React, and Astro support
 - **Prettier** for code formatting
 - **Husky** for Git hooks
 - **lint-staged** for running linters on staged files before commit
+- **Vitest** for unit and integration tests with 80%+ code coverage target
+- **React Testing Library** for testing React components
+- **Playwright** for end-to-end testing across multiple browsers
 
 ## Project Scope
 

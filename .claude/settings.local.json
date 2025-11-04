@@ -20,7 +20,9 @@
       "Bash(npx supabase db push)",
       "Bash(del \"d:\\PROJEKTY\\simple-calories\\supabase\\migrations\\20250204000000_re_enable_user_trigger.sql\")",
       "Bash(del \"d:\\PROJEKTY\\simple-calories\\supabase\\migrations\\20250204000100_backfill_missing_profiles.sql\")",
-      "Bash(timeout 10 bash:*)"
+      "Bash(timeout 10 bash:*)",
+      "Bash(npx playwright install chromium)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []
