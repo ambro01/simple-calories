@@ -133,8 +133,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       // User is already created in auth.users at this point
     }
 
+    // Sign out user after registration to prevent automatic login
+    // User must explicitly sign in through the login page
+    await supabase.auth.signOut();
+
     // Return user data on success (201 Created)
-    // User is automatically logged in (cookies set by Supabase)
     // Database trigger will automatically create default calorie_goal (2000 kcal)
     return new Response(
       JSON.stringify({

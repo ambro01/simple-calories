@@ -20,6 +20,7 @@ interface SignupFormState {
   password: string;
   passwordConfirm: string;
   isLoading: boolean;
+  isSuccess: boolean;
   errors: {
     email?: string;
     password?: string;
@@ -34,6 +35,7 @@ export function SignupForm() {
     password: "",
     passwordConfirm: "",
     isLoading: false,
+    isSuccess: false,
     errors: {},
   });
 
@@ -140,9 +142,12 @@ export function SignupForm() {
         throw new Error(data.error || "Nie udało się utworzyć konta");
       }
 
-      // Redirect to dashboard on success (hard redirect to reload middleware)
-      // User is automatically logged in after signup
-      window.location.href = "/";
+      // Show success message instead of redirecting
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        isSuccess: true,
+      }));
     } catch (error) {
       setState((prev) => ({
         ...prev,
@@ -153,6 +158,31 @@ export function SignupForm() {
       }));
     }
   };
+
+  // Show success message if registration completed
+  if (state.isSuccess) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Konto utworzone!</CardTitle>
+          <CardDescription>Sprawdź swoją skrzynkę email</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Email weryfikacyjny wysłany</AlertTitle>
+            <AlertDescription>
+              Wysłaliśmy wiadomość weryfikacyjną na adres <strong>{state.email}</strong>
+            </AlertDescription>
+          </Alert>
+
+          <Button asChild className="w-full">
+            <a href="/auth/login">Przejdź do logowania</a>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -170,103 +200,95 @@ export function SignupForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={state.email}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                email: e.target.value,
-                errors: { ...prev.errors, email: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("email")}
-            placeholder="jan@example.com"
-            disabled={state.isLoading}
-            className={state.errors.email ? "border-red-500" : ""}
-            aria-invalid={!!state.errors.email}
-            aria-describedby={state.errors.email ? "email-error" : undefined}
-            autoComplete="email"
-          />
-          {state.errors.email && (
-            <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.email}
-            </p>
-          )}
-        </div>
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={state.email}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                  errors: { ...prev.errors, email: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("email")}
+              placeholder="jan@example.com"
+              disabled={state.isLoading}
+              className={state.errors.email ? "border-red-500" : ""}
+              aria-invalid={!!state.errors.email}
+              aria-describedby={state.errors.email ? "email-error" : undefined}
+              autoComplete="email"
+            />
+            {state.errors.email && (
+              <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.email}
+              </p>
+            )}
+          </div>
 
-        {/* Password */}
-        <div className="space-y-2">
-          <Label htmlFor="password">Hasło</Label>
-          <PasswordInput
-            id="password"
-            value={state.password}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                password: e.target.value,
-                errors: { ...prev.errors, password: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("password")}
-            placeholder="Minimum 8 znaków"
-            error={state.errors.password}
-            disabled={state.isLoading}
-            autoComplete="new-password"
-          />
-          {state.errors.password && (
-            <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.password}
-            </p>
-          )}
-        </div>
+          {/* Password */}
+          <div className="space-y-2">
+            <Label htmlFor="password">Hasło</Label>
+            <PasswordInput
+              id="password"
+              value={state.password}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                  errors: { ...prev.errors, password: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("password")}
+              placeholder="Minimum 8 znaków"
+              error={state.errors.password}
+              disabled={state.isLoading}
+              autoComplete="new-password"
+            />
+            {state.errors.password && (
+              <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.password}
+              </p>
+            )}
+          </div>
 
-        {/* Password Confirm */}
-        <div className="space-y-2">
-          <Label htmlFor="passwordConfirm">Powtórz hasło</Label>
-          <PasswordInput
-            id="passwordConfirm"
-            value={state.passwordConfirm}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                passwordConfirm: e.target.value,
-                errors: { ...prev.errors, passwordConfirm: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("passwordConfirm")}
-            placeholder="Powtórz hasło"
-            error={state.errors.passwordConfirm}
-            disabled={state.isLoading}
-            autoComplete="new-password"
-          />
-          {state.errors.passwordConfirm && (
-            <p id="passwordConfirm-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.passwordConfirm}
-            </p>
-          )}
-        </div>
+          {/* Password Confirm */}
+          <div className="space-y-2">
+            <Label htmlFor="passwordConfirm">Powtórz hasło</Label>
+            <PasswordInput
+              id="passwordConfirm"
+              value={state.passwordConfirm}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  passwordConfirm: e.target.value,
+                  errors: { ...prev.errors, passwordConfirm: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("passwordConfirm")}
+              placeholder="Powtórz hasło"
+              error={state.errors.passwordConfirm}
+              disabled={state.isLoading}
+              autoComplete="new-password"
+            />
+            {state.errors.passwordConfirm && (
+              <p id="passwordConfirm-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.passwordConfirm}
+              </p>
+            )}
+          </div>
 
-        {/* Submit button */}
-        <Button
-          type="submit"
-          disabled={state.isLoading}
-          className="w-full"
-        >
-          {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {state.isLoading ? "Tworzenie konta..." : "Zarejestruj się"}
-        </Button>
+          {/* Submit button */}
+          <Button type="submit" disabled={state.isLoading} className="w-full">
+            {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {state.isLoading ? "Tworzenie konta..." : "Zarejestruj się"}
+          </Button>
         </form>
 
-        <AuthFormFooter
-          text="Masz już konto?"
-          linkText="Zaloguj się"
-          linkHref="/auth/login"
-        />
+        <AuthFormFooter text="Masz już konto?" linkText="Zaloguj się" linkHref="/auth/login" />
       </CardContent>
     </Card>
   );
