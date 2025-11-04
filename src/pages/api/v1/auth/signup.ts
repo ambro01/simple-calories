@@ -133,9 +133,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       // User is already created in auth.users at this point
     }
 
-    // Sign out user after registration to prevent automatic login
-    // User must explicitly sign in through the login page
-    await supabase.auth.signOut();
+    // Handle email confirmation based on environment
+    // Local dev (SKIP_EMAIL_CONFIRMATION=true): signUp creates session, so sign out
+    // Production (enable_confirmations=true in Supabase): signUp doesn't create session
+    if (import.meta.env.SKIP_EMAIL_CONFIRMATION === "true") {
+      await supabase.auth.signOut();
+    }
 
     // Return user data on success (201 Created)
     // Database trigger will automatically create default calorie_goal (2000 kcal)
