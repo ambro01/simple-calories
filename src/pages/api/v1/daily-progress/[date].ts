@@ -50,7 +50,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { GetDailyProgressDateSchema } from "../../../../lib/validation/daily-progress.schemas";
 import { DailyProgressService } from "../../../../lib/services/daily-progress.service";
 import { logError, formatErrorForLogging } from "../../../../lib/helpers/error-logger";
@@ -126,22 +126,12 @@ export const GET: APIRoute = async ({ params, locals }) => {
       throw error; // Re-throw if not a Zod error
     }
 
-    // Step 3: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
-
-    // TODO: Replace with JWT authentication in production
-    // const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   const errorResponse: ErrorResponseDTO = {
-    //     error: 'UNAUTHORIZED',
-    //     message: 'Authentication required',
-    //   };
-    //   return new Response(JSON.stringify(errorResponse), {
-    //     status: 401,
-    //     headers: { 'Content-Type': 'application/json' },
-    //   });
-    // }
-    // const userId = user.id;
+    // Step 3: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 4: Fetch daily progress for the specific date
     // Service handles "zero progress" case automatically
@@ -164,7 +154,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       const errorLogParams = formatErrorForLogging(
         error,
         "daily_progress_date_fetch_failed",
-        DEFAULT_USER_ID, // Use DEFAULT_USER_ID for MVP
+        locals.user?.id,
         {
           endpoint: "GET /api/v1/daily-progress/:date",
           date: params.date,

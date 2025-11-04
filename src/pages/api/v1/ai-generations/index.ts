@@ -66,7 +66,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { CreateAIGenerationSchema } from "../../../../lib/validation/ai-generation.schemas";
 import { AIGenerationService } from "../../../../lib/services/ai-generation.service";
 import { aiGenerationRateLimiter } from "../../../../lib/services/rate-limit.service";
@@ -85,8 +85,12 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
     const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
 
-    // Step 2: Get user ID
-    const userId = DEFAULT_USER_ID;
+    // Step 2: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 3: Fetch data from service
     const aiGenerationService = new AIGenerationService(locals.supabase);
@@ -158,18 +162,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw error; // Re-throw if not a Zod error
     }
 
-    // Step 2: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
-
-    // TODO: Replace with JWT authentication in production
-    // const session = await getSession(request);
-    // if (!session) {
-    //   return new Response(JSON.stringify({ error: "UNAUTHORIZED" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
-    // const userId = session.user.id;
+    // Step 2: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 3: Check rate limit
     const rateLimitResult = aiGenerationRateLimiter.checkRateLimit(userId);

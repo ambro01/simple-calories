@@ -14,7 +14,12 @@
       "Bash(npx prettier:*)",
       "Bash(npm run dev:*)",
       "Bash(findstr:*)",
-      "Bash(timeout 15 bash:*)"
+      "Bash(timeout 15 bash:*)",
+      "Bash(npm install:*)",
+      "Bash(if exist \"node_modules\\.vite\" rmdir /s /q \"node_modules\\.vite\")",
+      "Bash(npx supabase db push)",
+      "Bash(del \"d:\\PROJEKTY\\simple-calories\\supabase\\migrations\\20250204000000_re_enable_user_trigger.sql\")",
+      "Bash(del \"d:\\PROJEKTY\\simple-calories\\supabase\\migrations\\20250204000100_backfill_missing_profiles.sql\")"
     ],
     "deny": [],
     "ask": []

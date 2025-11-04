@@ -26,7 +26,7 @@
  */
 
 import type { APIRoute } from "astro";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { AIGenerationService } from "../../../../lib/services/ai-generation.service";
 import type { ErrorResponseDTO } from "../../../../types";
 
@@ -50,8 +50,12 @@ export const GET: APIRoute = async ({ params, locals }) => {
       });
     }
 
-    // Step 2: Get user ID
-    const userId = DEFAULT_USER_ID;
+    // Step 2: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 3: Fetch from service
     const aiGenerationService = new AIGenerationService(locals.supabase);

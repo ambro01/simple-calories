@@ -48,7 +48,6 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
 import { GetDailyProgressQuerySchema } from "../../../../lib/validation/daily-progress.schemas";
 import { DailyProgressService } from "../../../../lib/services/daily-progress.service";
 import { logError, formatErrorForLogging } from "../../../../lib/helpers/error-logger";
@@ -114,22 +113,19 @@ export const GET: APIRoute = async ({ url, locals }) => {
       throw error; // Re-throw if not a Zod error
     }
 
-    // Step 3: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
+    // Step 3: Get user ID from authenticated session (set by middleware)
+    if (!locals.user) {
+      const errorResponse: ErrorResponseDTO = {
+        error: "UNAUTHORIZED",
+        message: "Authentication required",
+      };
+      return new Response(JSON.stringify(errorResponse), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    // TODO: Replace with JWT authentication in production
-    // const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   const errorResponse: ErrorResponseDTO = {
-    //     error: 'UNAUTHORIZED',
-    //     message: 'Authentication required',
-    //   };
-    //   return new Response(JSON.stringify(errorResponse), {
-    //     status: 401,
-    //     headers: { 'Content-Type': 'application/json' },
-    //   });
-    // }
-    // const userId = user.id;
+    const userId = locals.user.id;
 
     // Step 4: Fetch daily progress from service
     const dailyProgressService = new DailyProgressService(locals.supabase);
@@ -163,7 +159,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
       const errorLogParams = formatErrorForLogging(
         error,
         "daily_progress_list_fetch_failed",
-        DEFAULT_USER_ID, // Use DEFAULT_USER_ID for MVP
+        locals.user?.id, // Use authenticated user ID if available
         {
           endpoint: "GET /api/v1/daily-progress",
           url: url.toString(),

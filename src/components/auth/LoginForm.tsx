@@ -99,32 +99,24 @@ export function LoginForm() {
     setState((prev) => ({ ...prev, isLoading: true, errors: {} }));
 
     try {
-      // TODO: Wywołanie API /api/v1/auth/login
-      // const response = await fetch("/api/v1/auth/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     email: state.email,
-      //     password: state.password,
-      //   }),
-      // });
-
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || "Nieprawidłowy email lub hasło");
-      // }
-
-      // Redirect na / (dashboard) po sukcesie
-      // window.location.href = "/";
-
-      // Tymczasowo - symulacja sukcesu
-      console.log("Login attempt:", {
-        email: state.email,
-        password: "***",
+      // Call login API endpoint
+      const response = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: state.email,
+          password: state.password,
+        }),
       });
 
-      alert("Logowanie - UI gotowe! Backend będzie zaimplementowany później.");
-      setState((prev) => ({ ...prev, isLoading: false }));
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Nieprawidłowy email lub hasło");
+      }
+
+      // Redirect to dashboard on success (hard redirect to reload middleware)
+      window.location.href = "/";
     } catch (error) {
       setState((prev) => ({
         ...prev,

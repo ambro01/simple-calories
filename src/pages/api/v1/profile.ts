@@ -60,7 +60,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
+import { requireAuth } from "../../../lib/helpers/auth";
 import { ProfileService } from "../../../lib/services/profile.service";
 import { updateProfileSchema } from "../../../lib/validators/profile.validators";
 import { logError } from "../../../lib/helpers/error-logger";
@@ -80,21 +80,12 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    // const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: 'Unauthorized',
-    //       message: 'Authentication required'
-    //     } as ErrorResponseDTO),
-    //     { status: 401, headers: { 'Content-Type': 'application/json' } }
-    //   );
-    // }
-    // const userId = user.id;
-
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Fetch profile
     const profileService = new ProfileService(locals.supabase);
@@ -135,9 +126,8 @@ export const GET: APIRoute = async ({ locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error fetching profile:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "profile_fetch_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
@@ -173,21 +163,12 @@ export const GET: APIRoute = async ({ locals }) => {
  */
 export const PATCH: APIRoute = async ({ request, locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    // const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: 'Unauthorized',
-    //       message: 'Authentication required'
-    //     } as ErrorResponseDTO),
-    //     { status: 401, headers: { 'Content-Type': 'application/json' } }
-    //   );
-    // }
-    // const userId = user.id;
-
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Parse request body
     let body;
@@ -245,9 +226,8 @@ export const PATCH: APIRoute = async ({ request, locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error updating profile:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "profile_update_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,

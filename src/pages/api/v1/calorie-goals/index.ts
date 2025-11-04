@@ -57,7 +57,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
 import { createCalorieGoalSchema } from "../../../../lib/validators/calorie-goal.validators";
 import { logError } from "../../../../lib/helpers/error-logger";
@@ -85,11 +85,12 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ url, locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    // const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    // if (authError || !user) { return 401 }
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Parse query parameters with validation
     const limitParam = url.searchParams.get("limit");
@@ -126,9 +127,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error listing calorie goals:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "calorie_goals_list_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
@@ -169,9 +169,12 @@ export const GET: APIRoute = async ({ url, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Parse request body
     let body;
@@ -243,9 +246,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error creating calorie goal:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "calorie_goal_create_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,

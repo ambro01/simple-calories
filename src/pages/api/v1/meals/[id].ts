@@ -16,7 +16,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { UpdateMealSchema } from "../../../../lib/validation/meal.schemas";
 import { MealsService } from "../../../../lib/services/meals.service";
 import type { ErrorResponseDTO, MealResponseDTO, UpdateMealResponseDTO } from "../../../../types";
@@ -94,18 +94,12 @@ export const GET: APIRoute = async ({ params, locals }) => {
       });
     }
 
-    // Step 3: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
-
-    // TODO: Replace with JWT authentication in production
-    // const session = await getSession(request);
-    // if (!session) {
-    //   return new Response(JSON.stringify({ error: "UNAUTHORIZED" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
-    // const userId = session.user.id;
+    // Step 3: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 4: Fetch meal from service
     const mealsService = new MealsService(locals.supabase);
@@ -251,8 +245,12 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
       throw error; // Re-throw if not a Zod error
     }
 
-    // Step 5: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
+    // Step 5: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 6: Fetch current meal
     const mealsService = new MealsService(locals.supabase);
@@ -357,8 +355,12 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       });
     }
 
-    // Step 3: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
+    // Step 3: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 4: Delete meal via service
     const mealsService = new MealsService(locals.supabase);

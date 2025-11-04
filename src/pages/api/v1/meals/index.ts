@@ -12,7 +12,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { GetMealsQuerySchema, CreateMealSchema } from "../../../../lib/validation/meal.schemas";
 import { MealsService } from "../../../../lib/services/meals.service";
 import type { ErrorResponseDTO, MealsListResponseDTO, CreateMealResponseDTO } from "../../../../types";
@@ -60,18 +60,12 @@ export const GET: APIRoute = async ({ url, locals }) => {
       throw error; // Re-throw if not a Zod error
     }
 
-    // Step 3: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
-
-    // TODO: Replace with JWT authentication in production
-    // const session = await getSession(request);
-    // if (!session) {
-    //   return new Response(JSON.stringify({ error: "UNAUTHORIZED" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
-    // const userId = session.user.id;
+    // Step 3: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 4: Fetch meals and count from service
     const mealsService = new MealsService(locals.supabase);
@@ -258,18 +252,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw error; // Re-throw if not a Zod error
     }
 
-    // Step 3: Get user ID (using DEFAULT_USER_ID for MVP)
-    const userId = DEFAULT_USER_ID;
-
-    // TODO: Replace with JWT authentication in production
-    // const session = await getSession(request);
-    // if (!session) {
-    //   return new Response(JSON.stringify({ error: "UNAUTHORIZED" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
-    // const userId = session.user.id;
+    // Step 3: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 4: Create meal via service
     // Service will:

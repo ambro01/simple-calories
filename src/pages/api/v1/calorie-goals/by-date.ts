@@ -43,7 +43,7 @@
  */
 
 import type { APIRoute } from "astro";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
 import { dateQueryParamSchema } from "../../../../lib/validators/calorie-goal.validators";
 import { logError } from "../../../../lib/helpers/error-logger";
@@ -70,11 +70,12 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ url, locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    // const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    // if (authError || !user) { return 401 }
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Parse and validate date parameter
     const dateParam = url.searchParams.get("date");
@@ -132,9 +133,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error fetching calorie goal by date:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "calorie_goal_by_date_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,

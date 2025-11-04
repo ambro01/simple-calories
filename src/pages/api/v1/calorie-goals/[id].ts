@@ -51,7 +51,7 @@
 
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { requireAuth } from "../../../../lib/helpers/auth";
 import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
 import { updateCalorieGoalSchema, uuidParamSchema } from "../../../../lib/validators/calorie-goal.validators";
 import { logError } from "../../../../lib/helpers/error-logger";
@@ -82,9 +82,12 @@ export const prerender = false;
  */
 export const PATCH: APIRoute = async ({ params, request, locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Validate UUID parameter
     const idValidation = uuidParamSchema.safeParse(params.id);
@@ -167,9 +170,8 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error updating calorie goal:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "calorie_goal_update_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
@@ -214,9 +216,12 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
-    // Step 1: Get user ID
-    // TODO: Replace with actual JWT authentication
-    const userId = DEFAULT_USER_ID;
+    // Step 1: Get authenticated user ID from middleware
+    const userIdOrResponse = requireAuth(locals);
+    if (userIdOrResponse instanceof Response) {
+      return userIdOrResponse; // Return 401 if not authenticated
+    }
+    const userId = userIdOrResponse;
 
     // Step 2: Validate UUID parameter
     const idValidation = uuidParamSchema.safeParse(params.id);
@@ -256,9 +261,8 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // Unexpected error - log to database and return 500
     console.error("Error deleting calorie goal:", error);
 
-    const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
-      user_id: userId,
+      user_id: locals.user?.id,
       error_type: "calorie_goal_delete_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
