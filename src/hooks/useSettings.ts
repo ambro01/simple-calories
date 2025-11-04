@@ -6,14 +6,15 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { supabaseClient } from "@/db/supabase.client";
-import type { ProfileResponseDTO, CalorieGoalResponseDTO, ErrorResponseDTO } from "@/types";
+import type { ProfileResponseDTO, CalorieGoalResponseDTO } from "@/types";
 import type { SettingsViewModel } from "@/types/settings.types";
 
 interface UseSettingsReturn {
   state: SettingsViewModel;
   openEditGoalDialog: () => void;
   closeEditGoalDialog: () => void;
+  openChangePasswordDialog: () => void;
+  closeChangePasswordDialog: () => void;
   openLogoutDialog: () => void;
   closeLogoutDialog: () => void;
   logout: () => Promise<void>;
@@ -79,20 +80,29 @@ async function fetchCurrentGoal(): Promise<CalorieGoalResponseDTO | null> {
 }
 
 /**
- * Pobiera email użytkownika z Supabase Auth
+ * Pobiera email użytkownika z API
  */
 async function fetchUserEmail(): Promise<string | null> {
-  const {
-    data: { user },
-    error,
-  } = await supabaseClient.auth.getUser();
+  try {
+    const response = await fetch("/api/v1/auth/me", {
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+    });
 
-  if (error) {
+    if (!response.ok) {
+      console.error("Error fetching user email:", response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.email || null;
+  } catch (error) {
     console.error("Error fetching user email:", error);
     return null;
   }
-
-  return user?.email || null;
 }
 
 export function useSettings(): UseSettingsReturn {
@@ -103,6 +113,7 @@ export function useSettings(): UseSettingsReturn {
     isLoading: true,
     error: null,
     showEditGoalDialog: false,
+    showChangePasswordDialog: false,
     showLogoutDialog: false,
   });
 
@@ -175,6 +186,20 @@ export function useSettings(): UseSettingsReturn {
   }, []);
 
   /**
+   * Otwiera dialog zmiany hasła
+   */
+  const openChangePasswordDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, showChangePasswordDialog: true }));
+  }, []);
+
+  /**
+   * Zamyka dialog zmiany hasła
+   */
+  const closeChangePasswordDialog = useCallback(() => {
+    setState((prev) => ({ ...prev, showChangePasswordDialog: false }));
+  }, []);
+
+  /**
    * Otwiera dialog potwierdzenia wylogowania
    */
   const openLogoutDialog = useCallback(() => {
@@ -193,21 +218,25 @@ export function useSettings(): UseSettingsReturn {
    */
   const logout = useCallback(async () => {
     try {
-      // Wyloguj użytkownika z Supabase Auth
-      const { error } = await supabaseClient.auth.signOut();
+      // Wyloguj użytkownika przez API endpoint
+      const response = await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        throw new Error("Logout failed");
       }
 
-      // Przekieruj na stronę główną lub logowania
-      // W MVP może to być po prostu "/" lub dedykowana strona logowania
-      window.location.href = "/";
+      // Przekieruj na stronę logowania
+      window.location.href = "/auth/login";
     } catch (error) {
       console.error("Logout error:", error);
       // Nawet jeśli wystąpił błąd, przekieruj użytkownika
-      // (może to być problem z połączeniem, ale lokalnie sesja jest już wyczyszczona)
-      window.location.href = "/";
+      // (może to być problem z połączeniem, ale lokalnie sesja powinna być wyczyszczona)
+      window.location.href = "/auth/login";
     }
   }, []);
 
@@ -222,6 +251,8 @@ export function useSettings(): UseSettingsReturn {
     state,
     openEditGoalDialog,
     closeEditGoalDialog,
+    openChangePasswordDialog,
+    closeChangePasswordDialog,
     openLogoutDialog,
     closeLogoutDialog,
     logout,

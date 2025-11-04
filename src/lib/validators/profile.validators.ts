@@ -39,3 +39,32 @@ export const updateProfileSchema = z
  * Can be used for type checking without runtime validation
  */
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+/**
+ * Schema for PATCH /api/v1/profile/password request body
+ *
+ * Validates password change requests with current and new password.
+ * Both passwords must meet security requirements.
+ *
+ * @example Valid request
+ * {
+ *   "currentPassword": "OldPass123!",
+ *   "newPassword": "NewSecurePass456!"
+ * }
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(1, "Aktualne hasło jest wymagane"),
+    newPassword: z
+      .string()
+      .min(8, "Nowe hasło musi mieć co najmniej 8 znaków")
+      .max(100, "Nowe hasło nie może przekraczać 100 znaków"),
+  })
+  .strict();
+
+/**
+ * Inferred TypeScript type from changePasswordSchema
+ */
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

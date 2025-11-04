@@ -5,7 +5,8 @@
  * Handles operations related to the user's profile record which serves
  * as a bridge between Supabase Auth and application logic.
  *
- * The profile is automatically created on user signup via the handle_new_user() trigger.
+ * The profile is created in the application layer during signup (POST /api/v1/auth/signup).
+ * A database trigger (on_profile_created) automatically creates a default calorie goal (2000 kcal).
  *
  * @module ProfileService
  */
@@ -63,5 +64,43 @@ export class ProfileService {
     if (error) throw error;
 
     return data;
+  }
+
+  /**
+   * Changes the password for the authenticated user
+   *
+   * Uses Supabase Auth API to update the user's password.
+   * Requires the current password for verification.
+   *
+   * @param currentPassword - User's current password
+   * @param newPassword - New password to set
+   * @throws Error if current password is incorrect or update fails
+   */
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    // First, verify current password by attempting to sign in
+    const { data: userData, error: authError } = await this.supabase.auth.getUser();
+
+    if (authError || !userData?.user?.email) {
+      throw new Error("Nie można pobrać danych użytkownika");
+    }
+
+    // Verify current password
+    const { error: signInError } = await this.supabase.auth.signInWithPassword({
+      email: userData.user.email,
+      password: currentPassword,
+    });
+
+    if (signInError) {
+      throw new Error("Aktualne hasło jest nieprawidłowe");
+    }
+
+    // Update password
+    const { error: updateError } = await this.supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) {
+      throw new Error(`Nie udało się zmienić hasła: ${updateError.message}`);
+    }
   }
 }

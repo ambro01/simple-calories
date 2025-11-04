@@ -6,11 +6,12 @@
  * Obsługuje stany: loading, error, success.
  */
 
-import { Target, Mail, LogOut, Loader2, AlertCircle, Moon, Sun } from "lucide-react";
+import { Target, LogOut, Loader2, AlertCircle, Moon, Sun, KeyRound } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/hooks/useTheme";
 import { SettingsCard } from "./SettingsCard";
 import { EditCalorieGoalDialog } from "./EditCalorieGoalDialog";
+import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { LogoutAlertDialog } from "./LogoutAlertDialog";
 import { Separator } from "@/components/ui/separator";
 
@@ -24,6 +25,15 @@ export function Settings() {
    */
   const handleGoalSuccess = async () => {
     await settings.refreshData();
+  };
+
+  /**
+   * Obsługa sukcesu zmiany hasła
+   * Zamyka dialog (nie trzeba odświeżać danych)
+   */
+  const handlePasswordChangeSuccess = () => {
+    // Pokazujemy sukces użytkownikowi (opcjonalnie można dodać toast)
+    console.log("Password changed successfully");
   };
 
   // Loading initial state
@@ -65,18 +75,26 @@ export function Settings() {
       {/* Header */}
       <div className="bg-background border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto p-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Ustawienia</h1>
-            <a
-              href="/"
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
-              aria-label="Powrót do dashboard"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="hidden sm:inline">Powrót</span>
-            </a>
+          <div className="flex justify-between items-center gap-4">
+            {/* Left side: Title */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-bold">Ustawienia</h1>
+            </div>
+
+            {/* Right side: Email and Back button */}
+            <div className="flex items-center gap-4">
+              <p className="text-base font-medium text-foreground truncate max-w-[200px] sm:max-w-none">{userEmailDisplay}</p>
+              <a
+                href="/"
+                className="flex-shrink-0 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                aria-label="Powrót do dashboard"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="hidden sm:inline">Powrót</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -101,20 +119,20 @@ export function Settings() {
           <section>
             <h2 className="text-lg font-semibold mb-3">Konto</h2>
             <div className="space-y-3">
-              {/* Email card (non-clickable, informational) */}
-              <SettingsCard
-                title="Email"
-                subtitle={userEmailDisplay}
-                icon={<Mail className="h-5 w-5" />}
-                showChevron={false}
-              />
-
               {/* Theme card */}
               <SettingsCard
                 title="Motyw aplikacji"
                 subtitle={theme === "light" ? "Jasny" : "Ciemny"}
                 icon={theme === "light" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 onClick={toggleTheme}
+              />
+
+              {/* Change Password card */}
+              <SettingsCard
+                title="Zmiana hasła"
+                subtitle="Zmień swoje hasło"
+                icon={<KeyRound className="h-5 w-5" />}
+                onClick={settings.openChangePasswordDialog}
               />
 
               {/* Logout card */}
@@ -136,6 +154,13 @@ export function Settings() {
         onOpenChange={settings.closeEditGoalDialog}
         currentGoal={settings.state.currentGoal}
         onSuccess={handleGoalSuccess}
+      />
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog
+        open={settings.state.showChangePasswordDialog}
+        onOpenChange={settings.closeChangePasswordDialog}
+        onSuccess={handlePasswordChangeSuccess}
       />
 
       {/* Logout Confirmation Dialog */}

@@ -1,303 +1,185 @@
 /**
  * ChangePasswordDialog Component
  *
- * Dialog zmiany hasła w panelu ustawień.
- * Wymaga podania aktualnego hasła oraz nowego hasła z potwierdzeniem.
+ * Dialog do zmiany hasła użytkownika.
+ * Pozwala na wprowadzenie aktualnego hasła oraz nowego hasła.
+ * Zawiera walidację i obsługę błędów z API.
  */
 
-import { useState } from "react";
-import { Loader2, AlertCircle, Key } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Info, Loader2, Eye, EyeOff } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { PasswordInput } from "@/components/auth/PasswordInput";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import type { ChangePasswordDialogProps } from "@/types/settings.types";
+import { useChangePasswordForm } from "@/hooks/useChangePasswordForm";
 
-interface ChangePasswordDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePasswordDialogProps) {
+  const form = useChangePasswordForm();
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
-interface ChangePasswordFormState {
-  currentPassword: string;
-  newPassword: string;
-  newPasswordConfirm: string;
-  isLoading: boolean;
-  errors: {
-    currentPassword?: string;
-    newPassword?: string;
-    newPasswordConfirm?: string;
-    general?: string;
-  };
-}
-
-export function ChangePasswordDialog({ isOpen, onClose }: ChangePasswordDialogProps) {
-  const [state, setState] = useState<ChangePasswordFormState>({
-    currentPassword: "",
-    newPassword: "",
-    newPasswordConfirm: "",
-    isLoading: false,
-    errors: {},
-  });
-
-  const resetForm = () => {
-    setState({
-      currentPassword: "",
-      newPassword: "",
-      newPasswordConfirm: "",
-      isLoading: false,
-      errors: {},
-    });
-  };
-
-  const handleClose = () => {
-    resetForm();
-    onClose();
-  };
-
-  const validateCurrentPassword = (password: string): string | undefined => {
-    if (!password) {
-      return "Aktualne hasło jest wymagane";
+  /**
+   * Reset formularza przy otwieraniu dialogu
+   */
+  useEffect(() => {
+    if (open) {
+      form.reset();
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
     }
-    return undefined;
-  };
+  }, [open]);
 
-  const validateNewPassword = (password: string): string | undefined => {
-    if (!password) {
-      return "Nowe hasło jest wymagane";
-    }
-    if (password.length < 8) {
-      return "Nowe hasło musi mieć minimum 8 znaków";
-    }
-    if (password.length > 72) {
-      return "Nowe hasło może mieć maksymalnie 72 znaki";
-    }
-    if (password === state.currentPassword) {
-      return "Nowe hasło musi być inne niż aktualne";
-    }
-    return undefined;
-  };
-
-  const validateNewPasswordConfirm = (passwordConfirm: string): string | undefined => {
-    if (!passwordConfirm) {
-      return "Potwierdzenie hasła jest wymagane";
-    }
-    if (passwordConfirm !== state.newPassword) {
-      return "Hasła muszą być identyczne";
-    }
-    return undefined;
-  };
-
-  const handleBlur = (field: "currentPassword" | "newPassword" | "newPasswordConfirm") => {
-    let error: string | undefined;
-
-    if (field === "currentPassword") {
-      error = validateCurrentPassword(state.currentPassword);
-    } else if (field === "newPassword") {
-      error = validateNewPassword(state.newPassword);
-    } else if (field === "newPasswordConfirm") {
-      error = validateNewPasswordConfirm(state.newPasswordConfirm);
-    }
-
-    setState((prev) => ({
-      ...prev,
-      errors: {
-        ...prev.errors,
-        [field]: error,
-      },
-    }));
-  };
-
+  /**
+   * Obsługa submit formularza
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate all fields
-    const currentPasswordError = validateCurrentPassword(state.currentPassword);
-    const newPasswordError = validateNewPassword(state.newPassword);
-    const newPasswordConfirmError = validateNewPasswordConfirm(state.newPasswordConfirm);
-
-    if (currentPasswordError || newPasswordError || newPasswordConfirmError) {
-      setState((prev) => ({
-        ...prev,
-        errors: {
-          currentPassword: currentPasswordError,
-          newPassword: newPasswordError,
-          newPasswordConfirm: newPasswordConfirmError,
-        },
-      }));
-
-      // Focus first error field
-      if (currentPasswordError) {
-        document.getElementById("currentPassword")?.focus();
-      } else if (newPasswordError) {
-        document.getElementById("newPassword")?.focus();
-      } else if (newPasswordConfirmError) {
-        document.getElementById("newPasswordConfirm")?.focus();
-      }
-
-      return;
-    }
-
-    setState((prev) => ({ ...prev, isLoading: true, errors: {} }));
-
     try {
-      // TODO: Wywołanie API /api/v1/auth/change-password
-      // const response = await fetch("/api/v1/auth/change-password", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     currentPassword: state.currentPassword,
-      //     newPassword: state.newPassword,
-      //   }),
-      // });
+      await form.submitPasswordChange();
 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   if (errorData.message?.includes("nieprawidłowe")) {
-      //     throw new Error("Aktualne hasło jest nieprawidłowe");
-      //   }
-      //   throw new Error(errorData.message || "Nie udało się zmienić hasła");
-      // }
-
-      // Sukces - pokazujemy toast i zamykamy dialog
-      // toast.success("Hasło zostało zmienione");
-      // handleClose();
-
-      // Tymczasowo - symulacja sukcesu
-      console.log("Change password attempt");
-      alert("Zmiana hasła - UI gotowe! Backend będzie zaimplementowany później.");
-      setState((prev) => ({ ...prev, isLoading: false }));
-      handleClose();
+      // Sukces - wywołaj callback i zamknij dialog
+      onSuccess();
+      onOpenChange(false);
     } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        errors: {
-          general: error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd",
-        },
-      }));
+      // Błędy są obsługiwane w hooku (form.state.validationError lub form.state.apiError)
+      console.error("Failed to change password:", error);
+    }
+  };
+
+  /**
+   * Obsługa zamknięcia dialogu
+   */
+  const handleClose = (isOpen: boolean) => {
+    if (!isOpen && !form.state.isSaving) {
+      // Zamknięcie tylko jeśli nie trwa zapisywanie
+      onOpenChange(false);
+    }
+  };
+
+  /**
+   * Obsługa klawisza Enter w polu input
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !form.state.isSaving) {
+      handleSubmit(e);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" />
-            Zmień hasło
-          </DialogTitle>
+          <DialogTitle>Zmiana hasła</DialogTitle>
           <DialogDescription>
-            Wprowadź aktualne hasło oraz nowe hasło, aby je zmienić.
+            Wprowadź aktualne hasło oraz nowe hasło, które chcesz ustawić.
           </DialogDescription>
         </DialogHeader>
 
-        {state.errors.general && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Błąd</AlertTitle>
-            <AlertDescription>{state.errors.general}</AlertDescription>
+        <form onSubmit={handleSubmit}>
+          {/* Info Alert */}
+          <Alert className="mb-4 border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-100">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-sm">
+              Nowe hasło musi mieć co najmniej 8 znaków.
+            </AlertDescription>
           </Alert>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Current Password */}
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Aktualne hasło</Label>
-            <PasswordInput
-              id="currentPassword"
-              value={state.currentPassword}
-              onChange={(e) =>
-                setState((prev) => ({
-                  ...prev,
-                  currentPassword: e.target.value,
-                  errors: { ...prev.errors, currentPassword: undefined },
-                }))
-              }
-              onBlur={() => handleBlur("currentPassword")}
-              placeholder="Wprowadź aktualne hasło"
-              error={state.errors.currentPassword}
-              disabled={state.isLoading}
-              autoComplete="current-password"
-            />
-            {state.errors.currentPassword && (
-              <p className="text-sm text-red-500 mt-1" role="alert">
-                {state.errors.currentPassword}
+          <div className="space-y-4">
+            {/* Current Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="current_password">
+                Aktualne hasło <span className="text-destructive">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="current_password"
+                  type={showCurrentPassword ? "text" : "password"}
+                  placeholder="Wprowadź aktualne hasło"
+                  value={form.state.currentPassword}
+                  onChange={(e) => form.updateCurrentPassword(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={form.state.isSaving}
+                  className={form.state.validationError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                  aria-invalid={!!form.state.validationError}
+                  aria-describedby={form.state.validationError ? "password-error" : undefined}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  tabIndex={-1}
+                  aria-label={showCurrentPassword ? "Ukryj hasło" : "Pokaż hasło"}
+                >
+                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* New Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="new_password">
+                Nowe hasło <span className="text-destructive">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="new_password"
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="Wprowadź nowe hasło"
+                  value={form.state.newPassword}
+                  onChange={(e) => form.updateNewPassword(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={form.state.isSaving}
+                  className={form.state.validationError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                  aria-invalid={!!form.state.validationError}
+                  aria-describedby={form.state.validationError ? "password-error" : undefined}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  tabIndex={-1}
+                  aria-label={showNewPassword ? "Ukryj hasło" : "Pokaż hasło"}
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Validation Error */}
+            {form.state.validationError && (
+              <p id="password-error" className="text-sm text-destructive" role="alert">
+                {form.state.validationError}
               </p>
             )}
           </div>
 
-          {/* New Password */}
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Nowe hasło</Label>
-            <PasswordInput
-              id="newPassword"
-              value={state.newPassword}
-              onChange={(e) =>
-                setState((prev) => ({
-                  ...prev,
-                  newPassword: e.target.value,
-                  errors: { ...prev.errors, newPassword: undefined },
-                }))
-              }
-              onBlur={() => handleBlur("newPassword")}
-              placeholder="Minimum 8 znaków"
-              error={state.errors.newPassword}
-              disabled={state.isLoading}
-              autoComplete="new-password"
-            />
-            {state.errors.newPassword && (
-              <p className="text-sm text-red-500 mt-1" role="alert">
-                {state.errors.newPassword}
-              </p>
-            )}
-          </div>
+          {/* API Error */}
+          {form.state.apiError && (
+            <Alert className="mt-4 border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive">
+              <AlertDescription>{form.state.apiError}</AlertDescription>
+            </Alert>
+          )}
 
-          {/* New Password Confirm */}
-          <div className="space-y-2">
-            <Label htmlFor="newPasswordConfirm">Powtórz nowe hasło</Label>
-            <PasswordInput
-              id="newPasswordConfirm"
-              value={state.newPasswordConfirm}
-              onChange={(e) =>
-                setState((prev) => ({
-                  ...prev,
-                  newPasswordConfirm: e.target.value,
-                  errors: { ...prev.errors, newPasswordConfirm: undefined },
-                }))
-              }
-              onBlur={() => handleBlur("newPasswordConfirm")}
-              placeholder="Powtórz nowe hasło"
-              error={state.errors.newPasswordConfirm}
-              disabled={state.isLoading}
-              autoComplete="new-password"
-            />
-            {state.errors.newPasswordConfirm && (
-              <p className="text-sm text-red-500 mt-1" role="alert">
-                {state.errors.newPasswordConfirm}
-              </p>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={state.isLoading}
-            >
+          {/* Dialog Footer with Actions */}
+          <DialogFooter className="mt-6">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={form.state.isSaving}>
               Anuluj
             </Button>
-            <Button type="submit" disabled={state.isLoading}>
-              {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {state.isLoading ? "Zapisywanie..." : "Zmień hasło"}
+            <Button type="submit" disabled={form.state.isSaving}>
+              {form.state.isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {form.state.isSaving ? "Zmieniam hasło..." : "Zmień hasło"}
             </Button>
           </DialogFooter>
         </form>

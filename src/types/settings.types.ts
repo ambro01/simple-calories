@@ -25,6 +25,7 @@ export interface SettingsViewModel {
   isLoading: boolean; // Ładowanie początkowe danych
   error: string | null; // Ogólny błąd strony
   showEditGoalDialog: boolean; // Widoczność dialogu edycji celu
+  showChangePasswordDialog: boolean; // Widoczność dialogu zmiany hasła
   showLogoutDialog: boolean; // Widoczność dialogu wylogowania
 }
 
@@ -84,4 +85,25 @@ export interface LogoutAlertDialogProps {
  */
 export interface CalorieGoalFormData {
   daily_goal: number; // Wartość celu (zwalidowana, 1-10000)
+}
+
+/**
+ * Model widoku dla dialogu zmiany hasła
+ * Zawiera stan formularza i walidacji
+ */
+export interface ChangePasswordViewModel {
+  currentPassword: string; // Aktualne hasło
+  newPassword: string; // Nowe hasło
+  isSaving: boolean; // Stan zapisywania (loading)
+  validationError: string | null; // Błąd walidacji po stronie klienta
+  apiError: string | null; // Błąd z API
+}
+
+/**
+ * Props dla komponentu ChangePasswordDialog
+ */
+export interface ChangePasswordDialogProps {
+  open: boolean; // Czy dialog jest otwarty
+  onOpenChange: (open: boolean) => void; // Handler zmiany stanu otwarcia
+  onSuccess: () => void; // Callback po udanej zmianie hasła
 }

@@ -48,7 +48,7 @@ async function fetchDailyProgress(limit: number, offset: number): Promise<DailyP
 export function useDashboard(): UseDashboardReturn {
   const [state, setState] = useState<DashboardState>({
     days: [],
-    loading: false,
+    loading: true, // Start with loading true to prevent EmptyDashboard flash
     error: null,
     hasMore: true,
     offset: 0,

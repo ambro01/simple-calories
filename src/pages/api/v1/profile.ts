@@ -5,11 +5,12 @@
  * Profile management endpoints for the authenticated user.
  * Allows retrieving and updating the user's profile.
  *
- * The profile record is automatically created on user signup via the
- * handle_new_user() trigger and serves as a bridge between Supabase Auth
- * and application logic.
+ * The profile record is created in the application layer during signup
+ * (POST /api/v1/auth/signup) to avoid cross-schema permission issues.
+ * A database trigger (on_profile_created) automatically creates a default
+ * calorie goal (2000 kcal) when the profile is inserted.
  *
- * Authentication: Uses DEFAULT_USER_ID for MVP (no JWT yet)
+ * Authentication: Requires authenticated user (JWT via middleware)
  *
  * @example GET Request
  * GET /api/v1/profile

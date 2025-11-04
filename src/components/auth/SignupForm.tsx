@@ -124,32 +124,25 @@ export function SignupForm() {
     setState((prev) => ({ ...prev, isLoading: true, errors: {} }));
 
     try {
-      // TODO: Wywołanie API /api/v1/auth/signup
-      // const response = await fetch("/api/v1/auth/signup", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     email: state.email,
-      //     password: state.password,
-      //   }),
-      // });
-
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || "Nie udało się utworzyć konta");
-      // }
-
-      // Redirect na /settings po sukcesie
-      // window.location.href = "/settings";
-
-      // Tymczasowo - symulacja sukcesu
-      console.log("Signup attempt:", {
-        email: state.email,
-        password: "***",
+      // Call signup API endpoint
+      const response = await fetch("/api/v1/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: state.email,
+          password: state.password,
+        }),
       });
 
-      alert("Rejestracja - UI gotowe! Backend będzie zaimplementowany później.");
-      setState((prev) => ({ ...prev, isLoading: false }));
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Nie udało się utworzyć konta");
+      }
+
+      // Redirect to dashboard on success (hard redirect to reload middleware)
+      // User is automatically logged in after signup
+      window.location.href = "/";
     } catch (error) {
       setState((prev) => ({
         ...prev,
