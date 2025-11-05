@@ -44,7 +44,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
     }
 
@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
     }
 
@@ -90,7 +90,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
   } catch (error) {
     // Handle unexpected errors
@@ -104,7 +104,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
   }
 };

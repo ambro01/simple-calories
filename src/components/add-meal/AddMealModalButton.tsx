@@ -7,7 +7,12 @@ export function AddMealButton() {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)} size="lg" className="shadow-md hover:shadow-lg transition-shadow">
+      <Button
+        onClick={() => setIsOpen(true)}
+        size="lg"
+        className="shadow-md hover:shadow-lg transition-shadow"
+        data-testid="add-meal-button"
+      >
         Dodaj posiłek
       </Button>
       <MealModal

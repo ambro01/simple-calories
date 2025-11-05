@@ -61,6 +61,7 @@ export function CommonFields({
           value={date}
           onChange={(e) => onDateChange(e.target.value)}
           className={isFutureDate ? "border-destructive" : ""}
+          data-testid="meal-date-input"
         />
 
         {/* Date Warning - Future (Error) */}
@@ -87,7 +88,13 @@ export function CommonFields({
         <Label htmlFor="meal-time" className="text-sm font-medium">
           Godzina
         </Label>
-        <Input id="meal-time" type="time" value={time} onChange={(e) => onTimeChange(e.target.value)} />
+        <Input
+          id="meal-time"
+          type="time"
+          value={time}
+          onChange={(e) => onTimeChange(e.target.value)}
+          data-testid="meal-time-input"
+        />
       </div>
     </div>
   );

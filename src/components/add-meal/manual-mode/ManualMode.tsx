@@ -64,7 +64,7 @@ export function ManualMode({
   if (fiberError) macroErrors.fiber = fiberError;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="manual-mode-form">
       {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="manual-description" className="text-sm font-medium">
@@ -78,6 +78,7 @@ export function ManualMode({
           maxLength={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH}
           rows={3}
           className={`resize-none ${descriptionError ? "border-destructive" : ""}`}
+          data-testid="manual-description-input"
         />
         <div className="flex items-center justify-between">
           <CharacterCounter current={description.length} max={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH} />
@@ -103,6 +104,7 @@ export function ManualMode({
             }}
             placeholder="0"
             className={caloriesError ? "border-destructive" : ""}
+            data-testid="manual-calories-input"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">kcal</span>
         </div>

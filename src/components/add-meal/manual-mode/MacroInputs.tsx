@@ -77,6 +77,7 @@ export function MacroInputs({ protein, carbs, fats, fiber, onChange, errors }: M
                 onChange={(e) => handleChange(field.key, e.target.value)}
                 placeholder="0"
                 className={hasError ? "border-destructive" : ""}
+                data-testid={`manual-${field.key}-input`}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                 {field.unit}

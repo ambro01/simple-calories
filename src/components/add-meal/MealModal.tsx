@@ -46,9 +46,9 @@ export function MealModal({ isOpen, onClose, onSuccess, mealId, initialDate }: A
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl" data-testid="meal-modal">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle data-testid="meal-modal-title">{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <MealForm onClose={onClose} onSuccess={onSuccess} mealId={mealId} initialDate={initialDate} />

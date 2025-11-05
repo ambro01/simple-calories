@@ -143,7 +143,7 @@ export function LoginForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
         {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -165,6 +165,7 @@ export function LoginForm() {
             aria-invalid={!!state.errors.email}
             aria-describedby={state.errors.email ? "email-error" : undefined}
             autoComplete="email"
+            data-testid="login-email-input"
           />
           {state.errors.email && (
             <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
@@ -199,6 +200,7 @@ export function LoginForm() {
             error={state.errors.password}
             disabled={state.isLoading}
             autoComplete="current-password"
+            data-testid="login-password-input"
           />
           {state.errors.password && (
             <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
@@ -212,6 +214,7 @@ export function LoginForm() {
           type="submit"
           disabled={state.isLoading}
           className="w-full"
+          data-testid="login-submit-button"
         >
           {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {state.isLoading ? "Logowanie..." : "Zaloguj się"}

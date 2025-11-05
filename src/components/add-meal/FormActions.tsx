@@ -30,10 +30,15 @@ export function FormActions({
 
   return (
     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-      <Button type="button" variant="ghost" onClick={onCancel} disabled={submitLoading}>
+      <Button type="button" variant="ghost" onClick={onCancel} disabled={submitLoading} data-testid="cancel-button">
         Anuluj
       </Button>
-      <Button type="button" onClick={onSubmit} disabled={submitDisabled || submitLoading}>
+      <Button
+        type="button"
+        onClick={onSubmit}
+        disabled={submitDisabled || submitLoading}
+        data-testid="submit-meal-button"
+      >
         {submitLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {buttonText}
       </Button>

@@ -577,7 +577,7 @@ Skopiuj UUID do `.env` jako `DEFAULT_USER_ID`.
 npm run dev
 ```
 
-Aplikacja będzie dostępna pod adresem: **http://localhost:4321**
+Aplikacja będzie dostępna pod adresem: **http://localhost:3000**
 
 ### Dostępne skrypty NPM
 
@@ -624,7 +624,7 @@ Kompilacja aplikacji do wersji produkcyjnej. Jeśli build przechodzi bez błęd�
 
 #### Scenariusz 1: Dashboard i nawigacja
 
-1. Otwórz `http://localhost:4321`
+1. Otwórz `http://localhost:3000`
 2. ✅ Sprawdź czy wyświetla się lista dni
 3. ✅ Sprawdź czy każdy dzień pokazuje: datę, kalorie/cel, wskaźnik koloru
 4. ✅ Kliknij na dzień → powinieneś zobaczyć listę posiłków

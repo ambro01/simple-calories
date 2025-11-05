@@ -36,7 +36,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2" data-testid="category-selector">
       {CATEGORIES.map((category) => {
         const isSelected = value === category.value;
         const icon = CATEGORY_ICONS[category.value];
@@ -49,6 +49,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
             size="sm"
             onClick={() => handleClick(category.value)}
             className="gap-2"
+            data-testid={`category-${category.value}`}
           >
             <span className="text-base">{icon}</span>
             <span>{category.label}</span>

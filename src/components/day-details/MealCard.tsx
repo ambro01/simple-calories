@@ -68,6 +68,8 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
       className={`bg-card rounded-lg shadow-sm border border-border p-3 transition-opacity ${
         isDeleting ? "opacity-50 pointer-events-none" : ""
       }`}
+      data-testid="meal-card"
+      data-meal-id={meal.id}
     >
       {/* Header: category badge + AI badge + time */}
       <div className="flex justify-between items-center mb-2">
@@ -91,17 +93,21 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
               Wygenerowane przez AI
             </span>
           )}
-          <span className="text-sm text-muted-foreground">{mealTime}</span>
+          <span className="text-sm text-muted-foreground" data-testid="meal-card-time">{mealTime}</span>
         </div>
       </div>
 
       {/* Description line */}
-      <p className="text-foreground font-medium mb-2">{meal.description}</p>
+      <p className="text-foreground font-medium mb-2" data-testid="meal-card-description">
+        {meal.description}
+      </p>
 
       {/* Calories, macros & actions line */}
       {!showDeleteConfirm ? (
         <div className="flex items-center gap-3">
-          <div className="text-lg font-bold text-foreground whitespace-nowrap">{meal.calories} kcal</div>
+          <div className="text-lg font-bold text-foreground whitespace-nowrap" data-testid="meal-card-calories">
+            {meal.calories} kcal
+          </div>
           {(meal.protein !== null || meal.carbs !== null || meal.fats !== null) && (
             <div className="flex gap-2 text-xs text-muted-foreground whitespace-nowrap">
               {meal.protein !== null && (
@@ -129,6 +135,7 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
               disabled={isDeleting}
               className="px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Edytuj posiłek"
+              data-testid="meal-card-edit-button"
             >
               Edytuj
             </button>
@@ -137,19 +144,21 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
               disabled={isDeleting}
               className="px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Usuń posiłek"
+              data-testid="meal-card-delete-button"
             >
               Usuń
             </button>
           </div>
         </div>
       ) : (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3" data-testid="delete-confirm-dialog">
           <p className="text-sm text-destructive mb-2">Czy na pewno chcesz usunąć ten posiłek?</p>
           <div className="flex gap-2">
             <button
               onClick={handleDeleteConfirm}
               className="px-3 py-1.5 text-sm font-medium text-destructive-foreground bg-destructive hover:bg-destructive/90 rounded-md transition-colors"
               aria-label="Potwierdź usunięcie"
+              data-testid="confirm-delete-button"
             >
               Usuń
             </button>
@@ -157,6 +166,7 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
               onClick={handleDeleteCancel}
               className="px-3 py-1.5 text-sm font-medium text-foreground bg-secondary border border-border hover:bg-secondary/80 rounded-md transition-colors"
               aria-label="Anuluj usunięcie"
+              data-testid="cancel-delete-button"
             >
               Anuluj
             </button>

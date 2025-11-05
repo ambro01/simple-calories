@@ -30,10 +30,15 @@ export const DEFAULT_USER_ID = import.meta.env.DEFAULT_USER_ID || "00000000-0000
 /**
  * Cookie options for Supabase Auth
  * Used by createSupabaseServerInstance for proper session management
+ *
+ * Note: secure is set to false to allow cookies on localhost (HTTP)
+ * In production with HTTPS, this should be set to true via environment variable
  */
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
-  secure: true,
+  // Allow non-secure cookies for localhost development and testing
+  // TODO: Set to true in production environment
+  secure: false,
   httpOnly: true,
   sameSite: "lax",
 };
@@ -78,11 +83,22 @@ export const createSupabaseServerInstance = (context: {
   headers: Headers;
   cookies: AstroCookies;
 }) => {
+  // Determine if we're on localhost by checking the host header
+  const host = context.headers.get("host") || "";
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
+
+  // Create dynamic cookie options based on environment
+  const dynamicCookieOptions: CookieOptionsWithName = {
+    ...cookieOptions,
+    // Only require secure on non-localhost (production)
+    secure: !isLocalhost,
+  };
+
   const supabase = createServerClient<Database>(
     supabaseUrl,
     supabaseAnonKey,
     {
-      cookieOptions,
+      cookieOptions: dynamicCookieOptions,
       cookies: {
         getAll() {
           return parseCookieHeader(context.headers.get("Cookie") ?? "");
