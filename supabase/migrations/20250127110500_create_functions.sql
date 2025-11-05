@@ -115,13 +115,15 @@ returns trigger as $$
 begin
   -- create profile for new user
   -- maintains 1:1 relationship with auth.users
-  insert into profiles (id, created_at, updated_at)
+  -- NOTE: using fully qualified table names (public.profiles) because this function
+  -- is triggered by auth.users which runs with search_path=auth
+  insert into public.profiles (id, created_at, updated_at)
   values (new.id, now(), now());
 
   -- create default calorie goal (2000 kcal from today)
   -- note: this is the only goal with effective_from = current_date
   -- all subsequent goals will have effective_from = current_date + 1
-  insert into calorie_goals (user_id, daily_goal, effective_from, created_at, updated_at)
+  insert into public.calorie_goals (user_id, daily_goal, effective_from, created_at, updated_at)
   values (new.id, 2000, current_date, now(), now());
 
   return new;

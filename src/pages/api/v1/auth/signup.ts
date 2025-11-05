@@ -27,15 +27,8 @@ export const prerender = false;
 
 // Validation schema for signup request
 const signupSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email jest wymagany")
-    .email("Nieprawidłowy format email")
-    .max(255),
-  password: z
-    .string()
-    .min(8, "Hasło musi mieć minimum 8 znaków")
-    .max(72, "Hasło może mieć maksymalnie 72 znaki"), // bcrypt limit
+  email: z.string().min(1, "Email jest wymagany").email("Nieprawidłowy format email").max(255),
+  password: z.string().min(8, "Hasło musi mieć minimum 8 znaków").max(72, "Hasło może mieć maksymalnie 72 znaki"), // bcrypt limit
 });
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -54,7 +47,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
     }
 
@@ -84,7 +77,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             headers: {
               "Content-Type": "application/json",
             },
-          },
+          }
         );
       }
 
@@ -98,7 +91,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
     }
 
@@ -113,25 +106,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
     }
 
-    // Create profile for new user in application layer
-    // (avoiding cross-schema permission issues with triggers)
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert({
-        id: data.user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-    if (profileError) {
-      console.error("Error creating profile:", profileError);
-      // Log error but don't fail the signup - profile can be created later
-      // User is already created in auth.users at this point
-    }
+    // Note: profile and default calorie_goal are created automatically by the
+    // handle_new_user() database trigger. No manual creation needed here.
 
     // Handle email confirmation based on environment
     // Local dev (SKIP_EMAIL_CONFIRMATION=true): signUp creates session, so sign out
@@ -141,7 +121,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // Return user data on success (201 Created)
-    // Database trigger will automatically create default calorie_goal (2000 kcal)
+    // Database trigger automatically created profile and default calorie_goal (2000 kcal)
     return new Response(
       JSON.stringify({
         user: {
@@ -154,7 +134,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
   } catch (error) {
     // Handle unexpected errors
@@ -168,7 +148,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
   }
 };
