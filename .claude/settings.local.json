@@ -22,7 +22,11 @@
       "Bash(del \"d:\\PROJEKTY\\simple-calories\\supabase\\migrations\\20250204000100_backfill_missing_profiles.sql\")",
       "Bash(timeout 10 bash:*)",
       "Bash(npx playwright install chromium)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(node --loader tsx --test src/lib/helpers/__tests__/date-formatter.test.ts)",
+      "Bash(del \"d:\\PROJEKTY\\simple-calories\\src\\lib\\helpers\\__tests__\\simple.test.ts\")"
     ],
     "deny": [],
     "ask": []
