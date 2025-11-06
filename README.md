@@ -1,6 +1,6 @@
 # Simple Calories
 
-A fast and intuitive calorie tracking web application powered by AI.
+A fast and intuitive calorie tracking web application powered by AI
 
 ## Table of Contents
 
