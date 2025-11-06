@@ -119,14 +119,6 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-      - name: Upload E2E test coverage
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: e2e-test-coverage
-          path: coverage/
-          retention-days: 7
-
   status-comment:
     name: PR Status Comment
     runs-on: ubuntu-latest
@@ -141,12 +133,6 @@ jobs:
         with:
           name: unit-test-coverage
           path: coverage-unit/
-
-      - name: Download E2E test coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: e2e-test-coverage
-          path: coverage-e2e/
 
       - name: Comment PR with success status
         uses: actions/github-script@v7
@@ -170,11 +156,10 @@ jobs:
             ### Summary
             - ✅ **Linting**: Passed
             - ✅ **Unit Tests**: Passed (with coverage)
-            - ✅ **E2E Tests**: Passed (with coverage)
+            - ✅ **E2E Tests**: Passed
 
             ### Artifacts
             - Unit test coverage report uploaded
-            - E2E test coverage report uploaded
             - Playwright test report uploaded
 
             ---
