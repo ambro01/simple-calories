@@ -20,12 +20,6 @@ export function Dashboard() {
   const { state, loadMoreDays, refetchAfterMealChange } = useDashboard();
   const [isAddMealModalOpen, setIsAddMealModalOpen] = useState(false);
 
-  console.log("🎨 [Dashboard] Render", {
-    daysLength: state.days.length,
-    isRefetchingAfterChange: state.isRefetchingAfterChange,
-    loading: state.loading,
-  });
-
   // Error state
   if (state.error && state.days.length === 0) {
     return (
@@ -66,9 +60,7 @@ export function Dashboard() {
           isOpen={isAddMealModalOpen}
           onClose={() => setIsAddMealModalOpen(false)}
           onSuccess={async () => {
-            console.log("🎯 [Dashboard EMPTY] MealModal onSuccess - calling refetchAfterMealChange");
             await refetchAfterMealChange();
-            console.log("🎯 [Dashboard EMPTY] MealModal onSuccess - refetch completed, closing modal");
             setIsAddMealModalOpen(false);
           }}
         />
@@ -93,9 +85,7 @@ export function Dashboard() {
           isOpen={isAddMealModalOpen}
           onClose={() => setIsAddMealModalOpen(false)}
           onSuccess={async () => {
-            console.log("🎯 [Dashboard REFETCH] MealModal onSuccess - calling refetchAfterMealChange");
             await refetchAfterMealChange();
-            console.log("🎯 [Dashboard REFETCH] MealModal onSuccess - refetch completed, closing modal");
             setIsAddMealModalOpen(false);
           }}
         />
@@ -151,9 +141,7 @@ export function Dashboard() {
         isOpen={isAddMealModalOpen}
         onClose={() => setIsAddMealModalOpen(false)}
         onSuccess={async () => {
-          console.log("🎯 [Dashboard MAIN] MealModal onSuccess - calling refetchAfterMealChange");
           await refetchAfterMealChange();
-          console.log("🎯 [Dashboard MAIN] MealModal onSuccess - refetch completed, closing modal");
           setIsAddMealModalOpen(false);
         }}
       />

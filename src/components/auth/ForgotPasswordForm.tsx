@@ -77,8 +77,7 @@ export function ForgotPasswordForm() {
         isSuccess: true,
       }));
 
-      // Tymczasowo - symulacja sukcesu
-      console.log("Forgot password request for:", state.email);
+      // Tymczasowo - symulacja sukcesu (będzie usunięte po implementacji API)
     } catch (error) {
       setState((prev) => ({
         ...prev,
@@ -174,7 +173,7 @@ export function ForgotPasswordForm() {
               aria-invalid={!!state.errors.email}
               aria-describedby={state.errors.email ? "email-error" : undefined}
               autoComplete="email"
-              autoFocus
+              autoFocus // eslint-disable-line jsx-a11y/no-autofocus -- Initial form focus
             />
             {state.errors.email && (
               <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">

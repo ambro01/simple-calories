@@ -35,6 +35,7 @@ export function LogoutAlertDialog({ open, onOpenChange, onConfirm }: LogoutAlert
       // Po udanym wylogowaniu użytkownik zostanie przekierowany
       // więc nie ma potrzeby resetowania stanu
     } catch (error) {
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Logout error in dialog:", error);
       // W przypadku błędu funkcja onConfirm i tak przekierowuje,
       // więc ten catch jest głównie dla logowania

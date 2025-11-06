@@ -17,7 +17,7 @@
  */
 
 import { useState, useCallback } from "react";
-import type { MealFormState, AILoadingStage, MacroWarningInfo, FormValidationError } from "../types/add-meal.types";
+import type { MealFormState, MacroWarningInfo, FormValidationError } from "../types/add-meal.types";
 import type { AIGenerationResponseDTO, CreateMealResponseDTO } from "../types";
 import {
   getCurrentDate,
@@ -282,6 +282,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
           aiError: null,
         }));
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setState((prev) => ({
         ...prev,
@@ -577,6 +578,8 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
         // PATCH - only include fields to update (UpdateMealRequestDTO)
         requestData = {
           description: description,
+          // calories is guaranteed to be non-null due to validation
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           calories: calories!,
           protein: protein,
           carbs: carbs,
@@ -590,17 +593,22 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
           state.mode === "ai"
             ? {
                 description: description,
+                // calories and ai_generation_id are guaranteed to be non-null due to validation
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 calories: calories!,
                 protein: protein,
                 carbs: carbs,
                 fats: fats,
                 category: state.category,
                 input_method: "ai" as const,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ai_generation_id: state.aiGenerationId!,
                 meal_timestamp: timestamp,
               }
             : {
                 description: description,
+                // calories is guaranteed to be non-null due to validation
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 calories: calories!,
                 protein: protein,
                 carbs: carbs,
@@ -611,8 +619,6 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
               };
       }
 
-      console.log(`Sending ${method} request to ${url}:`, requestData);
-
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -621,7 +627,6 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
       if (response.status === 400) {
         const errorData = await response.json();
-        console.error("API validation error:", errorData);
         const errors = Object.entries(errorData.details || {}).map(([field, message]) => ({
           field,
           message: message as string,

@@ -18,8 +18,7 @@ export function AddMealButton() {
       <MealModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        onSuccess={(meal) => {
-          console.log("Meal added:", meal);
+        onSuccess={() => {
           setIsOpen(false);
           // tutaj możesz odświeżyć listę posiłków
         }}

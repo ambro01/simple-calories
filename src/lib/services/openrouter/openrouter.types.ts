@@ -25,6 +25,7 @@ export type ResponseFormat = {
     strict: boolean;
     schema: {
       type: "object";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- JSON Schema properties
       properties: Record<string, any>;
       required: string[];
       additionalProperties?: boolean;
@@ -76,6 +77,7 @@ export type ChatCompletionOptions = {
 };
 
 // Wynik parsowania odpowiedzi
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic response type
 export type ParsedResponse<T = any> = {
   content: string;
   data?: T;

@@ -8,13 +8,13 @@ type SupabaseClient = SupabaseClientBase<Database>;
 
 declare global {
   namespace App {
-    interface Locals {
+    type Locals = {
       supabase: SupabaseClient;
       user?: {
         id: string;
         email: string | undefined;
       };
-    }
+    };
   }
 }
 

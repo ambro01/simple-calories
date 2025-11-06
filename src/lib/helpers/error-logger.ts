@@ -92,18 +92,24 @@ export async function logError(supabase: SupabaseClient<Database>, params: Error
       user_id: params.user_id ?? null,
       error_type: params.error_type,
       error_message: params.error_message,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Database JSON field requires any type
       error_details: (params.error_details ?? null) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Database JSON field requires any type
       context: (params.context ?? null) as any,
     });
 
     if (error) {
       // If insert failed, log to console as fallback
+      // eslint-disable-next-line no-console -- Error logging to console as fallback
       console.error("Failed to insert error log into database:", error);
+      // eslint-disable-next-line no-console -- Error logging to console as fallback
       console.error("Original error:", params);
     }
   } catch (logError) {
     // If the entire logging process failed, log to console as fallback
+    // eslint-disable-next-line no-console -- Error logging to console as fallback
     console.error("Failed to log error to database:", logError);
+    // eslint-disable-next-line no-console -- Error logging to console as fallback
     console.error("Original error:", params);
   }
 }
@@ -154,6 +160,7 @@ export function formatErrorForLogging(
     // Include any additional properties from the error object
     Object.keys(error).forEach((key) => {
       if (key !== "message" && key !== "name" && key !== "stack") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic error property access
         errorDetails[key] = (error as any)[key];
       }
     });

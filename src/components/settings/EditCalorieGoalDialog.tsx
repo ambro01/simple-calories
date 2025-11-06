@@ -33,6 +33,7 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
     if (open) {
       form.reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on open change
   }, [open]);
 
   /**
@@ -49,6 +50,7 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
       onOpenChange(false);
     } catch (error) {
       // Błędy są obsługiwane w hooku (form.state.validationError lub form.state.apiError)
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Failed to save goal:", error);
     }
   };
@@ -114,7 +116,7 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
                 className={form.state.validationError ? "border-destructive focus-visible:ring-destructive" : ""}
                 aria-invalid={!!form.state.validationError}
                 aria-describedby={form.state.validationError ? "goal-error" : undefined}
-                autoFocus
+                autoFocus // eslint-disable-line jsx-a11y/no-autofocus -- Dialog focus management
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
                 kcal

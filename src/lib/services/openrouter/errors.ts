@@ -3,6 +3,7 @@ export class OpenRouterError extends Error {
   constructor(
     message: string,
     public statusCode?: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic error wrapper
     public originalError?: any
   ) {
     super(message);
@@ -33,6 +34,7 @@ export class RateLimitError extends OpenRouterError {
 export class ValidationError extends OpenRouterError {
   constructor(
     message: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Validation error details can be of any shape
     public details?: any
   ) {
     super(message, 400);

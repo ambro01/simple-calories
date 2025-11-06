@@ -479,6 +479,7 @@ export class MealsService {
    * @param meal - Raw meal record from Supabase
    * @returns Formatted meal with optional AI generation info
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase query result type
   private formatMealWithAIGeneration(meal: any): MealResponseDTO {
     // Extract ai_generation array from Supabase response
     const aiGenArray = meal.ai_generation;

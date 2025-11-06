@@ -37,6 +37,7 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
       setShowCurrentPassword(false);
       setShowNewPassword(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on open change
   }, [open]);
 
   /**
@@ -53,6 +54,7 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
       onOpenChange(false);
     } catch (error) {
       // Błędy są obsługiwane w hooku (form.state.validationError lub form.state.apiError)
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Failed to change password:", error);
     }
   };
@@ -111,7 +113,7 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
                   }
                   aria-invalid={!!form.state.validationError}
                   aria-describedby={form.state.validationError ? "password-error" : undefined}
-                  autoFocus
+                  autoFocus // eslint-disable-line jsx-a11y/no-autofocus -- Dialog focus management
                 />
                 <button
                   type="button"

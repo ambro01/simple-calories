@@ -179,7 +179,6 @@ export function useCalorieGoalForm(currentGoal: CalorieGoalResponseDTO | null): 
 
       let method: "POST" | "PATCH";
       let url: string;
-      const existingGoalId: string | null = null;
 
       if (checkResponse.status === 200) {
         // Goal exists - check if it's immutable

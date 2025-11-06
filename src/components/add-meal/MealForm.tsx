@@ -32,25 +32,22 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
   // Load meal data for editing
   useEffect(() => {
     if (mealId) {
-      form.loadMealForEdit(mealId).catch((error) => {
-        console.error("Failed to load meal for editing:", error);
-        // Error is already set in form state, LoadingOverlay will be hidden
-        // and error message will be displayed
-      });
+      // eslint-disable-next-line no-console -- Error logging for debugging
+      form.loadMealForEdit(mealId).catch((error) => console.error("Failed to load meal for editing:", error));
+      // Error is already set in form state, LoadingOverlay will be hidden
+      // and error message will be displayed
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mealId]);
 
   const handleSubmit = async () => {
     try {
-      console.log("📝 [MealForm] handleSubmit START");
       const result = await form.submitMeal();
-      console.log("📝 [MealForm] submitMeal SUCCESS, calling onSuccess callback", result);
       await onSuccess(result);
-      console.log("📝 [MealForm] onSuccess callback completed");
       // onClose is now called by the parent component after refetch
     } catch (error) {
       // Errors are handled inside the hook
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("❌ [MealForm] Failed to submit meal:", error);
     }
   };

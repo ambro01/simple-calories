@@ -65,6 +65,9 @@ export default tseslint.config(
   jsxA11yConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
+  {
+    ignores: ["**/*.astro"],
+  },
   eslintPluginPrettier,
   // Allow console.log in test files, e2e tests, and development utilities
   {

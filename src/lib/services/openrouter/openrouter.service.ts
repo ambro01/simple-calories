@@ -71,6 +71,7 @@ export class OpenRouterService {
    * @param options - Opcje zapytania
    * @returns Parsowana odpowiedź z modelu
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic response type
   async chatCompletion<T = any>(options: ChatCompletionOptions): Promise<ParsedResponse<T>> {
     // Buduj wiadomości
     const messages = this.buildMessages(options.userMessage, options.systemPrompt, options.conversationHistory);
@@ -285,6 +286,7 @@ export class OpenRouterService {
 
       const data = await response.json();
       return data as OpenRouterResponse;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic error handling
     } catch (error: any) {
       clearTimeout(timeoutId);
 
@@ -371,6 +373,7 @@ export class OpenRouterService {
   /**
    * Sprawdza czy należy ponowić próbę
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic error check
   private shouldRetry(error: any, attempt: number): boolean {
     if (attempt >= this.maxRetries) {
       return false;

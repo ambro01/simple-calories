@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+// These are Playwright test fixtures, not React hooks - disable react-hooks rule for this file
 import { test as base } from "@playwright/test";
 import { LoginPage } from "../pages/LoginPage";
 
@@ -13,8 +15,6 @@ export const test = base.extend<{
   loginPage: LoginPage;
   authenticatedPage: typeof base.prototype.page;
 }>({
-  // These are Playwright test fixtures, not React hooks
-
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
     await use(loginPage);

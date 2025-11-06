@@ -121,8 +121,7 @@ export function ResetPasswordForm() {
       // Redirect na /auth/login?success=password_reset po sukcesie
       // window.location.href = "/auth/login?success=password_reset";
 
-      // Tymczasowo - symulacja sukcesu
-      console.log("Reset password attempt");
+      // Tymczasowo - symulacja sukcesu (będzie usunięte po implementacji API)
       alert("Reset hasła - UI gotowe! Backend będzie zaimplementowany później.");
       setState((prev) => ({ ...prev, isLoading: false }));
     } catch (error) {

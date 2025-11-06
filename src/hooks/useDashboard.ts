@@ -155,16 +155,10 @@ export function useDashboard(): UseDashboardReturn {
    * Odświeża dane bez pokazywania loading spinner
    */
   const refetchAfterMealChange = useCallback(async () => {
-    console.log("🔄 [useDashboard] refetchAfterMealChange START");
-    setState((prev) => {
-      console.log("🔄 [useDashboard] Setting isRefetchingAfterChange: true", { prevDaysLength: prev.days.length });
-      return { ...prev, isRefetchingAfterChange: true };
-    });
+    setState((prev) => ({ ...prev, isRefetchingAfterChange: true }));
 
     try {
-      console.log("🔄 [useDashboard] Fetching daily progress...");
       const days = await fetchDailyProgress(PAGINATION_LIMITS.DASHBOARD_DAYS_LIMIT, 0);
-      console.log("✅ [useDashboard] refetchAfterMealChange SUCCESS", { daysReceived: days.length, days });
 
       setState((prev) => ({
         ...prev,
@@ -175,6 +169,7 @@ export function useDashboard(): UseDashboardReturn {
       }));
     } catch (error) {
       // Silent fail - nie zmieniamy error state
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("❌ [useDashboard] Failed to refetch after meal change:", error);
       setState((prev) => ({ ...prev, isRefetchingAfterChange: false }));
     }

@@ -105,5 +105,6 @@ export function validateModelParameters(params: ModelParameters): void {
 
 // Funkcja sprawdzająca czy model istnieje
 export function isValidModel(model: string): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Type cast for includes check
   return Object.values(AVAILABLE_MODELS).includes(model as any);
 }

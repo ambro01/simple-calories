@@ -32,8 +32,7 @@ export function Settings() {
    * Zamyka dialog (nie trzeba odświeżać danych)
    */
   const handlePasswordChangeSuccess = () => {
-    // Pokazujemy sukces użytkownikowi (opcjonalnie można dodać toast)
-    console.log("Password changed successfully");
+    // Password change success - dialog will be closed automatically
   };
 
   // Loading initial state

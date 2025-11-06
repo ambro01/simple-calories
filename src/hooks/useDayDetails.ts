@@ -161,6 +161,7 @@ export function useDayDetails({ date }: UseDayDetailsParams): UseDayDetailsRetur
       }));
     } catch (error) {
       // Silent fail - nie zmieniamy error state
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Failed to refresh after meal change:", error);
     }
   }, [date]);

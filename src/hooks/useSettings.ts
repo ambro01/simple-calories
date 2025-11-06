@@ -93,13 +93,13 @@ async function fetchUserEmail(): Promise<string | null> {
     });
 
     if (!response.ok) {
-      console.error("Error fetching user email:", response.statusText);
       return null;
     }
 
     const data = await response.json();
     return data.email || null;
   } catch (error) {
+    // eslint-disable-next-line no-console -- Error logging for debugging
     console.error("Error fetching user email:", error);
     return null;
   }
@@ -167,6 +167,7 @@ export function useSettings(): UseSettingsReturn {
       }));
     } catch (error) {
       // Silent fail - nie zmieniamy error state podczas odświeżania
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Failed to refresh settings data:", error);
     }
   }, []);
@@ -233,6 +234,7 @@ export function useSettings(): UseSettingsReturn {
       // Przekieruj na stronę logowania
       window.location.href = "/auth/login";
     } catch (error) {
+      // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Logout error:", error);
       // Nawet jeśli wystąpił błąd, przekieruj użytkownika
       // (może to być problem z połączeniem, ale lokalnie sesja powinna być wyczyszczona)
