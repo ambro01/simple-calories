@@ -82,8 +82,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const rawParams = {
       date_from: url.searchParams.get("date_from") || undefined,
       date_to: url.searchParams.get("date_to") || undefined,
-      limit: url.searchParams.get("limit") ? parseInt(url.searchParams.get("limit")!) : undefined,
-      offset: url.searchParams.get("offset") ? parseInt(url.searchParams.get("offset")!) : undefined,
+      limit: url.searchParams.get("limit") ? parseInt(url.searchParams.get("limit") ?? "0") : undefined,
+      offset: url.searchParams.get("offset") ? parseInt(url.searchParams.get("offset") ?? "0") : undefined,
     };
 
     // Step 2: Validate query parameters with Zod

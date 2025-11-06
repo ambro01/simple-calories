@@ -13,7 +13,8 @@ API Meals zapewnia pełne operacje CRUD (Create, Read, Update, Delete) dla posi�
 Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Security (RLS) przez Supabase, co zapewnia pełną izolację danych między użytkownikami.
 
 **Kluczowe funkcjonalności biznesowe:**
-- Walidacja makroskładników z ostrzeżeniami (obliczenie kalorii: 4*protein + 4*carbs + 9*fats)
+
+- Walidacja makroskładników z ostrzeżeniami (obliczenie kalorii: 4*protein + 4*carbs + 9\*fats)
 - Tracking źródła danych (`input_method`: ai, manual, ai-edited) dla metryk AI
 - Opcjonalne dołączanie informacji o generowaniu AI dla posiłków
 - Blokada timestamps w przyszłości (meal_timestamp nie może być > NOW())
@@ -30,17 +31,18 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 
 **Query Parameters:**
 
-| Parametr | Typ | Wymagany | Domyślna | Opis |
-|----------|-----|----------|----------|------|
-| `date` | string (YYYY-MM-DD) | Nie | - | Filtruj po konkretnej dacie |
-| `date_from` | string (YYYY-MM-DD) | Nie | - | Początek zakresu dat |
-| `date_to` | string (YYYY-MM-DD) | Nie | - | Koniec zakresu dat |
-| `category` | enum | Nie | - | Filtruj po kategorii (breakfast, lunch, dinner, snack, other) |
-| `limit` | number | Nie | 50 | Liczba rekordów (max: 100) |
-| `offset` | number | Nie | 0 | Liczba rekordów do pominięcia (min: 0) |
-| `sort` | enum | Nie | desc | Kolejność sortowania: asc, desc |
+| Parametr    | Typ                 | Wymagany | Domyślna | Opis                                                          |
+| ----------- | ------------------- | -------- | -------- | ------------------------------------------------------------- |
+| `date`      | string (YYYY-MM-DD) | Nie      | -        | Filtruj po konkretnej dacie                                   |
+| `date_from` | string (YYYY-MM-DD) | Nie      | -        | Początek zakresu dat                                          |
+| `date_to`   | string (YYYY-MM-DD) | Nie      | -        | Koniec zakresu dat                                            |
+| `category`  | enum                | Nie      | -        | Filtruj po kategorii (breakfast, lunch, dinner, snack, other) |
+| `limit`     | number              | Nie      | 50       | Liczba rekordów (max: 100)                                    |
+| `offset`    | number              | Nie      | 0        | Liczba rekordów do pominięcia (min: 0)                        |
+| `sort`      | enum                | Nie      | desc     | Kolejność sortowania: asc, desc                               |
 
 **Logika filtrowania:**
+
 - Jeśli podano `date`, ignoruj `date_from` i `date_to` (filtruj tylko po konkretnej dacie)
 - Jeśli podano `date_from` i/lub `date_to`, użyj zakresu dat
 - Sortowanie zawsze po `meal_timestamp`
@@ -54,6 +56,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 **Autentykacja:** Required
 
 **URL Parameters:**
+
 - `id` (UUID, required) - Identyfikator posiłku
 
 ---
@@ -66,6 +69,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 **Content-Type:** application/json
 
 **Request Body (AI-generated meal):**
+
 ```json
 {
   "description": "Jajka sadzone z chlebem",
@@ -81,6 +85,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 ```
 
 **Request Body (Manual meal):**
+
 ```json
 {
   "description": "Kurczak z ryżem",
@@ -95,6 +100,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 ```
 
 **Walidacja:**
+
 - `description`: required, string, trim, min 1, max 500
 - `calories`: required, integer, 1-10000
 - `protein`: optional, number, 0-1000, max 2 decimal places
@@ -115,9 +121,11 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 **Content-Type:** application/json
 
 **URL Parameters:**
+
 - `id` (UUID, required) - Identyfikator posiłku
 
 **Request Body (partial update):**
+
 ```json
 {
   "description": "Jajka sadzone z chlebem (updated)",
@@ -128,6 +136,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 ```
 
 **Logika biznesowa:**
+
 - Wszystkie pola opcjonalne (partial update)
 - Jeśli użytkownik edytuje wartości z `input_method='ai'`, automatycznie zmień na `ai-edited`
 - Walidacja taka sama jak przy POST, ale wszystkie pola opcjonalne
@@ -141,6 +150,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 **Autentykacja:** Required
 
 **URL Parameters:**
+
 - `id` (UUID, required) - Identyfikator posiłku
 
 ---
@@ -150,12 +160,14 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 ### 3.1. Typy DTO (z `src/types.ts`)
 
 **Request DTOs:**
+
 - `CreateMealRequestDTO` - union type dla tworzenia posiłku
   - `CreateAIMealRequestDTO` - dla AI-generated
   - `CreateManualMealRequestDTO` - dla manual
 - `UpdateMealRequestDTO` - dla aktualizacji (wszystkie pola opcjonalne)
 
 **Response DTOs:**
+
 - `MealResponseDTO` - pojedynczy posiłek z opcjonalnymi informacjami AI
 - `MealsListResponseDTO` - lista posiłków z paginacją
 - `CreateMealResponseDTO` - odpowiedź przy tworzeniu (z warnings)
@@ -167,6 +179,7 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 - `PaginationMetaDTO` - metadane paginacji
 
 **Enums:**
+
 - `MealCategory` - enum kategorii posiłków
 - `InputMethodType` - enum metod wprowadzania
 
@@ -182,8 +195,8 @@ Wszystkie endpointy wymagają autentykacji użytkownika i stosują Row Level Sec
 Należy utworzyć nowy plik `src/lib/validation/meal.schemas.ts`:
 
 ```typescript
-export const MealCategorySchema = z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'other']);
-export const InputMethodSchema = z.enum(['ai', 'manual', 'ai-edited']);
+export const MealCategorySchema = z.enum(["breakfast", "lunch", "dinner", "snack", "other"]);
+export const InputMethodSchema = z.enum(["ai", "manual", "ai-edited"]);
 
 export const CreateAIMealSchema = z.object({
   description: z.string().trim().min(1).max(500),
@@ -192,7 +205,7 @@ export const CreateAIMealSchema = z.object({
   carbs: z.number().min(0).max(1000).nullable().optional(),
   fats: z.number().min(0).max(1000).nullable().optional(),
   category: MealCategorySchema.nullable().optional(),
-  input_method: z.literal('ai'),
+  input_method: z.literal("ai"),
   ai_generation_id: z.string().uuid(),
   meal_timestamp: z.string().datetime(),
 });
@@ -204,14 +217,11 @@ export const CreateManualMealSchema = z.object({
   carbs: z.number().min(0).max(1000).nullable().optional(),
   fats: z.number().min(0).max(1000).nullable().optional(),
   category: MealCategorySchema.nullable().optional(),
-  input_method: z.literal('manual'),
+  input_method: z.literal("manual"),
   meal_timestamp: z.string().datetime(),
 });
 
-export const CreateMealSchema = z.discriminatedUnion('input_method', [
-  CreateAIMealSchema,
-  CreateManualMealSchema,
-]);
+export const CreateMealSchema = z.discriminatedUnion("input_method", [CreateAIMealSchema, CreateManualMealSchema]);
 
 export const UpdateMealSchema = z.object({
   description: z.string().trim().min(1).max(500).optional(),
@@ -225,13 +235,22 @@ export const UpdateMealSchema = z.object({
 });
 
 export const GetMealsQuerySchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  date_from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  date_to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   category: MealCategorySchema.optional(),
   limit: z.number().int().min(1).max(100).default(50),
   offset: z.number().int().min(0).default(0),
-  sort: z.enum(['asc', 'desc']).default('desc'),
+  sort: z.enum(["asc", "desc"]).default("desc"),
 });
 ```
 
@@ -242,6 +261,7 @@ export const GetMealsQuerySchema = z.object({
 ### 4.1. GET /api/v1/meals
 
 **Success (200 OK):**
+
 ```json
 {
   "data": [
@@ -276,6 +296,7 @@ export const GetMealsQuerySchema = z.object({
 ```
 
 **Error (400 Bad Request):**
+
 ```json
 {
   "error": "VALIDATION_ERROR",
@@ -292,6 +313,7 @@ export const GetMealsQuerySchema = z.object({
 ### 4.2. GET /api/v1/meals/:id
 
 **Success (200 OK):**
+
 ```json
 {
   "id": "uuid",
@@ -317,6 +339,7 @@ export const GetMealsQuerySchema = z.object({
 ```
 
 **Error (404 Not Found):**
+
 ```json
 {
   "error": "NOT_FOUND",
@@ -329,6 +352,7 @@ export const GetMealsQuerySchema = z.object({
 ### 4.3. POST /api/v1/meals
 
 **Success (201 Created):**
+
 ```json
 {
   "id": "uuid",
@@ -348,6 +372,7 @@ export const GetMealsQuerySchema = z.object({
 ```
 
 **Success with Warning (201 Created):**
+
 ```json
 {
   "id": "uuid",
@@ -372,6 +397,7 @@ export const GetMealsQuerySchema = z.object({
 ```
 
 **Error (400 Bad Request):**
+
 ```json
 {
   "error": "VALIDATION_ERROR",
@@ -384,6 +410,7 @@ export const GetMealsQuerySchema = z.object({
 ```
 
 **Error (404 Not Found):**
+
 ```json
 {
   "error": "NOT_FOUND",
@@ -396,6 +423,7 @@ export const GetMealsQuerySchema = z.object({
 ### 4.4. PATCH /api/v1/meals/:id
 
 **Success (200 OK):**
+
 ```json
 {
   "id": "uuid",
@@ -415,6 +443,7 @@ export const GetMealsQuerySchema = z.object({
 ```
 
 **Error (404 Not Found):**
+
 ```json
 {
   "error": "NOT_FOUND",
@@ -430,6 +459,7 @@ export const GetMealsQuerySchema = z.object({
 Brak treści odpowiedzi.
 
 **Error (404 Not Found):**
+
 ```json
 {
   "error": "NOT_FOUND",
@@ -466,6 +496,7 @@ Brak treści odpowiedzi.
 ```
 
 **Database queries:**
+
 ```sql
 -- Count query
 SELECT COUNT(*) FROM meals
@@ -553,6 +584,7 @@ LIMIT $limit OFFSET $offset
 ```
 
 **Business rule - ai_generation_id validation:**
+
 ```typescript
 if (input_method === 'ai') {
   const aiGeneration = await supabase
@@ -573,6 +605,7 @@ if (input_method === 'ai') {
 ```
 
 **Macronutrient warning logic:**
+
 ```typescript
 function validateMacronutrients(
   calories: number,
@@ -589,8 +622,8 @@ function validateMacronutrients(
 
     if (percentage > 5) {
       warnings.push({
-        field: 'macronutrients',
-        message: `The calculated calories from macronutrients (${Math.round(calculatedCalories)} kcal) differs by more than 5% from the provided calories (${calories} kcal). Please verify your input.`
+        field: "macronutrients",
+        message: `The calculated calories from macronutrients (${Math.round(calculatedCalories)} kcal) differs by more than 5% from the provided calories (${calories} kcal). Please verify your input.`,
       });
     }
   }
@@ -630,18 +663,16 @@ function validateMacronutrients(
 ```
 
 **Auto input_method change logic:**
+
 ```typescript
-function shouldChangeToAIEdited(
-  currentMeal: Tables<"meals">,
-  updateData: UpdateMealRequestDTO
-): boolean {
+function shouldChangeToAIEdited(currentMeal: Tables<"meals">, updateData: UpdateMealRequestDTO): boolean {
   // Only change if current is 'ai'
-  if (currentMeal.input_method !== 'ai') {
+  if (currentMeal.input_method !== "ai") {
     return false;
   }
 
   // Check if any nutritional value changed
-  const nutritionalFields = ['calories', 'protein', 'carbs', 'fats', 'description'];
+  const nutritionalFields = ["calories", "protein", "carbs", "fats", "description"];
 
   for (const field of nutritionalFields) {
     if (field in updateData && updateData[field] !== currentMeal[field]) {
@@ -675,6 +706,7 @@ function shouldChangeToAIEdited(
 ```
 
 **CASCADE behavior:**
+
 - Usunięcie meal automatycznie ustawia `meal_id = NULL` w powiązanych `ai_generations` (NOT CASCADE DELETE)
 - Zgodnie z db-plan.md, relacja jest `ON DELETE CASCADE` dla `ai_generations.meal_id → meals.id`
 
@@ -685,26 +717,32 @@ function shouldChangeToAIEdited(
 ### 6.1. Autentykacja i autoryzacja
 
 **Current state (MVP):**
+
 - Używamy `DEFAULT_USER_ID` z `supabaseClient`
 - Brak JWT authentication (TODO)
 
 **Future state (Production):**
+
 ```typescript
 // Replace DEFAULT_USER_ID with:
 const session = context.locals.supabase.auth.getSession();
 if (!session) {
-  return new Response(JSON.stringify({
-    error: "UNAUTHORIZED",
-    message: "Authentication required"
-  }), {
-    status: 401,
-    headers: { "Content-Type": "application/json" }
-  });
+  return new Response(
+    JSON.stringify({
+      error: "UNAUTHORIZED",
+      message: "Authentication required",
+    }),
+    {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
 const userId = session.user.id;
 ```
 
 **Row Level Security (RLS):**
+
 - Wszystkie zapytania do tabeli `meals` automatycznie filtrowane przez RLS
 - RLS policy: `user_id = auth.uid()`
 - Dodatkowa walidacja w service layer dla pewności
@@ -714,23 +752,27 @@ const userId = session.user.id;
 ### 6.2. Walidacja danych wejściowych
 
 **Ochrona przed injection:**
+
 - Wszystkie inputy walidowane przez Zod schemas
 - Supabase SDK używa parametryzowanych zapytań
 - Brak raw SQL w application code
 
 **Walidacja formatów:**
+
 - UUID validation dla IDs
 - ISO 8601 datetime validation
 - YYYY-MM-DD date format dla filtrów
 - Enum validation dla category i input_method
 
 **Walidacja zakresów:**
+
 - `limit`: min 1, max 100
 - `offset`: min 0
 - `calories`: 1-10000
 - `protein/carbs/fats`: 0-1000
 
 **Sanityzacja:**
+
 - `description`: trim whitespace, max 500 chars
 - Wszystkie string inputs: trim
 
@@ -739,12 +781,14 @@ const userId = session.user.id;
 ### 6.3. Zapobieganie Mass Assignment
 
 **Chronione pola:**
+
 - `id` - generowany przez bazę (UUID)
 - `user_id` - pobierany z auth.uid(), NIE z requestu
 - `created_at` - auto timestamp
 - `updated_at` - auto trigger
 
 **Mechanizm ochrony:**
+
 ```typescript
 // NIGDY nie przekazuj user_id z body:
 const body = await request.json();
@@ -755,7 +799,7 @@ const body = await request.json();
 const mealData = CreateMealSchema.parse(body); // Schema nie zawiera user_id
 const userId = DEFAULT_USER_ID; // lub z JWT
 
-await supabase.from('meals').insert({
+await supabase.from("meals").insert({
   ...mealData,
   user_id: userId, // Zawsze z auth
 });
@@ -766,10 +810,12 @@ await supabase.from('meals').insert({
 ### 6.4. Ochrona przed CSRF/XSS
 
 **CORS:**
+
 - Skonfigurowany w Astro middleware
 - Allowed origins: frontend domain only (production)
 
 **XSS Prevention:**
+
 - `description` field: walidacja max length
 - Frontend: użycie `textContent` zamiast `innerHTML`
 - Supabase: automatyczne escaping w queries
@@ -779,8 +825,9 @@ await supabase.from('meals').insert({
 ### 6.5. Rate Limiting
 
 **Nie wymagany dla MVP**, ale dla produkcji:
+
 ```typescript
-import { mealsRateLimiter } from '../../../lib/services/rate-limit.service';
+import { mealsRateLimiter } from "../../../lib/services/rate-limit.service";
 
 // POST /api/v1/meals: 20 requests/min
 // GET /api/v1/meals: 60 requests/min
@@ -792,6 +839,7 @@ import { mealsRateLimiter } from '../../../lib/services/rate-limit.service';
 ### 6.6. Bezpieczeństwo timestamps
 
 **Walidacja meal_timestamp:**
+
 ```typescript
 function validateMealTimestamp(timestamp: string): boolean {
   const mealDate = new Date(timestamp);
@@ -819,15 +867,15 @@ function validateMealTimestamp(timestamp: string): boolean {
 
 ### 7.1. Kody statusu HTTP
 
-| Kod | Znaczenie | Kiedy używać |
-|-----|-----------|--------------|
-| 200 | OK | Successful GET, PATCH |
-| 201 | Created | Successful POST |
-| 204 | No Content | Successful DELETE |
-| 400 | Bad Request | Validation errors, invalid query params, business rule violations |
-| 401 | Unauthorized | Missing or invalid JWT token |
-| 404 | Not Found | Meal not found, AI generation not found |
-| 500 | Internal Server Error | Unexpected errors, database failures |
+| Kod | Znaczenie             | Kiedy używać                                                      |
+| --- | --------------------- | ----------------------------------------------------------------- |
+| 200 | OK                    | Successful GET, PATCH                                             |
+| 201 | Created               | Successful POST                                                   |
+| 204 | No Content            | Successful DELETE                                                 |
+| 400 | Bad Request           | Validation errors, invalid query params, business rule violations |
+| 401 | Unauthorized          | Missing or invalid JWT token                                      |
+| 404 | Not Found             | Meal not found, AI generation not found                           |
+| 500 | Internal Server Error | Unexpected errors, database failures                              |
 
 ---
 
@@ -835,61 +883,61 @@ function validateMealTimestamp(timestamp: string): boolean {
 
 #### GET /api/v1/meals
 
-| Scenariusz | Status | Error Code | Message |
-|------------|--------|------------|---------|
-| Invalid date format | 400 | VALIDATION_ERROR | Invalid date format. Expected YYYY-MM-DD |
-| Invalid category | 400 | VALIDATION_ERROR | Invalid category. Must be one of: breakfast, lunch, dinner, snack, other |
-| Limit out of range | 400 | VALIDATION_ERROR | Limit must be between 1 and 100 |
-| Negative offset | 400 | VALIDATION_ERROR | Offset must be non-negative |
-| Database error | 500 | INTERNAL_SERVER_ERROR | An unexpected error occurred |
+| Scenariusz          | Status | Error Code            | Message                                                                  |
+| ------------------- | ------ | --------------------- | ------------------------------------------------------------------------ |
+| Invalid date format | 400    | VALIDATION_ERROR      | Invalid date format. Expected YYYY-MM-DD                                 |
+| Invalid category    | 400    | VALIDATION_ERROR      | Invalid category. Must be one of: breakfast, lunch, dinner, snack, other |
+| Limit out of range  | 400    | VALIDATION_ERROR      | Limit must be between 1 and 100                                          |
+| Negative offset     | 400    | VALIDATION_ERROR      | Offset must be non-negative                                              |
+| Database error      | 500    | INTERNAL_SERVER_ERROR | An unexpected error occurred                                             |
 
 ---
 
 #### GET /api/v1/meals/:id
 
-| Scenariusz | Status | Error Code | Message |
-|------------|--------|------------|---------|
-| Invalid UUID format | 400 | VALIDATION_ERROR | Invalid meal ID format |
-| Meal not found | 404 | NOT_FOUND | Meal not found |
-| Unauthorized access | 404 | NOT_FOUND | Meal not found (RLS prevents seeing other users' meals) |
-| Database error | 500 | INTERNAL_SERVER_ERROR | An unexpected error occurred |
+| Scenariusz          | Status | Error Code            | Message                                                 |
+| ------------------- | ------ | --------------------- | ------------------------------------------------------- |
+| Invalid UUID format | 400    | VALIDATION_ERROR      | Invalid meal ID format                                  |
+| Meal not found      | 404    | NOT_FOUND             | Meal not found                                          |
+| Unauthorized access | 404    | NOT_FOUND             | Meal not found (RLS prevents seeing other users' meals) |
+| Database error      | 500    | INTERNAL_SERVER_ERROR | An unexpected error occurred                            |
 
 ---
 
 #### POST /api/v1/meals
 
-| Scenariusz | Status | Error Code | Message |
-|------------|--------|------------|---------|
-| Missing required field | 400 | VALIDATION_ERROR | {field} is required |
-| Invalid field type | 400 | VALIDATION_ERROR | {field} must be a {type} |
-| Out of range value | 400 | VALIDATION_ERROR | {field} must be between {min} and {max} |
-| meal_timestamp in future | 400 | VALIDATION_ERROR | meal_timestamp cannot be in the future |
-| AI generation not found | 404 | NOT_FOUND | AI generation not found |
-| AI generation not completed | 400 | VALIDATION_ERROR | AI generation must be completed before creating a meal |
-| AI generation belongs to different user | 404 | NOT_FOUND | AI generation not found (RLS) |
-| Database error | 500 | INTERNAL_SERVER_ERROR | Failed to create meal |
+| Scenariusz                              | Status | Error Code            | Message                                                |
+| --------------------------------------- | ------ | --------------------- | ------------------------------------------------------ |
+| Missing required field                  | 400    | VALIDATION_ERROR      | {field} is required                                    |
+| Invalid field type                      | 400    | VALIDATION_ERROR      | {field} must be a {type}                               |
+| Out of range value                      | 400    | VALIDATION_ERROR      | {field} must be between {min} and {max}                |
+| meal_timestamp in future                | 400    | VALIDATION_ERROR      | meal_timestamp cannot be in the future                 |
+| AI generation not found                 | 404    | NOT_FOUND             | AI generation not found                                |
+| AI generation not completed             | 400    | VALIDATION_ERROR      | AI generation must be completed before creating a meal |
+| AI generation belongs to different user | 404    | NOT_FOUND             | AI generation not found (RLS)                          |
+| Database error                          | 500    | INTERNAL_SERVER_ERROR | Failed to create meal                                  |
 
 ---
 
 #### PATCH /api/v1/meals/:id
 
-| Scenariusz | Status | Error Code | Message |
-|------------|--------|------------|---------|
-| Invalid UUID format | 400 | VALIDATION_ERROR | Invalid meal ID format |
-| Validation errors | 400 | VALIDATION_ERROR | Invalid update data |
-| meal_timestamp in future | 400 | VALIDATION_ERROR | meal_timestamp cannot be in the future |
-| Meal not found | 404 | NOT_FOUND | Meal not found |
-| Database error | 500 | INTERNAL_SERVER_ERROR | Failed to update meal |
+| Scenariusz               | Status | Error Code            | Message                                |
+| ------------------------ | ------ | --------------------- | -------------------------------------- |
+| Invalid UUID format      | 400    | VALIDATION_ERROR      | Invalid meal ID format                 |
+| Validation errors        | 400    | VALIDATION_ERROR      | Invalid update data                    |
+| meal_timestamp in future | 400    | VALIDATION_ERROR      | meal_timestamp cannot be in the future |
+| Meal not found           | 404    | NOT_FOUND             | Meal not found                         |
+| Database error           | 500    | INTERNAL_SERVER_ERROR | Failed to update meal                  |
 
 ---
 
 #### DELETE /api/v1/meals/:id
 
-| Scenariusz | Status | Error Code | Message |
-|------------|--------|------------|---------|
-| Invalid UUID format | 400 | VALIDATION_ERROR | Invalid meal ID format |
-| Meal not found | 404 | NOT_FOUND | Meal not found |
-| Database error | 500 | INTERNAL_SERVER_ERROR | Failed to delete meal |
+| Scenariusz          | Status | Error Code            | Message                |
+| ------------------- | ------ | --------------------- | ---------------------- |
+| Invalid UUID format | 400    | VALIDATION_ERROR      | Invalid meal ID format |
+| Meal not found      | 404    | NOT_FOUND             | Meal not found         |
+| Database error      | 500    | INTERNAL_SERVER_ERROR | Failed to delete meal  |
 
 ---
 
@@ -898,17 +946,20 @@ function validateMealTimestamp(timestamp: string): boolean {
 **Logować do tabeli `error_logs` (przez `logError` helper):**
 
 ✅ **Logować:**
+
 - Database connection errors (500)
 - Unexpected exceptions (500)
 - AI generation verification failures (gdy ai_generation_id istnieje ale ma nieprawidłowy status)
 - Supabase RPC errors
 
 ❌ **Nie logować:**
+
 - 400 Validation errors (user errors)
 - 401 Unauthorized (expected)
 - 404 Not Found (expected)
 
 **Przykład:**
+
 ```typescript
 catch (error) {
   console.error('Unexpected error in POST /api/v1/meals:', error);
@@ -939,6 +990,7 @@ catch (error) {
 ### 8.1. Optymalizacja zapytań
 
 **Wykorzystanie istniejących indeksów:**
+
 ```sql
 -- Z db-plan.md:
 idx_meals_user_id ON meals(user_id)
@@ -948,6 +1000,7 @@ idx_ai_generations_meal_created ON ai_generations(meal_id, created_at DESC)
 ```
 
 **Query patterns:**
+
 - GET /api/v1/meals: używa `idx_meals_user_timestamp` dla sortowania
 - GET /api/v1/meals/:id: używa Primary Key + `idx_meals_user_id`
 - LEFT JOIN z ai_generations: używa `idx_ai_generations_meal_created`
@@ -957,12 +1010,14 @@ idx_ai_generations_meal_created ON ai_generations(meal_id, created_at DESC)
 ### 8.2. Paginacja
 
 **Best practices:**
+
 - Default limit: 50 (reasonable)
 - Max limit: 100 (prevent large responses)
 - Always count total with `count: 'exact'`
 - Use `range(offset, offset + limit - 1)` for consistent pagination
 
 **Performance note:**
+
 - COUNT query może być kosztowny dla dużych zbiorów danych
 - Future optimization: cache count lub użyj approximate count
 
@@ -971,29 +1026,33 @@ idx_ai_generations_meal_created ON ai_generations(meal_id, created_at DESC)
 ### 8.3. Wykorzystanie VIEW
 
 **Option 1: Use existing VIEW `meals_with_latest_ai`**
+
 ```typescript
 // Advantage: Simplified query
 const { data } = await supabase
-  .from('meals_with_latest_ai')
-  .select('*')
-  .eq('user_id', userId)
-  .order('meal_timestamp', { ascending: false })
+  .from("meals_with_latest_ai")
+  .select("*")
+  .eq("user_id", userId)
+  .order("meal_timestamp", { ascending: false })
   .range(offset, offset + limit - 1);
 ```
 
 **Option 2: Manual LEFT JOIN LATERAL**
+
 ```typescript
 // Advantage: More control, can select specific fields
 const { data } = await supabase
-  .from('meals')
-  .select(`
+  .from("meals")
+  .select(
+    `
     *,
     ai_generation:ai_generations(
       id, prompt, assumptions, model_used, generation_duration
     )
-  `)
-  .eq('user_id', userId)
-  .order('meal_timestamp', { ascending: false })
+  `
+  )
+  .eq("user_id", userId)
+  .order("meal_timestamp", { ascending: false })
   .range(offset, offset + limit - 1);
 ```
 
@@ -1006,22 +1065,21 @@ const { data } = await supabase
 **Problem:** Pobieranie ai_generation dla każdego meal osobno
 
 **Solution:** Zawsze używaj LEFT JOIN lub VIEW, NIGDY pętli:
+
 ```typescript
 // ❌ BAD: N+1 queries
 for (const meal of meals) {
   const aiGen = await supabase
-    .from('ai_generations')
-    .select('*')
-    .eq('meal_id', meal.id)
-    .order('created_at', { ascending: false })
+    .from("ai_generations")
+    .select("*")
+    .eq("meal_id", meal.id)
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
 }
 
 // ✅ GOOD: Single query with JOIN
-const { data } = await supabase
-  .from('meals_with_latest_ai')
-  .select('*');
+const { data } = await supabase.from("meals_with_latest_ai").select("*");
 ```
 
 ---
@@ -1029,16 +1087,15 @@ const { data } = await supabase
 ### 8.5. Response size optimization
 
 **Selective field selection:**
+
 ```typescript
 // Future optimization: allow client to specify fields
 // Example: ?fields=id,description,calories,meal_timestamp
 
-const fields = parseFieldsParam(url.searchParams.get('fields'));
-const selectQuery = fields || '*';
+const fields = parseFieldsParam(url.searchParams.get("fields"));
+const selectQuery = fields || "*";
 
-const { data } = await supabase
-  .from('meals')
-  .select(selectQuery);
+const { data } = await supabase.from("meals").select(selectQuery);
 ```
 
 ---
@@ -1048,6 +1105,7 @@ const { data } = await supabase
 ### Step 1: Przygotowanie walidacji
 
 **Task 1.1:** Utworzyć `src/lib/validation/meal.schemas.ts`
+
 - [ ] Zdefiniować `MealCategorySchema` enum
 - [ ] Zdefiniować `InputMethodSchema` enum
 - [ ] Zdefiniować `CreateAIMealSchema`
@@ -1074,28 +1132,16 @@ export class MealsService {
   constructor(private supabase: SupabaseClient<Database>) {}
 
   // [ ] getMeals(userId, filters)
-  async getMeals(
-    userId: string,
-    filters: GetMealsFilters
-  ): Promise<MealResponseDTO[]>
+  async getMeals(userId: string, filters: GetMealsFilters): Promise<MealResponseDTO[]>;
 
   // [ ] countMeals(userId, filters)
-  async countMeals(
-    userId: string,
-    filters: GetMealsFilters
-  ): Promise<number>
+  async countMeals(userId: string, filters: GetMealsFilters): Promise<number>;
 
   // [ ] getMealById(mealId, userId)
-  async getMealById(
-    mealId: string,
-    userId: string
-  ): Promise<MealResponseDTO | null>
+  async getMealById(mealId: string, userId: string): Promise<MealResponseDTO | null>;
 
   // [ ] createMeal(userId, mealData)
-  async createMeal(
-    userId: string,
-    mealData: CreateMealRequestDTO
-  ): Promise<CreateMealResult>
+  async createMeal(userId: string, mealData: CreateMealRequestDTO): Promise<CreateMealResult>;
 
   // [ ] updateMeal(mealId, userId, updateData)
   async updateMeal(
@@ -1103,28 +1149,24 @@ export class MealsService {
     userId: string,
     updateData: UpdateMealRequestDTO,
     currentMeal: Tables<"meals">
-  ): Promise<UpdateMealResult>
+  ): Promise<UpdateMealResult>;
 
   // [ ] deleteMeal(mealId, userId)
-  async deleteMeal(
-    mealId: string,
-    userId: string
-  ): Promise<boolean>
+  async deleteMeal(mealId: string, userId: string): Promise<boolean>;
 
   // [ ] validateAIGeneration(aiGenerationId, userId)
   private async validateAIGeneration(
     aiGenerationId: string,
     userId: string
-  ): Promise<{ valid: boolean; error?: string }>
+  ): Promise<{ valid: boolean; error?: string }>;
 
   // [ ] formatMealWithAIGeneration(meal)
-  private formatMealWithAIGeneration(
-    meal: any
-  ): MealResponseDTO
+  private formatMealWithAIGeneration(meal: any): MealResponseDTO;
 }
 ```
 
 **Task 2.2:** Utworzyć `src/lib/helpers/macronutrient-validator.ts`
+
 - [ ] Funkcja `validateMacronutrients(calories, protein, carbs, fats)`
 - [ ] Zwraca `MealWarningDTO[]`
 - [ ] Logika: oblicz kalorie (4p + 4c + 9f), sprawdź czy różnica > 5%
@@ -1140,6 +1182,7 @@ export class MealsService {
 **Task 3.1:** Utworzyć `src/pages/api/v1/meals/index.ts`
 
 **GET handler:**
+
 - [ ] Parse query parameters z URL
 - [ ] Validate z `GetMealsQuerySchema`
 - [ ] Handle Zod validation errors (400)
@@ -1159,6 +1202,7 @@ export class MealsService {
 **Task 4.1:** Utworzyć `src/pages/api/v1/meals/[id].ts`
 
 **GET handler:**
+
 - [ ] Parse meal ID z `context.params.id`
 - [ ] Validate UUID format
 - [ ] Get userId (DEFAULT_USER_ID)
@@ -1177,6 +1221,7 @@ export class MealsService {
 **Task 5.1:** Dodać POST handler do `src/pages/api/v1/meals/index.ts`
 
 **POST handler:**
+
 - [ ] Parse request body (JSON)
 - [ ] Validate z `CreateMealSchema`
 - [ ] Handle Zod validation errors (400)
@@ -1204,6 +1249,7 @@ export class MealsService {
 **Task 6.1:** Dodać PATCH handler do `src/pages/api/v1/meals/[id].ts`
 
 **PATCH handler:**
+
 - [ ] Parse meal ID z URL params
 - [ ] Parse request body (JSON)
 - [ ] Validate z `UpdateMealSchema`
@@ -1228,6 +1274,7 @@ export class MealsService {
 **Task 7.1:** Dodać DELETE handler do `src/pages/api/v1/meals/[id].ts`
 
 **DELETE handler:**
+
 - [ ] Parse meal ID z URL params
 - [ ] Validate UUID format
 - [ ] Get userId (DEFAULT_USER_ID)
@@ -1246,6 +1293,7 @@ export class MealsService {
 **Task 8.1:** Utworzyć `src/tests/api/meals.test.ts`
 
 **Test scenarios:**
+
 - [ ] GET /api/v1/meals - list meals with pagination
 - [ ] GET /api/v1/meals - filter by date
 - [ ] GET /api/v1/meals - filter by date range
@@ -1273,11 +1321,13 @@ export class MealsService {
 ### Step 9: Dokumentacja API
 
 **Task 9.1:** Zaktualizować `.ai/api-plan.md`
+
 - [ ] Verify wszystkie przykłady request/response są poprawne
 - [ ] Add any missing edge cases
 - [ ] Update error codes if needed
 
 **Task 9.2:** Utworzyć przykłady użycia (optional)
+
 - [ ] Curl examples
 - [ ] JavaScript/TypeScript fetch examples
 - [ ] Postman collection (optional)
@@ -1290,6 +1340,7 @@ export class MealsService {
 ### Step 10: Code review i polish
 
 **Task 10.1:** Code review checklist
+
 - [ ] All Zod schemas are correct
 - [ ] Error handling is consistent
 - [ ] Error logging for 500 errors only
@@ -1305,12 +1356,14 @@ export class MealsService {
 - [ ] Date filters work correctly (single date vs range)
 
 **Task 10.2:** Performance review
+
 - [ ] Check query plans (EXPLAIN ANALYZE)
 - [ ] Verify indexes are used
 - [ ] Measure response times
 - [ ] Optimize if needed
 
 **Task 10.3:** Security review
+
 - [ ] Verify RLS policies are active
 - [ ] Test unauthorized access (different user trying to access meals)
 - [ ] Test SQL injection attempts (should be blocked by Supabase SDK)
@@ -1325,6 +1378,7 @@ export class MealsService {
 ## 10. Checklist końcowy
 
 ### Files to create:
+
 - [ ] `src/lib/validation/meal.schemas.ts`
 - [ ] `src/lib/services/meals.service.ts`
 - [ ] `src/lib/helpers/macronutrient-validator.ts`
@@ -1333,9 +1387,11 @@ export class MealsService {
 - [ ] `src/tests/api/meals.test.ts`
 
 ### Files to update:
+
 - [ ] `.ai/api-plan.md` (verify and update if needed)
 
 ### Verification:
+
 - [ ] All endpoints return correct status codes
 - [ ] All validation rules are enforced
 - [ ] Macronutrient warnings work correctly
@@ -1357,6 +1413,7 @@ export class MealsService {
 **Problem:** Nie wiadomo, czy używać `meals_with_latest_ai` VIEW czy manual JOIN.
 
 **Solution:**
+
 1. Start z VIEW dla uproszczenia
 2. Measure performance
 3. Jeśli VIEW jest wolny, przełącz na manual LEFT JOIN LATERAL z selekcją konkretnych kolumn
@@ -1368,6 +1425,7 @@ export class MealsService {
 **Problem:** `COUNT(*)` może być wolny dla dużych tabel.
 
 **Solution:**
+
 1. For MVP: użyj `count: 'exact'`
 2. For production: rozważ:
    - Cached count (aktualizowany co 5 min)
@@ -1381,10 +1439,12 @@ export class MealsService {
 **Problem:** Filtrowanie po dacie z różnymi timezone.
 
 **Current approach:**
+
 - Wszystkie timestamps w UTC
 - Frontend konwertuje do local timezone
 
 **Future improvement:**
+
 - Dodać `user_timezone` do profiles
 - Konwertować daty w query: `DATE(meal_timestamp AT TIME ZONE user_timezone)`
 
@@ -1395,6 +1455,7 @@ export class MealsService {
 **Problem:** Sprawdzanie ai_generation_id może być kosztowne.
 
 **Solution:**
+
 1. Sprawdzaj tylko gdy `input_method='ai'`
 2. Użyj `.single()` dla single query
 3. Rozważ cache dla często używanych ai_generation_id (unlikely needed)
@@ -1406,6 +1467,7 @@ export class MealsService {
 **Problem:** Timezone differences mogą powodować false positives dla "future" validation.
 
 **Solution:**
+
 ```typescript
 // Allow small buffer (e.g., 1 minute) to account for clock skew
 const now = new Date();

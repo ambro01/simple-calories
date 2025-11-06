@@ -9,11 +9,11 @@ import type { DailyProgressResponseDTO } from "@/types";
 import { CalorieProgressBar } from "@/components/shared/CalorieProgressBar";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 
-interface DayHeaderProps {
+type DayHeaderProps = {
   progress: DailyProgressResponseDTO;
   onBack?: () => void;
   onAddMeal?: () => void;
-}
+};
 
 export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
   const dateFormatter = useDateFormatter();

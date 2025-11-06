@@ -5,16 +5,19 @@
 ### 1. Vitest Globals Configuration
 
 **Problem:**
+
 - Test files were importing `describe`, `it`, `expect` from vitest
 - Configuration had `globals: true` in vitest.config.ts
 - This caused "No test suite found in file" error
 
 **Solution:**
+
 - When `globals: true` is set in vitest.config.ts, **DO NOT import** test functions
 - Remove imports like: `import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"`
 - Keep only actual module imports
 
 **Example:**
+
 ```typescript
 // ❌ WRONG (with globals: true)
 import { describe, it, expect } from "vitest";
@@ -33,15 +36,18 @@ describe("myFunction", () => {
 ### 2. Time Zone Issues in Date/Time Tests
 
 **Problem:**
+
 - Tests used UTC timestamps: `new Date("2025-01-27T08:30:00Z")`
 - Functions returned local time using `getHours()` and `getMinutes()`
 - Tests failed because local time ≠ UTC time (e.g., Poland is UTC+1)
 
 **Solution:**
+
 - Use local date constructor for time-based tests: `new Date(year, month, day, hour, minute)`
 - This ensures tests work regardless of system timezone
 
 **Example:**
+
 ```typescript
 // ❌ WRONG - assumes UTC
 it("returns correct time", () => {
@@ -60,15 +66,18 @@ it("returns correct time", () => {
 ### 3. String Validation with Punctuation
 
 **Problem:**
+
 - Test checked: `expect(message).not.toContain(".")`
 - This failed because the message ended with a period: "...Please verify your input."
 - Intent was to verify numbers don't have decimal points
 
 **Solution:**
+
 - Be specific in what you're testing
 - Use regex to check for decimal numbers: `not.toMatch(/\d+\.\d+ kcal/)`
 
 **Example:**
+
 ```typescript
 // ❌ WRONG - too broad
 it("has no decimals in calories", () => {
@@ -84,15 +93,18 @@ it("has no decimals in calories", () => {
 ### 4. Unicode/Emoji Character Counting
 
 **Problem:**
+
 - Test assumed emoji counts as 1 character: `"🍕".repeat(500)`
 - Emoji use surrogate pairs in JavaScript, counting as 2 characters
 - Test failed because 500 emoji = 1000 JS characters
 
 **Solution:**
+
 - Remember that emoji and some Unicode characters use 2+ characters in JavaScript
 - Adjust test expectations accordingly
 
 **Example:**
+
 ```typescript
 // ❌ WRONG - assumes 1 char per emoji
 it("handles emoji", () => {

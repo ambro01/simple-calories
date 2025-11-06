@@ -23,6 +23,7 @@ PUBLIC_APP_URL=http://localhost:4321
 ```
 
 **Getting DEFAULT_USER_ID:**
+
 1. Go to your Supabase Dashboard → Authentication → Users
 2. Copy the user ID from an existing user, OR
 3. Run SQL: `SELECT id FROM profiles LIMIT 1;`
@@ -44,6 +45,7 @@ The server should start on `http://localhost:4321`
 Creates a new AI-powered nutritional estimation.
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -51,6 +53,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "uuid",
@@ -75,11 +78,13 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 Lists all AI generations for the user with pagination.
 
 **Request:**
+
 ```bash
 curl http://localhost:4321/api/v1/ai-generations?limit=10&offset=0
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "data": [
@@ -103,11 +108,13 @@ curl http://localhost:4321/api/v1/ai-generations?limit=10&offset=0
 Retrieves a single AI generation by ID.
 
 **Request:**
+
 ```bash
 curl http://localhost:4321/api/v1/ai-generations/550e8400-e29b-41d4-a716-446655440000
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -124,6 +131,7 @@ curl http://localhost:4321/api/v1/ai-generations/550e8400-e29b-41d4-a716-4466554
 ### Scenario 1: Successful Estimation (Specific Meal)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -131,6 +139,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Expected Result:**
+
 - Status: `201 Created`
 - `status`: `"completed"`
 - All nutritional values filled (calories, protein, carbs, fats)
@@ -142,6 +151,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ### Scenario 2: Vague Description (AI Error)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -149,6 +159,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Expected Result:**
+
 - Status: `201 Created` (record created, but AI failed)
 - `status`: `"failed"`
 - All nutritional values are `null`
@@ -156,6 +167,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 - `assumptions` is `null`
 
 **Other vague keywords to test:**
+
 - `"dinner"`, `"breakfast"`, `"obiad"`, `"śniadanie"`, `"kolacja"`
 
 ---
@@ -163,6 +175,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ### Scenario 3: Complex Meal
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -170,6 +183,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Expected Result:**
+
 - Status: `201 Created`
 - `status`: `"completed"`
 - Higher calorie values (around 1200 kcal)
@@ -180,6 +194,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ### Scenario 4: Validation Error (Empty Prompt)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -187,8 +202,10 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Expected Result:**
+
 - Status: `400 Bad Request`
 - Response:
+
 ```json
 {
   "error": "VALIDATION_ERROR",
@@ -204,6 +221,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ### Scenario 5: Validation Error (Too Long)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -211,6 +229,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Expected Result:**
+
 - Status: `400 Bad Request`
 - `details.prompt`: `"Prompt cannot exceed 1000 characters"`
 
@@ -219,6 +238,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ### Scenario 6: Validation Error (Missing Prompt)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:4321/api/v1/ai-generations \
   -H "Content-Type: application/json" \
@@ -226,6 +246,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ```
 
 **Expected Result:**
+
 - Status: `400 Bad Request`
 - `details.prompt`: `"Prompt is required"`
 
@@ -234,6 +255,7 @@ curl -X POST http://localhost:4321/api/v1/ai-generations \
 ### Scenario 7: Rate Limiting
 
 **Request (run 11 times quickly):**
+
 ```bash
 for i in {1..11}; do
   curl -X POST http://localhost:4321/api/v1/ai-generations \
@@ -245,9 +267,11 @@ done
 ```
 
 **Expected Result:**
+
 - First 10 requests: `201 Created`
 - 11th request: `429 Too Many Requests`
 - Response includes:
+
 ```json
 {
   "error": "RATE_LIMIT_EXCEEDED",
@@ -255,6 +279,7 @@ done
   "retry_after": 45000
 }
 ```
+
 - Header: `Retry-After: 45` (seconds)
 
 ---
@@ -262,6 +287,7 @@ done
 ### Scenario 8: List Pagination
 
 **Request:**
+
 ```bash
 # Create some records first
 for i in {1..5}; do
@@ -277,6 +303,7 @@ curl "http://localhost:4321/api/v1/ai-generations?limit=2&offset=2"
 ```
 
 **Expected Result:**
+
 - Each response contains max 2 records
 - `pagination.total` shows total count
 - `pagination.offset` matches request
@@ -287,6 +314,7 @@ curl "http://localhost:4321/api/v1/ai-generations?limit=2&offset=2"
 ### Scenario 9: Get Single Record
 
 **Request:**
+
 ```bash
 # Create a record and get its ID
 RESPONSE=$(curl -X POST http://localhost:4321/api/v1/ai-generations \
@@ -300,6 +328,7 @@ curl "http://localhost:4321/api/v1/ai-generations/$ID"
 ```
 
 **Expected Result:**
+
 - Status: `200 OK`
 - Returns the exact record with matching ID
 
@@ -308,12 +337,15 @@ curl "http://localhost:4321/api/v1/ai-generations/$ID"
 ### Scenario 10: Not Found
 
 **Request:**
+
 ```bash
 curl "http://localhost:4321/api/v1/ai-generations/00000000-0000-0000-0000-000000000000"
 ```
 
 **Expected Result:**
+
 - Status: `404 Not Found`
+
 ```json
 {
   "error": "NOT_FOUND",
@@ -328,18 +360,22 @@ curl "http://localhost:4321/api/v1/ai-generations/00000000-0000-0000-0000-000000
 The OpenRouter service is currently mocked with the following behavior:
 
 ### Default Response (Specific Meals)
+
 - Any prompt that doesn't match vague/complex keywords
 - Returns: 650 kcal, 45g protein, 60g carbs, 18g fats
 
 ### Vague Response
+
 - Keywords: `lunch`, `dinner`, `breakfast`, `obiad`, `śniadanie`, `kolacja`, `something`, `coś`, `posiłek`
 - Returns: `status=failed` with error message
 
 ### Complex Response
+
 - Keywords: `burger`, `pizza`, `kebab`, `zestaw`, `menu`
 - Returns: 1200 kcal, 65g protein, 120g carbs, 42g fats
 
 ### Delay Simulation
+
 - All mocked responses have a random delay of 500-1500ms to simulate real API behavior
 
 ---
@@ -347,16 +383,19 @@ The OpenRouter service is currently mocked with the following behavior:
 ## Troubleshooting
 
 ### Error: "Failed to initialize AI generation"
+
 - Check if Supabase connection is working
 - Verify `SUPABASE_URL` and `SUPABASE_KEY` in `.env`
 - Check if `DEFAULT_USER_ID` exists in the `profiles` table
 
 ### Error: Rate limit not working
+
 - Rate limiter uses in-memory storage
 - Restarting the server will reset all rate limits
 - Each user (DEFAULT_USER_ID) has their own limit counter
 
 ### Build Errors
+
 ```bash
 # Run type check
 npm run build

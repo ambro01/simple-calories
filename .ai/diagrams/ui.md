@@ -296,6 +296,7 @@ flowchart TD
 ## Kluczowe przepływy
 
 ### 1. Przepływ rejestracji (Signup Flow)
+
 1. User odwiedza `/auth/signup` → **PageSignup** (Astro SSR)
 2. **PageSignup** renderuje **SignupForm** (React)
 3. User wypełnia formularz → **SignupForm** → POST `/api/v1/auth/signup`
@@ -304,6 +305,7 @@ flowchart TD
 6. Auto-login → Redirect na `/settings` (US-004: pierwsze ustawienie celu)
 
 ### 2. Przepływ logowania (Login Flow)
+
 1. User odwiedza `/auth/login` → **PageLogin** (Astro SSR)
 2. **PageLogin** renderuje **LoginForm** (React)
 3. User wypełnia formularz → **LoginForm** → POST `/api/v1/auth/login`
@@ -312,6 +314,7 @@ flowchart TD
 6. Redirect na `/` (Dashboard)
 
 ### 3. Przepływ resetu hasła (Password Reset Flow)
+
 1. User odwiedza `/auth/forgot-password` → **PageForgot**
 2. **PageForgot** renderuje **ForgotPasswordForm**
 3. User podaje email → POST `/api/v1/auth/forgot-password`
@@ -323,6 +326,7 @@ flowchart TD
 9. Redirect na `/auth/login?success=password_reset`
 
 ### 4. Przepływ zmiany hasła w ustawieniach (Change Password Flow)
+
 1. User w `/settings` → **CompSettings** → Klikam "Zmień hasło"
 2. Otwiera się **ChangePasswordDialog**
 3. User wypełnia 3 pola (aktualne, nowe, potwierdzenie)
@@ -331,6 +335,7 @@ flowchart TD
 6. Zamknięcie dialogu + Toast sukcesu
 
 ### 5. Auth Guard dla chronionych stron
+
 1. User próbuje odwiedzić `/`, `/settings`, `/day/[date]`
 2. **Middleware** → Odświeża sesję z cookies
 3. Strona Astro → Wywołuje `requireAuth` helper
@@ -343,6 +348,7 @@ flowchart TD
 ### Nowe komponenty do utworzenia
 
 #### Strony Astro (5 plików)
+
 1. `/src/pages/auth/signup.astro` - Strona rejestracji
 2. `/src/pages/auth/login.astro` - Strona logowania
 3. `/src/pages/auth/forgot-password.astro` - Żądanie resetu hasła
@@ -350,9 +356,11 @@ flowchart TD
 5. `/src/pages/auth/callback.astro` - Callback Supabase (PKCE flow)
 
 #### Layout (1 plik)
+
 1. `/src/layouts/AuthLayout.astro` - Dedykowany layout dla stron auth
 
 #### Komponenty React (7 plików)
+
 1. `/src/components/auth/SignupForm.tsx` - Formularz rejestracji
 2. `/src/components/auth/LoginForm.tsx` - Formularz logowania
 3. `/src/components/auth/ForgotPasswordForm.tsx` - Formularz żądania resetu
@@ -362,6 +370,7 @@ flowchart TD
 7. `/src/components/auth/PasswordInput.tsx` - Input z toggle show/hide
 
 #### API Endpoints (6 plików)
+
 1. `/src/pages/api/v1/auth/signup.ts` - POST endpoint rejestracji
 2. `/src/pages/api/v1/auth/login.ts` - POST endpoint logowania
 3. `/src/pages/api/v1/auth/logout.ts` - POST endpoint wylogowania
@@ -370,12 +379,14 @@ flowchart TD
 6. `/src/pages/api/v1/auth/change-password.ts` - POST endpoint zmiany hasła
 
 #### Services & Utilities (4 pliki)
+
 1. `/src/lib/services/auth.service.ts` - Logika biznesowa autentykacji
 2. `/src/lib/helpers/auth.helpers.ts` - Funkcje pomocnicze (requireAuth, etc.)
 3. `/src/lib/validation/auth.schemas.ts` - Zod schemas dla walidacji
 4. `/src/types/auth.types.ts` - Definicje typów TypeScript
 
 #### Hooks (1 plik)
+
 1. `/src/hooks/useAuth.ts` - Hook do zarządzania stanem autentykacji
 
 ### Aktualizowane komponenty

@@ -17,11 +17,11 @@ export type DateFormat =
 /**
  * Helper do formatowania dat
  */
-export interface DateFormatter {
+export type DateFormatter = {
   format(date: string | Date, format: DateFormat): string;
   parseAPIDate(date: string): Date;
   toAPIFormat(date: Date): string;
-}
+};
 
 /**
  * Tworzy nowy formatter dat

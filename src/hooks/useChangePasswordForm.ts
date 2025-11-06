@@ -15,14 +15,14 @@ const VALIDATION_LIMITS = {
   MAX_PASSWORD_LENGTH: 100,
 };
 
-interface UseChangePasswordFormReturn {
+type UseChangePasswordFormReturn = {
   state: ChangePasswordViewModel;
   updateCurrentPassword: (value: string) => void;
   updateNewPassword: (value: string) => void;
   validateFields: () => boolean;
   submitPasswordChange: () => Promise<void>;
   reset: () => void;
-}
+};
 
 /**
  * Tworzy początkowy stan formularza

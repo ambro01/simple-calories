@@ -37,7 +37,7 @@ export class CalorieGoalService {
    * @param offset - Number of records to skip for pagination (default: 0)
    * @returns Array of calorie goals ordered by effective_from DESC
    */
-  async listCalorieGoals(userId: string, limit: number = 50, offset: number = 0): Promise<CalorieGoalResponseDTO[]> {
+  async listCalorieGoals(userId: string, limit = 50, offset = 0): Promise<CalorieGoalResponseDTO[]> {
     const { data, error } = await this.supabase
       .from("calorie_goals")
       .select("*")

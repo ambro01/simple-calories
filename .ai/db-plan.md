@@ -3,6 +3,7 @@
 ## 1. Tables with Columns, Data Types, and Constraints
 
 ### 1.0. users
+
 This table is managed by Supabase Auth.
 
 - id: UUID Primary Key
@@ -12,6 +13,7 @@ This table is managed by Supabase Auth.
 - confirmed_at TIMESTAMPTZ
 
 ### 1.1. profiles
+
 Tabela profili użytkowników - most między autentykacją Supabase a logiką aplikacji.
 
 ```sql
@@ -23,11 +25,13 @@ CREATE TABLE profiles (
 ```
 
 **Columns:**
+
 - `id` - UUID, PRIMARY KEY, FOREIGN KEY → auth.users(id) ON DELETE CASCADE
 - `created_at` - TIMESTAMPTZ, NOT NULL, DEFAULT NOW()
 - `updated_at` - TIMESTAMPTZ, NOT NULL, DEFAULT NOW()
 
 **Constraints:**
+
 - PRIMARY KEY na `id`
 - FOREIGN KEY do `auth.users(id)` z CASCADE DELETE
 - NOT NULL na wszystkich kolumnach
@@ -35,6 +39,7 @@ CREATE TABLE profiles (
 ---
 
 ### 1.2. calorie_goals
+
 Tabela historii celów kalorycznych użytkownika.
 
 ```sql
@@ -50,6 +55,7 @@ CREATE TABLE calorie_goals (
 ```
 
 **Columns:**
+
 - `id` - UUID, PRIMARY KEY, DEFAULT gen_random_uuid()
 - `user_id` - UUID, NOT NULL, FOREIGN KEY → profiles(id) ON DELETE CASCADE
 - `daily_goal` - INTEGER, NOT NULL, CHECK (0 < daily_goal <= 10000)
@@ -58,6 +64,7 @@ CREATE TABLE calorie_goals (
 - `updated_at` - TIMESTAMPTZ, NOT NULL, DEFAULT NOW()
 
 **Constraints:**
+
 - PRIMARY KEY na `id`
 - FOREIGN KEY do `profiles(id)` z CASCADE DELETE
 - UNIQUE constraint na `(user_id, effective_from)`
@@ -65,12 +72,14 @@ CREATE TABLE calorie_goals (
 - NOT NULL na wszystkich kolumnach
 
 **Business Logic:**
+
 - `effective_from` zawsze ustawiany przez aplikację na CURRENT_DATE + 1
 - Wielokrotne zmiany w tym samym dniu: `ON CONFLICT (user_id, effective_from) DO UPDATE`
 
 ---
 
 ### 1.3. meals
+
 Tabela posiłków użytkownika.
 
 ```sql
@@ -95,6 +104,7 @@ CREATE TABLE meals (
 ```
 
 **Columns:**
+
 - `id` - UUID, PRIMARY KEY, DEFAULT gen_random_uuid()
 - `user_id` - UUID, NOT NULL, FOREIGN KEY → profiles(id) ON DELETE CASCADE
 - `description` - VARCHAR(500), NOT NULL (finalna nazwa/opis posiłku, może być edytowana)
@@ -109,6 +119,7 @@ CREATE TABLE meals (
 - `updated_at` - TIMESTAMPTZ, NOT NULL, DEFAULT NOW()
 
 **Constraints:**
+
 - PRIMARY KEY na `id`
 - FOREIGN KEY do `profiles(id)` z CASCADE DELETE
 - CHECK constraint: `calories > 0 AND calories <= 10000`
@@ -116,6 +127,7 @@ CREATE TABLE meals (
 - NOT NULL na: id, user_id, description, calories, input_method, meal_timestamp, created_at, updated_at
 
 **Business Logic:**
+
 - Aplikacja waliduje: NIE pozwalać na meal_timestamp w przyszłości
 - Hard delete (brak soft delete)
 - `input_method = 'ai'` - zaakceptowane bez edycji
@@ -126,6 +138,7 @@ CREATE TABLE meals (
 ---
 
 ### 1.4. ai_generations
+
 Tabela historii generowań AI dla posiłków użytkownika.
 
 ```sql
@@ -158,6 +171,7 @@ CREATE TABLE ai_generations (
 ```
 
 **Columns:**
+
 - `id` - UUID, PRIMARY KEY, DEFAULT gen_random_uuid()
 - `meal_id` - UUID, NULLABLE, FOREIGN KEY → meals(id) ON DELETE CASCADE (NULL until user accepts)
 - `user_id` - UUID, NOT NULL, FOREIGN KEY → profiles(id) ON DELETE CASCADE
@@ -174,6 +188,7 @@ CREATE TABLE ai_generations (
 - `created_at` - TIMESTAMPTZ, NOT NULL, DEFAULT NOW()
 
 **Constraints:**
+
 - PRIMARY KEY na `id`
 - FOREIGN KEY do `meals(id)` z CASCADE DELETE (nullable)
 - FOREIGN KEY do `profiles(id)` z CASCADE DELETE
@@ -181,6 +196,7 @@ CREATE TABLE ai_generations (
 - NOT NULL na: id, user_id, prompt, status, created_at
 
 **Business Logic:**
+
 - Wpis tworzony **od razu po wywołaniu AI** (przed akceptacją użytkownika)
 - `meal_id = NULL` początkowo, UPDATE po akceptacji przez użytkownika
 - `status = 'pending'` podczas generowania, 'completed' po sukcesie, 'failed' po błędzie
@@ -190,6 +206,7 @@ CREATE TABLE ai_generations (
 ---
 
 ### 1.5. error_logs
+
 Tabela logów błędów aplikacji i AI.
 
 ```sql
@@ -205,6 +222,7 @@ CREATE TABLE error_logs (
 ```
 
 **Columns:**
+
 - `id` - UUID, PRIMARY KEY, DEFAULT gen_random_uuid()
 - `user_id` - UUID, NULLABLE, FOREIGN KEY → profiles(id) ON DELETE SET NULL
 - `error_type` - VARCHAR(100), NOT NULL (np. 'ai_analysis_failed', 'validation_error')
@@ -214,11 +232,13 @@ CREATE TABLE error_logs (
 - `created_at` - TIMESTAMPTZ, NOT NULL, DEFAULT NOW()
 
 **Constraints:**
+
 - PRIMARY KEY na `id`
 - FOREIGN KEY do `profiles(id)` z SET NULL (zachowanie logów po usunięciu użytkownika)
 - NOT NULL na: id, error_type, error_message, created_at
 
 **Business Logic:**
+
 - Automatyczne czyszczenie logów starszych niż 90 dni (PostgreSQL cron)
 - Dostęp tylko dla adminów (brak RLS policies dla użytkowników)
 
@@ -287,6 +307,7 @@ profiles
 ## 3. Indexes
 
 ### 3.1. Primary Key Indexes (automatic)
+
 ```sql
 -- Automatycznie tworzone dla PRIMARY KEY
 -- profiles(id)
@@ -297,6 +318,7 @@ profiles
 ```
 
 ### 3.2. Foreign Key Indexes
+
 ```sql
 -- Indeksy dla foreign keys
 CREATE INDEX idx_meals_user_id ON meals(user_id);
@@ -307,6 +329,7 @@ CREATE INDEX idx_error_logs_user_id ON error_logs(user_id);
 ```
 
 ### 3.3. Performance Indexes
+
 ```sql
 -- Optymalizacja zapytań dashboardu i widoku dnia
 CREATE INDEX idx_meals_user_timestamp ON meals(user_id, meal_timestamp DESC);
@@ -326,6 +349,7 @@ CREATE INDEX idx_error_logs_user_created ON error_logs(user_id, created_at DESC)
 ```
 
 **Index Strategy:**
+
 - Compound indexes dla często używanych zapytań (user_id + timestamp/date)
 - DESC ordering dla chronologicznego sortowania (najnowsze wpisy pierwsze)
 - meal_id + created_at DESC dla pobierania najnowszego generowania AI
@@ -337,6 +361,7 @@ CREATE INDEX idx_error_logs_user_created ON error_logs(user_id, created_at DESC)
 ## 4. PostgreSQL Functions and Triggers
 
 ### 4.1. Function: get_current_calorie_goal
+
 Pobiera aktualny cel kaloryczny użytkownika na podstawie daty.
 
 ```sql
@@ -361,6 +386,7 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ```
 
 **Properties:**
+
 - `STABLE` - funkcja nie modyfikuje danych, optymalizacja query planner
 - `SECURITY DEFINER` - wykonuje się z prawami twórcy (omija RLS dla internal logic)
 - Fallback na 2000 kcal jeśli brak celu dla użytkownika
@@ -368,6 +394,7 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ---
 
 ### 4.2. Function: get_latest_ai_generation
+
 Pobiera najnowsze generowanie AI dla posiłku.
 
 ```sql
@@ -408,12 +435,14 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 ```
 
 **Properties:**
+
 - Zwraca najnowsze generowanie AI dla danego posiłku
 - Używane przy wyświetlaniu szczegółów posiłku z historią AI
 
 ---
 
 ### 4.3. Trigger Function: update_updated_at_column
+
 Automatyczna aktualizacja kolumny `updated_at` przy UPDATE.
 
 ```sql
@@ -427,6 +456,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 **Applied to tables:**
+
 ```sql
 CREATE TRIGGER update_meals_updated_at
   BEFORE UPDATE ON meals
@@ -444,6 +474,7 @@ CREATE TRIGGER update_calorie_goals_updated_at
 ---
 
 ### 4.4. Trigger Function: handle_new_user
+
 Automatyczne tworzenie profilu i domyślnego celu przy rejestracji użytkownika.
 
 ```sql
@@ -468,6 +499,7 @@ CREATE TRIGGER on_auth_user_created
 ```
 
 **Business Logic:**
+
 - Automatyczne tworzenie przy INSERT na `auth.users`
 - Domyślny cel: 2000 kcal
 - `effective_from = CURRENT_DATE` (wyjątek - tylko dla pierwszego celu przy rejestracji)
@@ -478,6 +510,7 @@ CREATE TRIGGER on_auth_user_created
 ## 5. PostgreSQL Views
 
 ### 5.1. View: daily_progress
+
 Agregacja dziennego postępu użytkownika.
 
 ```sql
@@ -496,6 +529,7 @@ GROUP BY DATE(meal_timestamp), user_id;
 ```
 
 **Columns:**
+
 - `date` - DATE (dzień)
 - `user_id` - UUID
 - `total_calories` - suma kalorii z danego dnia
@@ -506,12 +540,14 @@ GROUP BY DATE(meal_timestamp), user_id;
 - `percentage` - procent realizacji celu (zaokrąglony do 1 miejsca)
 
 **Properties:**
+
 - Zwykły VIEW (nie materialized)
 - RLS automatycznie filtruje po `user_id = auth.uid()`
 - UTC date grouping (frontend konwertuje do lokalnego czasu)
 - Używa funkcji `get_current_calorie_goal()` dla każdego dnia
 
 **Usage:**
+
 ```sql
 -- Dashboard: lista dni użytkownika
 SELECT * FROM daily_progress
@@ -528,6 +564,7 @@ WHERE user_id = auth.uid()
 ---
 
 ### 5.2. View: meals_with_latest_ai
+
 Posiłki z najnowszym generowaniem AI.
 
 ```sql
@@ -549,6 +586,7 @@ LEFT JOIN LATERAL (
 ```
 
 **Usage:**
+
 ```sql
 -- Pobranie posiłku z najnowszym generowaniem AI
 SELECT * FROM meals_with_latest_ai
@@ -560,6 +598,7 @@ WHERE id = $1;
 ## 6. Row Level Security (RLS) Policies
 
 ### 6.1. profiles
+
 ```sql
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
@@ -579,6 +618,7 @@ USING (id = auth.uid());
 ---
 
 ### 6.2. meals
+
 ```sql
 ALTER TABLE meals ENABLE ROW LEVEL SECURITY;
 
@@ -606,6 +646,7 @@ USING (user_id = auth.uid());
 ---
 
 ### 6.3. ai_generations
+
 ```sql
 ALTER TABLE ai_generations ENABLE ROW LEVEL SECURITY;
 
@@ -634,6 +675,7 @@ USING (user_id = auth.uid());
 ---
 
 ### 6.4. calorie_goals
+
 ```sql
 ALTER TABLE calorie_goals ENABLE ROW LEVEL SECURITY;
 
@@ -661,6 +703,7 @@ USING (user_id = auth.uid());
 ---
 
 ### 6.5. error_logs
+
 ```sql
 ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 
@@ -672,6 +715,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 ---
 
 ### 6.6. Views
+
 ```sql
 -- daily_progress: RLS automatycznie egzekwowane przez underlying table (meals)
 -- meals_with_latest_ai: RLS automatycznie egzekwowane przez underlying tables
@@ -684,18 +728,21 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 ## 7. Additional Notes and Design Decisions
 
 ### 7.1. Authentication & Authorization
+
 - **Supabase Auth** zarządza użytkownikami w `auth.users`
 - **RLS policies** zapewniają 100% izolację danych między użytkownikami
 - **Restrictive by default** - brak dostępu bez explicit policy
 - **auth.uid()** - funkcja Supabase zwracająca ID zalogowanego użytkownika
 
 ### 7.2. Calorie Goals History
+
 - **Historyzacja celów** - każda zmiana jako nowy rekord
 - **effective_from** - cel obowiązuje od dnia następnego (CURRENT_DATE + 1)
 - **Wyjątek**: Domyślny cel przy rejestracji ma `effective_from = CURRENT_DATE`
 - **ON CONFLICT UPDATE** - wielokrotne zmiany w tym samym dniu
 
 ### 7.3. Meals Data Model (UPDATED)
+
 - **description** - finalna nazwa/opis posiłku (może być edytowana)
 - **Makroskładniki nullable** - tylko kalorie są wymagane
 - **input_method tracking** - niezbędne dla metryk AI z PRD
@@ -704,6 +751,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 - **Hard delete** - brak soft delete dla MVP
 
 ### 7.4. AI Generations Model (NEW)
+
 - **Historia pełna** - wszystkie wywołania AI zapisywane
 - **meal_id nullable** - NULL przed akceptacją, UPDATE po akceptacji
 - **Status tracking** - 'pending', 'completed', 'failed'
@@ -712,16 +760,18 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 - **Użycie** - pobierz najnowsze: `ORDER BY created_at DESC LIMIT 1`
 
 ### 7.5. AI Metrics (PRD Requirements - UPDATED)
+
 - **Metryka Zaufania**: `COUNT(input_method = 'ai') / COUNT(input_method IN ('ai', 'ai-edited'))`
 - **Metryka Użyteczności**: `COUNT(input_method IN ('ai', 'ai-edited')) / COUNT(*)`
 - **Nowe metryki z ai_generations**:
   - Liczba regeneracji na meal (ile razy użytkownik kliknął "Generuj ponownie")
   - Średni czas generowania (avg(generation_duration))
-  - Success rate (COUNT(status='completed') / COUNT(*))
+  - Success rate (COUNT(status='completed') / COUNT(\*))
   - Najpopularniejsze modele (GROUP BY model_used)
   - Różnica między generated values a finalnymi wartościami w meals (czy użytkownik edytuje)
 
 ### 7.6. Performance Considerations
+
 - **Compound indexes** - (user_id, timestamp/date DESC)
 - **AI generations index** - (meal_id, created_at DESC) dla najnowszego
 - **No partitioning** - niepotrzebne dla MVP
@@ -730,6 +780,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 - **LATERAL join** w view dla efektywnego pobierania najnowszego AI
 
 ### 7.7. Data Integrity
+
 - **CHECK constraints** - realistyczne zakresy wartości
 - **UNIQUE constraints** - zapobieganie duplikatom
 - **CASCADE DELETE** - automatyczne czyszczenie powiązanych danych
@@ -737,6 +788,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 - **Nullable meal_id** - wspiera flow: generate → accept → link to meal
 
 ### 7.8. GDPR Compliance
+
 - **CASCADE DELETE** - automatyczne usuwanie danych użytkownika
 - **ai_generations CASCADE** - historia AI usuwana z użytkownikiem
 - **SET NULL dla error_logs** - anonimizacja logów
@@ -744,12 +796,14 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 - **RLS** - pełna izolacja danych
 
 ### 7.9. Timezone Handling
+
 - **TIMESTAMPTZ** - przechowywanie w UTC
 - **Frontend konwersja** - wyświetlanie w lokalnym czasie użytkownika
 - **VIEW date grouping** - UTC (akceptowalne dla MVP)
 - **Future**: możliwość dodania user_timezone do profiles
 
 ### 7.10. Migration Strategy
+
 1. Create ENUM types (meal_category, input_method_type, ai_generation_status)
 2. Create tables (profiles, calorie_goals, meals, ai_generations, error_logs)
 3. Create functions (get_current_calorie_goal, get_latest_ai_generation, update_updated_at_column, handle_new_user)
@@ -759,6 +813,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 7. Create indexes
 
 ### 7.11. Known Limitations (MVP)
+
 - **No optimistic locking** - last write wins
 - **No timezone preferences** - UTC date grouping
 - **No rate limiting** - implementować w Edge Functions
@@ -766,6 +821,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 - **No concurrent edit protection** - monitorować czy występuje problem
 
 ### 7.12. Future Enhancements (poza MVP)
+
 - Tabela `meal_favorites` - ulubione posiłki
 - Tabela `weight_history` - śledzenie wagi
 - Tabela `user_preferences` - preferencje użytkownika (jednostki, timezone)
@@ -780,6 +836,7 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 ## 8. Complete Schema SQL
 
 ### 8.1. Full Schema Creation Script
+
 ```sql
 -- ============================================
 -- ENUMS
@@ -1105,6 +1162,7 @@ Ten zaktualizowany schemat bazy danych PostgreSQL dla MVP "Szybkie Kalorie" zape
 ✅ **Rozszerzone metryki AI** - regeneracje, modele, edycje użytkownika
 
 **Kluczowe zmiany:**
+
 - ➕ Nowa tabela `ai_generations` z pełną historią
 - ➕ Nowy ENUM `ai_generation_status`
 - ➕ Nowa funkcja `get_latest_ai_generation()`

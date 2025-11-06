@@ -7,13 +7,13 @@
 
 import { useCallback, useState } from "react";
 
-interface UseInfiniteScrollParams<T> {
+type UseInfiniteScrollParams<T> = {
   fetchFunction: (limit: number, offset: number) => Promise<T[]>;
   limit: number;
   onError?: (error: Error) => void;
-}
+};
 
-interface UseInfiniteScrollReturn<T> {
+type UseInfiniteScrollReturn<T> = {
   items: T[];
   loading: boolean;
   error: string | null;
@@ -21,7 +21,7 @@ interface UseInfiniteScrollReturn<T> {
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   reset: () => void;
-}
+};
 
 export function useInfiniteScroll<T>({
   fetchFunction,

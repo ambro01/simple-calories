@@ -28,8 +28,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
       date_from: url.searchParams.get("date_from") || undefined,
       date_to: url.searchParams.get("date_to") || undefined,
       category: url.searchParams.get("category") || undefined,
-      limit: url.searchParams.get("limit") ? parseInt(url.searchParams.get("limit")!) : undefined,
-      offset: url.searchParams.get("offset") ? parseInt(url.searchParams.get("offset")!) : undefined,
+      limit: url.searchParams.get("limit") ? parseInt(url.searchParams.get("limit") ?? "0") : undefined,
+      offset: url.searchParams.get("offset") ? parseInt(url.searchParams.get("offset") ?? "0") : undefined,
       sort: url.searchParams.get("sort") || undefined,
     };
 

@@ -21,19 +21,19 @@ import type { DailyProgressResponseDTO, DailyProgressListResponseDTO, DailyProgr
 /**
  * Query parameters for listing daily progress records
  */
-interface GetDailyProgressListParams {
+type GetDailyProgressListParams = {
   userId: string;
   dateFrom?: string;
   dateTo?: string;
   limit: number;
   offset: number;
-}
+};
 
 /**
  * Raw result from daily_progress view (database row)
  * Note: totals can be null when no meals exist for that date
  */
-interface DailyProgressViewRow {
+type DailyProgressViewRow = {
   date: string;
   user_id: string;
   total_calories: number | null;
@@ -42,7 +42,7 @@ interface DailyProgressViewRow {
   total_fats: number | null;
   calorie_goal: number;
   percentage: number | null;
-}
+};
 
 /**
  * Daily Progress Service Class

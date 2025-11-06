@@ -151,15 +151,10 @@ export const GET: APIRoute = async ({ params, locals }) => {
 
     // Log error to database
     try {
-      const errorLogParams = formatErrorForLogging(
-        error,
-        "daily_progress_date_fetch_failed",
-        locals.user?.id,
-        {
-          endpoint: "GET /api/v1/daily-progress/:date",
-          date: params.date,
-        }
-      );
+      const errorLogParams = formatErrorForLogging(error, "daily_progress_date_fetch_failed", locals.user?.id, {
+        endpoint: "GET /api/v1/daily-progress/:date",
+        date: params.date,
+      });
       await logError(locals.supabase, errorLogParams);
     } catch (logErr) {
       // If logging fails, just log to console

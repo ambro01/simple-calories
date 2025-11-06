@@ -5,6 +5,7 @@
 Endpointy zarządzania celami kalorycznymi umożliwiają użytkownikom ustawianie, przeglądanie i modyfikowanie swoich dziennych celów kalorycznych. System przechowuje pełną historię celów, co pozwala na śledzenie zmian w czasie i prawidłowe obliczanie postępów dla dat historycznych.
 
 **Endpointy:**
+
 - `GET /api/v1/calorie-goals` - lista wszystkich celów użytkownika (historia) z paginacją
 - `GET /api/v1/calorie-goals/current` - aktualny cel kaloryczny na wybrany dzień
 - `POST /api/v1/calorie-goals` - utworzenie nowego celu (obowiązuje od jutra)
@@ -12,6 +13,7 @@ Endpointy zarządzania celami kalorycznymi umożliwiają użytkownikom ustawiani
 - `DELETE /api/v1/calorie-goals/:id` - usunięcie celu z historii
 
 **Kluczowe cechy:**
+
 - Historyzacja celów - każda zmiana to nowy rekord
 - Automatyczne ustawianie `effective_from` na CURRENT_DATE + 1 przy tworzeniu
 - ON CONFLICT handling dla duplikatów (user_id, effective_from)
@@ -56,12 +58,14 @@ Endpointy zarządzania celami kalorycznymi umożliwiają użytkownikom ustawiani
     "daily_goal": 2500
   }
   ```
+
   - `daily_goal` (required): integer, 1-10000
 - **Headers:**
   - `Authorization: Bearer <access_token>` (wymagany)
   - `Content-Type: application/json` (wymagany)
 
 **Business Logic:**
+
 - `effective_from` automatycznie ustawiany na CURRENT_DATE + 1
 - Wielokrotne wywołania w tym samym dniu dla tego samego effective_from → 409 Conflict
 
@@ -78,6 +82,7 @@ Endpointy zarządzania celami kalorycznymi umożliwiają użytkownikom ustawiani
     "daily_goal": 2600
   }
   ```
+
   - `daily_goal` (required): integer, 1-10000
 - **Headers:**
   - `Authorization: Bearer <access_token>` (wymagany)
@@ -148,6 +153,7 @@ Tables<"calorie_goals"> = {
 ### GET /api/v1/calorie-goals
 
 **Status 200 - Success:**
+
 ```json
 {
   "data": [
@@ -169,6 +175,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 401 - Unauthorized:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -177,6 +184,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 500 - Internal Server Error:**
+
 ```json
 {
   "error": "Internal Server Error",
@@ -187,6 +195,7 @@ Tables<"calorie_goals"> = {
 ### GET /api/v1/calorie-goals/current
 
 **Status 200 - Success:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -199,6 +208,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 400 - Bad Request (invalid date format):**
+
 ```json
 {
   "error": "Bad Request",
@@ -207,6 +217,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 404 - Not Found (no goal set):**
+
 ```json
 {
   "error": "Not Found",
@@ -217,6 +228,7 @@ Tables<"calorie_goals"> = {
 ### POST /api/v1/calorie-goals
 
 **Status 201 - Created:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -229,6 +241,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 400 - Bad Request (validation):**
+
 ```json
 {
   "error": "Bad Request",
@@ -240,6 +253,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 409 - Conflict:**
+
 ```json
 {
   "error": "Conflict",
@@ -250,6 +264,7 @@ Tables<"calorie_goals"> = {
 ### PATCH /api/v1/calorie-goals/:id
 
 **Status 200 - Success:**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -262,6 +277,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 400 - Bad Request (invalid UUID):**
+
 ```json
 {
   "error": "Bad Request",
@@ -270,6 +286,7 @@ Tables<"calorie_goals"> = {
 ```
 
 **Status 404 - Not Found:**
+
 ```json
 {
   "error": "Not Found",
@@ -283,6 +300,7 @@ Tables<"calorie_goals"> = {
 (no response body)
 
 **Status 404 - Not Found:**
+
 ```json
 {
   "error": "Not Found",
@@ -434,17 +452,20 @@ Tables<"calorie_goals"> = {
 ## 6. Względy bezpieczeństwa
 
 ### Uwierzytelnianie:
+
 - **Supabase Auth:** middleware sprawdza ważność tokenu JWT
 - **Session Management:** `context.locals.supabase.auth.getUser()` pobiera sesję
 - **Token w headerze:** `Authorization: Bearer <access_token>`
 
 ### Autoryzacja:
+
 - **RLS Policies:** automatyczna filtracja zapytań po `auth.uid()`
 - **Explicit user_id filtering:** dodatkowe `.eq('user_id', userId)` w UPDATE/DELETE
 - **IDOR Protection:** użytkownik nie może modyfikować celów innych użytkowników
 - **Izolacja danych:** RLS zapewnia pełną separację danych między użytkownikami
 
 ### Walidacja danych:
+
 - **Zod schemas:**
   - `daily_goal`: integer, min 1, max 10000
   - `date`: regex /^\d{4}-\d{2}-\d{2}$/ (YYYY-MM-DD)
@@ -454,6 +475,7 @@ Tables<"calorie_goals"> = {
 - **SQL Injection:** Supabase SDK automatycznie chroni
 
 ### Najlepsze praktyki:
+
 - Używać `context.locals.supabase` zamiast bezpośredniego importu klienta
 - Zawsze sprawdzać wynik `getUser()` przed dostępem do zasobów
 - Walidować UUID format przed przekazaniem do bazy
@@ -464,17 +486,17 @@ Tables<"calorie_goals"> = {
 
 ### Scenariusze błędów:
 
-| Kod | Endpoint | Scenariusz | Obsługa | Logowanie |
-|-----|----------|-----------|---------|-----------|
-| 400 | POST, PATCH | Nieprawidłowy daily_goal | Walidacja Zod, zwróć szczegóły | Nie |
-| 400 | GET current | Nieprawidłowy format daty | Walidacja Zod/regex | Nie |
-| 400 | PATCH, DELETE | Nieprawidłowy format UUID | Walidacja UUID | Nie |
-| 401 | Wszystkie | Brak/nieprawidłowy token | Middleware/getUser() | Nie |
-| 404 | GET current | Brak celu (normalne) | Return message z defaultem | Nie |
-| 404 | PATCH, DELETE | Zasób nie istnieje | Service zwraca null | Nie |
-| 409 | POST | UNIQUE constraint violation | Catch PostgreSQL error 23505 | Tak (analytics) |
-| 500 | Wszystkie | Błąd bazy danych | Try-catch, log do error_logs | Tak |
-| 500 | Wszystkie | Nieoczekiwany błąd | Global error handler | Tak |
+| Kod | Endpoint      | Scenariusz                  | Obsługa                        | Logowanie       |
+| --- | ------------- | --------------------------- | ------------------------------ | --------------- |
+| 400 | POST, PATCH   | Nieprawidłowy daily_goal    | Walidacja Zod, zwróć szczegóły | Nie             |
+| 400 | GET current   | Nieprawidłowy format daty   | Walidacja Zod/regex            | Nie             |
+| 400 | PATCH, DELETE | Nieprawidłowy format UUID   | Walidacja UUID                 | Nie             |
+| 401 | Wszystkie     | Brak/nieprawidłowy token    | Middleware/getUser()           | Nie             |
+| 404 | GET current   | Brak celu (normalne)        | Return message z defaultem     | Nie             |
+| 404 | PATCH, DELETE | Zasób nie istnieje          | Service zwraca null            | Nie             |
+| 409 | POST          | UNIQUE constraint violation | Catch PostgreSQL error 23505   | Tak (analytics) |
+| 500 | Wszystkie     | Błąd bazy danych            | Try-catch, log do error_logs   | Tak             |
+| 500 | Wszystkie     | Nieoczekiwany błąd          | Global error handler           | Tak             |
 
 ### Struktura obsługi błędów:
 
@@ -485,35 +507,43 @@ try {
   return new Response(JSON.stringify(newGoal), { status: 201 });
 } catch (error) {
   // PostgreSQL UNIQUE constraint violation error code
-  if (error.code === '23505') {
-    return new Response(JSON.stringify({
-      error: "Conflict",
-      message: "A calorie goal for this date already exists. Use PATCH to update."
-    }), { status: 409 });
+  if (error.code === "23505") {
+    return new Response(
+      JSON.stringify({
+        error: "Conflict",
+        message: "A calorie goal for this date already exists. Use PATCH to update.",
+      }),
+      { status: 409 }
+    );
   }
 
   // Log unexpected errors
   await logError(supabase, {
     user_id: userId,
-    error_type: 'calorie_goal_create_error',
+    error_type: "calorie_goal_create_error",
     error_message: error.message,
-    context: { endpoint: 'POST /api/v1/calorie-goals' }
+    context: { endpoint: "POST /api/v1/calorie-goals" },
   });
 
-  return new Response(JSON.stringify({
-    error: "Internal Server Error",
-    message: "An unexpected error occurred"
-  }), { status: 500 });
+  return new Response(
+    JSON.stringify({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred",
+    }),
+    { status: 500 }
+  );
 }
 ```
 
 ### Logowanie błędów do error_logs:
 
 **Błędy wymagające logowania:**
+
 - 500 - wszystkie nieoczekiwane błędy aplikacji i bazy danych
 - 409 - konflikty (dla analityki - czy użytkownicy często próbują tworzyć duplikaty)
 
 **Błędy niewymagające logowania:**
+
 - 400 - błędy walidacji (user error)
 - 401 - brak autentykacji (normalna sytuacja)
 - 404 - brak zasobu (normalna sytuacja, szczególnie GET current)
@@ -561,12 +591,13 @@ try {
 ## 9. Etapy wdrożenia
 
 ### Krok 1: Utworzenie serwisu CalorieGoalService
+
 **Plik:** `src/lib/services/calorie-goal.service.ts`
 
 ```typescript
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../../db/database.types';
-import type { CalorieGoalResponseDTO } from '../../types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../db/database.types";
+import type { CalorieGoalResponseDTO } from "../../types";
 
 export class CalorieGoalService {
   constructor(private supabase: SupabaseClient<Database>) {}
@@ -575,16 +606,12 @@ export class CalorieGoalService {
    * List calorie goals for a user with pagination
    * Ordered by effective_from DESC (newest first)
    */
-  async listCalorieGoals(
-    userId: string,
-    limit: number = 50,
-    offset: number = 0
-  ): Promise<CalorieGoalResponseDTO[]> {
+  async listCalorieGoals(userId: string, limit: number = 50, offset: number = 0): Promise<CalorieGoalResponseDTO[]> {
     const { data, error } = await this.supabase
-      .from('calorie_goals')
-      .select('*')
-      .eq('user_id', userId)
-      .order('effective_from', { ascending: false })
+      .from("calorie_goals")
+      .select("*")
+      .eq("user_id", userId)
+      .order("effective_from", { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) throw error;
@@ -596,9 +623,9 @@ export class CalorieGoalService {
    */
   async countCalorieGoals(userId: string): Promise<number> {
     const { count, error } = await this.supabase
-      .from('calorie_goals')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
+      .from("calorie_goals")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
 
     if (error) throw error;
     return count || 0;
@@ -613,17 +640,17 @@ export class CalorieGoalService {
     targetDate: string // YYYY-MM-DD
   ): Promise<CalorieGoalResponseDTO | null> {
     const { data, error } = await this.supabase
-      .from('calorie_goals')
-      .select('*')
-      .eq('user_id', userId)
-      .lte('effective_from', targetDate)
-      .order('effective_from', { ascending: false })
+      .from("calorie_goals")
+      .select("*")
+      .eq("user_id", userId)
+      .lte("effective_from", targetDate)
+      .order("effective_from", { ascending: false })
       .limit(1)
       .single();
 
     if (error) {
       // PGRST116 = Row not found (not an error, just no goal set)
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null;
       }
       throw error;
@@ -638,17 +665,14 @@ export class CalorieGoalService {
    *
    * @throws Error with code '23505' if goal already exists for that date
    */
-  async createCalorieGoal(
-    userId: string,
-    dailyGoal: number
-  ): Promise<CalorieGoalResponseDTO> {
+  async createCalorieGoal(userId: string, dailyGoal: number): Promise<CalorieGoalResponseDTO> {
     // Calculate effective_from as tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const effectiveFrom = tomorrow.toISOString().split('T')[0]; // YYYY-MM-DD
+    const effectiveFrom = tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
 
     const { data, error } = await this.supabase
-      .from('calorie_goals')
+      .from("calorie_goals")
       .insert({
         user_id: userId,
         daily_goal: dailyGoal,
@@ -665,21 +689,17 @@ export class CalorieGoalService {
    * Update an existing calorie goal
    * Only daily_goal can be updated; effective_from is immutable
    */
-  async updateCalorieGoal(
-    userId: string,
-    goalId: string,
-    dailyGoal: number
-  ): Promise<CalorieGoalResponseDTO | null> {
+  async updateCalorieGoal(userId: string, goalId: string, dailyGoal: number): Promise<CalorieGoalResponseDTO | null> {
     const { data, error } = await this.supabase
-      .from('calorie_goals')
+      .from("calorie_goals")
       .update({ daily_goal: dailyGoal })
-      .eq('id', goalId)
-      .eq('user_id', userId)
+      .eq("id", goalId)
+      .eq("user_id", userId)
       .select()
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null;
       }
       throw error;
@@ -692,18 +712,11 @@ export class CalorieGoalService {
    * Delete a calorie goal
    * User can delete any goal from their history
    */
-  async deleteCalorieGoal(
-    userId: string,
-    goalId: string
-  ): Promise<boolean> {
-    const { error } = await this.supabase
-      .from('calorie_goals')
-      .delete()
-      .eq('id', goalId)
-      .eq('user_id', userId);
+  async deleteCalorieGoal(userId: string, goalId: string): Promise<boolean> {
+    const { error } = await this.supabase.from("calorie_goals").delete().eq("id", goalId).eq("user_id", userId);
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return false; // Not found
       }
       throw error;
@@ -715,10 +728,11 @@ export class CalorieGoalService {
 ```
 
 ### Krok 2: Utworzenie Zod schemas dla walidacji
+
 **Plik:** `src/lib/validators/calorie-goal.validators.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Schema for POST /api/v1/calorie-goals request body
@@ -727,9 +741,9 @@ import { z } from 'zod';
 export const createCalorieGoalSchema = z.object({
   daily_goal: z
     .number()
-    .int('Daily goal must be an integer')
-    .min(1, 'Daily goal must be at least 1')
-    .max(10000, 'Daily goal cannot exceed 10000'),
+    .int("Daily goal must be an integer")
+    .min(1, "Daily goal must be at least 1")
+    .max(10000, "Daily goal cannot exceed 10000"),
 });
 
 /**
@@ -739,9 +753,9 @@ export const createCalorieGoalSchema = z.object({
 export const updateCalorieGoalSchema = z.object({
   daily_goal: z
     .number()
-    .int('Daily goal must be an integer')
-    .min(1, 'Daily goal must be at least 1')
-    .max(10000, 'Daily goal cannot exceed 10000'),
+    .int("Daily goal must be an integer")
+    .min(1, "Daily goal must be at least 1")
+    .max(10000, "Daily goal cannot exceed 10000"),
 });
 
 /**
@@ -749,15 +763,13 @@ export const updateCalorieGoalSchema = z.object({
  */
 export const dateQueryParamSchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
   .optional();
 
 /**
  * Schema for UUID parameter validation
  */
-export const uuidParamSchema = z
-  .string()
-  .uuid('Invalid UUID format');
+export const uuidParamSchema = z.string().uuid("Invalid UUID format");
 
 /**
  * Inferred TypeScript types
@@ -767,20 +779,17 @@ export type UpdateCalorieGoalInput = z.infer<typeof updateCalorieGoalSchema>;
 ```
 
 ### Krok 3: Implementacja GET /api/v1/calorie-goals (list)
+
 **Plik:** `src/pages/api/v1/calorie-goals.ts`
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { DEFAULT_USER_ID } from '../../../db/supabase.client';
-import { CalorieGoalService } from '../../../lib/services/calorie-goal.service';
-import { createCalorieGoalSchema } from '../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../lib/helpers/error-logger';
-import type {
-  CalorieGoalsListResponseDTO,
-  ErrorResponseDTO,
-  CalorieGoalResponseDTO
-} from '../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../db/supabase.client";
+import { CalorieGoalService } from "../../../lib/services/calorie-goal.service";
+import { createCalorieGoalSchema } from "../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../lib/helpers/error-logger";
+import type { CalorieGoalsListResponseDTO, ErrorResponseDTO, CalorieGoalResponseDTO } from "../../../types";
 
 export const prerender = false;
 
@@ -794,14 +803,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 2: Parse query parameters
-    const limit = Math.min(
-      parseInt(url.searchParams.get('limit') || '50'),
-      100
-    );
-    const offset = Math.max(
-      parseInt(url.searchParams.get('offset') || '0'),
-      0
-    );
+    const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 100);
+    const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
 
     // Step 3: Fetch data from service
     const calorieGoalService = new CalorieGoalService(locals.supabase);
@@ -822,26 +825,26 @@ export const GET: APIRoute = async ({ url, locals }) => {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error listing calorie goals:', error);
+    console.error("Error listing calorie goals:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goals_list_error',
+      error_type: "calorie_goals_list_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
-      context: { endpoint: 'GET /api/v1/calorie-goals' },
+      context: { endpoint: "GET /api/v1/calorie-goals" },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -862,10 +865,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     } catch {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON body',
+          error: "Bad Request",
+          message: "Invalid JSON body",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -877,17 +880,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
       if (error instanceof ZodError) {
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         return new Response(
           JSON.stringify({
-            error: 'Bad Request',
-            message: 'Validation failed',
+            error: "Bad Request",
+            message: "Validation failed",
             details,
           } as ErrorResponseDTO),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
+          { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       throw error;
@@ -897,61 +900,59 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const calorieGoalService = new CalorieGoalService(locals.supabase);
 
     try {
-      const newGoal = await calorieGoalService.createCalorieGoal(
-        userId,
-        validatedData.daily_goal
-      );
+      const newGoal = await calorieGoalService.createCalorieGoal(userId, validatedData.daily_goal);
 
       return new Response(JSON.stringify(newGoal as CalorieGoalResponseDTO), {
         status: 201,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     } catch (createError: any) {
       // Handle UNIQUE constraint violation (goal already exists for that date)
-      if (createError.code === '23505') {
+      if (createError.code === "23505") {
         return new Response(
           JSON.stringify({
-            error: 'Conflict',
-            message: 'A calorie goal for this date already exists. Use PATCH to update.',
+            error: "Conflict",
+            message: "A calorie goal for this date already exists. Use PATCH to update.",
           } as ErrorResponseDTO),
-          { status: 409, headers: { 'Content-Type': 'application/json' } }
+          { status: 409, headers: { "Content-Type": "application/json" } }
         );
       }
       throw createError;
     }
   } catch (error) {
-    console.error('Error creating calorie goal:', error);
+    console.error("Error creating calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_create_error',
+      error_type: "calorie_goal_create_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
-      context: { endpoint: 'POST /api/v1/calorie-goals' },
+      context: { endpoint: "POST /api/v1/calorie-goals" },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
 ```
 
 ### Krok 4: Implementacja GET /api/v1/calorie-goals/current
+
 **Plik:** `src/pages/api/v1/calorie-goals/current.ts`
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { CalorieGoalService } from '../../../../lib/services/calorie-goal.service';
-import { dateQueryParamSchema } from '../../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../../lib/helpers/error-logger';
-import type { CalorieGoalResponseDTO, ErrorResponseDTO } from '../../../../types';
+import type { APIRoute } from "astro";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
+import { dateQueryParamSchema } from "../../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../../lib/helpers/error-logger";
+import type { CalorieGoalResponseDTO, ErrorResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -966,81 +967,76 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const userId = DEFAULT_USER_ID;
 
     // Step 2: Parse and validate date parameter
-    const dateParam = url.searchParams.get('date');
-    const targetDate = dateParam || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateParam = url.searchParams.get("date");
+    const targetDate = dateParam || new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
     // Validate date format
     const dateValidation = dateQueryParamSchema.safeParse(targetDate);
     if (!dateValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid date format. Expected YYYY-MM-DD',
+          error: "Bad Request",
+          message: "Invalid date format. Expected YYYY-MM-DD",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 3: Fetch current goal
     const calorieGoalService = new CalorieGoalService(locals.supabase);
-    const currentGoal = await calorieGoalService.getCurrentCalorieGoal(
-      userId,
-      targetDate
-    );
+    const currentGoal = await calorieGoalService.getCurrentCalorieGoal(userId, targetDate);
 
     // Step 4: Handle not found case
     if (!currentGoal) {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'No calorie goal found. Using default: 2000 kcal',
+          error: "Not Found",
+          message: "No calorie goal found. Using default: 2000 kcal",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 5: Return current goal
-    return new Response(
-      JSON.stringify(currentGoal as CalorieGoalResponseDTO),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify(currentGoal as CalorieGoalResponseDTO), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Error fetching current calorie goal:', error);
+    console.error("Error fetching current calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'current_calorie_goal_error',
+      error_type: "current_calorie_goal_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
-      context: { endpoint: 'GET /api/v1/calorie-goals/current' },
+      context: { endpoint: "GET /api/v1/calorie-goals/current" },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
 ```
 
 ### Krok 5: Implementacja PATCH i DELETE /api/v1/calorie-goals/[id].ts
+
 **Plik:** `src/pages/api/v1/calorie-goals/[id].ts`
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
-import { DEFAULT_USER_ID } from '../../../../db/supabase.client';
-import { CalorieGoalService } from '../../../../lib/services/calorie-goal.service';
-import {
-  updateCalorieGoalSchema,
-  uuidParamSchema,
-} from '../../../../lib/validators/calorie-goal.validators';
-import { logError } from '../../../../lib/helpers/error-logger';
-import type { CalorieGoalResponseDTO, ErrorResponseDTO } from '../../../../types';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
+import { CalorieGoalService } from "../../../../lib/services/calorie-goal.service";
+import { updateCalorieGoalSchema, uuidParamSchema } from "../../../../lib/validators/calorie-goal.validators";
+import { logError } from "../../../../lib/helpers/error-logger";
+import type { CalorieGoalResponseDTO, ErrorResponseDTO } from "../../../../types";
 
 export const prerender = false;
 
@@ -1058,10 +1054,10 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     if (!idValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid UUID format',
+          error: "Bad Request",
+          message: "Invalid UUID format",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -1074,10 +1070,10 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     } catch {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON body',
+          error: "Bad Request",
+          message: "Invalid JSON body",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -1089,17 +1085,17 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
       if (error instanceof ZodError) {
         const details: Record<string, string> = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           details[field] = err.message;
         });
 
         return new Response(
           JSON.stringify({
-            error: 'Bad Request',
-            message: 'Validation failed',
+            error: "Bad Request",
+            message: "Validation failed",
             details,
           } as ErrorResponseDTO),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
+          { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       throw error;
@@ -1107,49 +1103,45 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
     // Step 5: Update calorie goal
     const calorieGoalService = new CalorieGoalService(locals.supabase);
-    const updatedGoal = await calorieGoalService.updateCalorieGoal(
-      userId,
-      goalId,
-      validatedData.daily_goal
-    );
+    const updatedGoal = await calorieGoalService.updateCalorieGoal(userId, goalId, validatedData.daily_goal);
 
     // Step 6: Handle not found case
     if (!updatedGoal) {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Calorie goal not found',
+          error: "Not Found",
+          message: "Calorie goal not found",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 7: Return updated goal
-    return new Response(
-      JSON.stringify(updatedGoal as CalorieGoalResponseDTO),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify(updatedGoal as CalorieGoalResponseDTO), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Error updating calorie goal:', error);
+    console.error("Error updating calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_update_error',
+      error_type: "calorie_goal_update_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'PATCH /api/v1/calorie-goals/:id',
+        endpoint: "PATCH /api/v1/calorie-goals/:id",
         goal_id: params.id,
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -1168,10 +1160,10 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (!idValidation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid UUID format',
+          error: "Bad Request",
+          message: "Invalid UUID format",
         } as ErrorResponseDTO),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -1185,36 +1177,36 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (!deleted) {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Calorie goal not found',
+          error: "Not Found",
+          message: "Calorie goal not found",
         } as ErrorResponseDTO),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Step 5: Return 204 No Content
     return new Response(null, { status: 204 });
   } catch (error) {
-    console.error('Error deleting calorie goal:', error);
+    console.error("Error deleting calorie goal:", error);
 
     const userId = DEFAULT_USER_ID;
     await logError(locals.supabase, {
       user_id: userId,
-      error_type: 'calorie_goal_delete_error',
+      error_type: "calorie_goal_delete_error",
       error_message: error instanceof Error ? error.message : String(error),
       error_details: error instanceof Error ? { stack: error.stack } : undefined,
       context: {
-        endpoint: 'DELETE /api/v1/calorie-goals/:id',
+        endpoint: "DELETE /api/v1/calorie-goals/:id",
         goal_id: params.id,
       },
     });
 
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
       } as ErrorResponseDTO),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -1223,6 +1215,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 ### Krok 6: Testowanie endpointów
 
 **Test GET /api/v1/calorie-goals (list):**
+
 ```bash
 # Success case
 curl -X GET http://localhost:4321/api/v1/calorie-goals
@@ -1232,6 +1225,7 @@ curl -X GET "http://localhost:4321/api/v1/calorie-goals?limit=10&offset=0"
 ```
 
 **Test GET /api/v1/calorie-goals/current:**
+
 ```bash
 # Success case (today)
 curl -X GET http://localhost:4321/api/v1/calorie-goals/current
@@ -1244,6 +1238,7 @@ curl -X GET "http://localhost:4321/api/v1/calorie-goals/current?date=2020-01-01"
 ```
 
 **Test POST /api/v1/calorie-goals:**
+
 ```bash
 # Success case
 curl -X POST http://localhost:4321/api/v1/calorie-goals \
@@ -1262,6 +1257,7 @@ curl -X POST http://localhost:4321/api/v1/calorie-goals \
 ```
 
 **Test PATCH /api/v1/calorie-goals/:id:**
+
 ```bash
 # Success case (replace with actual UUID)
 curl -X PATCH http://localhost:4321/api/v1/calorie-goals/550e8400-e29b-41d4-a716-446655440000 \
@@ -1275,6 +1271,7 @@ curl -X PATCH http://localhost:4321/api/v1/calorie-goals/00000000-0000-0000-0000
 ```
 
 **Test DELETE /api/v1/calorie-goals/:id:**
+
 ```bash
 # Success case (replace with actual UUID)
 curl -X DELETE http://localhost:4321/api/v1/calorie-goals/550e8400-e29b-41d4-a716-446655440000

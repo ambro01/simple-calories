@@ -17,7 +17,7 @@ import { InfiniteScrollTrigger } from "@/components/shared/InfiniteScrollTrigger
 import { MealModal } from "@/components/add-meal";
 
 export function Dashboard() {
-  const { state, loadMoreDays, selectDay, refetchAfterMealChange } = useDashboard();
+  const { state, loadMoreDays, refetchAfterMealChange } = useDashboard();
   const [isAddMealModalOpen, setIsAddMealModalOpen] = useState(false);
 
   console.log("🎨 [Dashboard] Render", {

@@ -89,7 +89,7 @@ export const nutritionSuggestionSchema: ResponseFormat = {
 // Helper do tworzenia custom schema
 export function createCustomSchema(
   name: string,
-  properties: Record<string, any>,
+  properties: Record<string, unknown>,
   required: string[],
   strict = true
 ): ResponseFormat {
@@ -110,20 +110,20 @@ export function createCustomSchema(
 
 // Typy wynikowe dla schemas (dla type safety)
 // Kompatybilny z istniejącym NutritionalEstimate z mock service
-export interface NutritionalEstimate {
+export type NutritionalEstimate = {
   calories: number | null;
   protein: number | null;
   carbs: number | null;
   fats: number | null;
   assumptions: string | null;
   error?: string;
-}
+};
 
-export interface NutritionSuggestion {
+export type NutritionSuggestion = {
   suggestion: string;
   reasoning: string;
   priority: "high" | "medium" | "low";
   category: "macros" | "calories" | "timing" | "hydration" | "variety" | "general";
   action_items: string[];
   expected_impact?: string;
-}
+};

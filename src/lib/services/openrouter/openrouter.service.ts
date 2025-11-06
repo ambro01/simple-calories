@@ -1,6 +1,5 @@
 import type {
   Message,
-  ModelParameters,
   OpenRouterRequest,
   OpenRouterResponse,
   ChatCompletionOptions,
@@ -315,9 +314,10 @@ export class OpenRouterService {
       case 401:
         throw new UnauthorizedError(errorMessage);
 
-      case 429:
+      case 429: {
         const retryAfter = response.headers.get("Retry-After");
         throw new RateLimitError(errorMessage, retryAfter ? parseInt(retryAfter, 10) : undefined);
+      }
 
       case 400:
         throw new ValidationError(errorMessage);
@@ -352,7 +352,7 @@ export class OpenRouterService {
     if (responseFormat) {
       try {
         parsedData = JSON.parse(content) as T;
-      } catch (error) {
+      } catch {
         throw new ParseError("Failed to parse JSON response", content);
       }
     }

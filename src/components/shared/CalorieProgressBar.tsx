@@ -8,12 +8,12 @@
 import { getStatusBgClass } from "@/lib/helpers/status-colors";
 import type { DailyProgressStatus } from "@/types";
 
-interface CalorieProgressBarProps {
+type CalorieProgressBarProps = {
   percentage: number;
   status: DailyProgressStatus;
   showLabel?: boolean;
   size?: "sm" | "md" | "lg";
-}
+};
 
 export function CalorieProgressBar({ percentage, status, showLabel = false, size = "md" }: CalorieProgressBarProps) {
   // Ograniczenie do 0-100% dla UI (może być > 100 w danych)

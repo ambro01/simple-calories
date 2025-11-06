@@ -24,16 +24,19 @@ e2e/
 ### Prerequisites
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Install Playwright browsers:
+
 ```bash
 npx playwright install chromium
 ```
 
 3. Ensure `.env.test` is configured with test credentials:
+
 ```env
 SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_KEY=eyJxxx...
@@ -87,6 +90,7 @@ npx playwright show-report
 **File:** `e2e/meals/add-meal.spec.ts`
 
 #### Basic Scenarios:
+
 1. ✅ Add meal with full data (description, calories, macros, category)
 2. ✅ Add meal with minimal data (description + calories only)
 3. ✅ Add meal with category selection
@@ -132,18 +136,18 @@ const addMealPage = new AddMealPage(page);
 
 // Quick add with helper
 await addMealPage.addMealManually({
-  description: 'Chicken with Rice',
+  description: "Chicken with Rice",
   calories: 500,
   protein: 30,
   carbs: 40,
   fats: 20,
-  category: 'lunch',
+  category: "lunch",
 });
 
 // Or step-by-step
 await addMealPage.openModal();
 await addMealPage.switchToManualMode();
-await addMealPage.fillDescription('...');
+await addMealPage.fillDescription("...");
 await addMealPage.fillCalories(500);
 await addMealPage.submit();
 ```
@@ -153,7 +157,7 @@ await addMealPage.submit();
 ```typescript
 const mealCardPage = new MealCardPage(page);
 
-const mealCard = mealCardPage.getMealCardByDescription('Chicken with Rice');
+const mealCard = mealCardPage.getMealCardByDescription("Chicken with Rice");
 await mealCardPage.verifyMealData(mealCard, { calories: 500 });
 await mealCardPage.deleteMeal(mealCard);
 ```
@@ -166,7 +170,7 @@ import {
   cleanupUserMeals,
   getMealByDescription,
   verifyMealExists,
-} from '../utils/supabase-client';
+} from "../utils/supabase-client";
 
 const supabase = createSupabaseTestClient();
 const { userId } = getTestUserCredentials();
@@ -175,12 +179,12 @@ const { userId } = getTestUserCredentials();
 await cleanupUserMeals(supabase, userId);
 
 // Verify meal in DB
-const mealInDB = await getMealByDescription(supabase, userId, 'Chicken with Rice');
+const mealInDB = await getMealByDescription(supabase, userId, "Chicken with Rice");
 expect(mealInDB?.calories).toBe(500);
 
 // Or use helper
 const exists = await verifyMealExists(supabase, userId, {
-  description: 'Chicken with Rice',
+  description: "Chicken with Rice",
   calories: 500,
   protein: 30,
 });
@@ -193,9 +197,9 @@ const exists = await verifyMealExists(supabase, userId, {
 Auto-login before test:
 
 ```typescript
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect } from "../fixtures/auth.fixture";
 
-test('my test', async ({ authenticatedPage }) => {
+test("my test", async ({ authenticatedPage }) => {
   // User is already logged in
   // Page is at dashboard (/)
 });
@@ -206,13 +210,15 @@ test('my test', async ({ authenticatedPage }) => {
 ### 1. Use Page Object Models
 
 ✅ **Good:**
+
 ```typescript
-await addMealPage.fillDescription('Test');
+await addMealPage.fillDescription("Test");
 ```
 
 ❌ **Bad:**
+
 ```typescript
-await page.getByTestId('manual-description-input').fill('Test');
+await page.getByTestId("manual-description-input").fill("Test");
 ```
 
 ### 2. Always Cleanup Test Data
@@ -241,19 +247,21 @@ expect(mealInDB).not.toBeNull();
 ### 4. Use data-testid Selectors
 
 ✅ **Good:**
+
 ```typescript
-page.getByTestId('submit-meal-button')
+page.getByTestId("submit-meal-button");
 ```
 
 ❌ **Bad:**
+
 ```typescript
-page.locator('button:has-text("Dodaj posiłek")')
+page.locator('button:has-text("Dodaj posiłek")');
 ```
 
 ### 5. Use Meaningful Test Descriptions
 
 ```typescript
-test('should add meal with full data and verify in database', async () => {
+test("should add meal with full data and verify in database", async () => {
   // ...
 });
 ```

@@ -83,7 +83,9 @@ export function Settings() {
 
             {/* Right side: Email and Back button */}
             <div className="flex items-center gap-4">
-              <p className="text-base font-medium text-foreground truncate max-w-[200px] sm:max-w-none">{userEmailDisplay}</p>
+              <p className="text-base font-medium text-foreground truncate max-w-[200px] sm:max-w-none">
+                {userEmailDisplay}
+              </p>
               <a
                 href="/"
                 className="flex-shrink-0 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"

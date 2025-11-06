@@ -3,9 +3,11 @@
 ## 1. Przegląd punktów końcowych
 
 ### GET /api/v1/daily-progress
+
 Zwraca listę dziennych postępów użytkownika z paginacją. Każdy rekord zawiera sumę kalorii i makroskładników z danego dnia, cel kaloryczny, procent realizacji oraz status.
 
 ### GET /api/v1/daily-progress/:date
+
 Zwraca postęp użytkownika dla konkretnego dnia. Jeśli użytkownik nie ma żadnych posiłków w danym dniu, zwraca "zero progress" z aktualnym celem kalorycznym (zamiast 404).
 
 ## 2. Szczegóły żądania
@@ -19,6 +21,7 @@ Zwraca postęp użytkownika dla konkretnego dnia. Jeśli użytkownik nie ma żad
 **Authentication:** Required (Bearer token w nagłówku Authorization)
 
 **Query Parameters:**
+
 - **Opcjonalne:**
   - `date_from` (string, format: YYYY-MM-DD) - data początkowa filtrowania
   - `date_to` (string, format: YYYY-MM-DD) - data końcowa filtrowania
@@ -28,6 +31,7 @@ Zwraca postęp użytkownika dla konkretnego dnia. Jeśli użytkownik nie ma żad
 **Request Body:** Brak
 
 **Walidacja:**
+
 - Format daty musi być YYYY-MM-DD
 - `date_from` musi być <= `date_to`
 - `limit` musi być w zakresie 1-100
@@ -42,12 +46,14 @@ Zwraca postęp użytkownika dla konkretnego dnia. Jeśli użytkownik nie ma żad
 **Authentication:** Required (Bearer token w nagłówku Authorization)
 
 **URL Parameters:**
+
 - **Wymagane:**
   - `date` (string, format: YYYY-MM-DD) - data dla której pobieramy postęp
 
 **Request Body:** Brak
 
 **Walidacja:**
+
 - Format daty musi być YYYY-MM-DD
 - Data nie może być w przyszłości (> CURRENT_DATE)
 
@@ -57,11 +63,11 @@ Zwraca postęp użytkownika dla konkretnego dnia. Jeśli użytkownik nie ma żad
 
 ```typescript
 // Response types - już zdefiniowane
-DailyProgressResponseDTO
-DailyProgressListResponseDTO
-DailyProgressStatus
-PaginationMetaDTO
-ErrorResponseDTO
+DailyProgressResponseDTO;
+DailyProgressListResponseDTO;
+DailyProgressStatus;
+PaginationMetaDTO;
+ErrorResponseDTO;
 ```
 
 ### Nowe typy do utworzenia:
@@ -96,26 +102,35 @@ interface DailyProgressViewRow {
 **W src/pages/api/v1/daily-progress/index.ts:**
 
 ```typescript
-const dailyProgressListQuerySchema = z.object({
-  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(30),
-  offset: z.coerce.number().int().min(0).default(0),
-}).refine(
-  (data) => {
-    if (data.date_from && data.date_to) {
-      return new Date(data.date_from) <= new Date(data.date_to);
-    }
-    return true;
-  },
-  { message: "date_from must be less than or equal to date_to" }
-);
+const dailyProgressListQuerySchema = z
+  .object({
+    date_from: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    date_to: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    limit: z.coerce.number().int().min(1).max(100).default(30),
+    offset: z.coerce.number().int().min(0).default(0),
+  })
+  .refine(
+    (data) => {
+      if (data.date_from && data.date_to) {
+        return new Date(data.date_from) <= new Date(data.date_to);
+      }
+      return true;
+    },
+    { message: "date_from must be less than or equal to date_to" }
+  );
 ```
 
 **W src/pages/api/v1/daily-progress/[date].ts:**
 
 ```typescript
-const dailyProgressDateSchema = z.string()
+const dailyProgressDateSchema = z
+  .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
   .refine(
     (date) => {
@@ -133,6 +148,7 @@ const dailyProgressDateSchema = z.string()
 ### GET /api/v1/daily-progress
 
 **Response 200 (Success):**
+
 ```json
 {
   "data": [
@@ -157,6 +173,7 @@ const dailyProgressDateSchema = z.string()
 ```
 
 **Response 400 (Bad Request):**
+
 ```json
 {
   "error": "VALIDATION_ERROR",
@@ -168,6 +185,7 @@ const dailyProgressDateSchema = z.string()
 ```
 
 **Response 401 (Unauthorized):**
+
 ```json
 {
   "error": "UNAUTHORIZED",
@@ -176,6 +194,7 @@ const dailyProgressDateSchema = z.string()
 ```
 
 **Response 500 (Internal Server Error):**
+
 ```json
 {
   "error": "INTERNAL_SERVER_ERROR",
@@ -186,6 +205,7 @@ const dailyProgressDateSchema = z.string()
 ### GET /api/v1/daily-progress/:date
 
 **Response 200 (Success - with meals):**
+
 ```json
 {
   "date": "2025-01-27",
@@ -201,6 +221,7 @@ const dailyProgressDateSchema = z.string()
 ```
 
 **Response 200 (Success - no meals, zero progress):**
+
 ```json
 {
   "date": "2025-01-27",
@@ -290,27 +311,32 @@ const dailyProgressDateSchema = z.string()
 ### Interakcje z bazą danych:
 
 **View daily_progress** (istniejący w bazie):
+
 - Agreguje meals po dacie i user_id
 - Używa funkcji get_current_calorie_goal() dla celu
 - RLS automatycznie filtruje po auth.uid()
 
 **Funkcja get_current_calorie_goal()** (istniejąca w bazie):
+
 - Pobiera aktualny cel kaloryczny dla użytkownika i daty
 - Fallback na 2000 kcal jeśli brak wpisu
 
 ## 6. Względy bezpieczeństwa
 
 ### Uwierzytelnianie:
+
 - **Wymagane:** Bearer token w nagłówku Authorization
 - **Weryfikacja:** context.locals.supabase.auth.getUser()
 - **Zwracany kod:** 401 jeśli brak tokena lub token nieprawidłowy
 
 ### Autoryzacja:
+
 - **RLS (Row Level Security):** View daily_progress automatycznie filtruje po auth.uid()
 - **Izolacja danych:** Użytkownik może zobaczyć tylko swoje dane
 - **Dodatkowa weryfikacja:** W service sprawdzamy czy user_id z tokena == user_id z query
 
 ### Walidacja danych:
+
 1. **Format daty:**
    - Regex: `/^\d{4}-\d{2}-\d{2}$/`
    - Walidacja że parsuje się do prawidłowej daty
@@ -328,10 +354,12 @@ const dailyProgressDateSchema = z.string()
    - Wszystkie wartości przekazywane jako parametry, nie string interpolation
 
 ### Rate Limiting:
+
 - **MVP:** Brak implementacji (do rozważenia w przyszłości)
 - **Sugestia:** Middleware z limitem 100 requests/minute per user
 
 ### Exposure wrażliwych danych:
+
 - **user_id w response:** Akceptowalne, użytkownik widzi tylko swój ID
 - **calorie_goal:** Dane użytkownika, chronione przez RLS
 - **Brak:** Nie exposujemy danych innych użytkowników
@@ -341,7 +369,9 @@ const dailyProgressDateSchema = z.string()
 ### 400 Bad Request
 
 **Przypadki:**
+
 1. Nieprawidłowy format daty
+
    ```json
    {
      "error": "VALIDATION_ERROR",
@@ -351,6 +381,7 @@ const dailyProgressDateSchema = z.string()
    ```
 
 2. date_from > date_to
+
    ```json
    {
      "error": "VALIDATION_ERROR",
@@ -360,6 +391,7 @@ const dailyProgressDateSchema = z.string()
    ```
 
 3. Invalid limit/offset
+
    ```json
    {
      "error": "VALIDATION_ERROR",
@@ -382,11 +414,13 @@ const dailyProgressDateSchema = z.string()
 ### 401 Unauthorized
 
 **Przypadki:**
+
 1. Brak tokena autoryzacji
 2. Token nieprawidłowy
 3. Token wygasły
 
 **Response:**
+
 ```json
 {
   "error": "UNAUTHORIZED",
@@ -399,12 +433,14 @@ const dailyProgressDateSchema = z.string()
 ### 500 Internal Server Error
 
 **Przypadki:**
+
 1. Błąd połączenia z Supabase
 2. Błąd w funkcji get_current_calorie_goal()
 3. Nieoczekiwany błąd w service
 4. Błąd w transformacji danych
 
 **Response:**
+
 ```json
 {
   "error": "INTERNAL_SERVER_ERROR",
@@ -413,6 +449,7 @@ const dailyProgressDateSchema = z.string()
 ```
 
 **Logowanie do error_logs:**
+
 ```typescript
 {
   user_id: userId,
@@ -439,18 +476,18 @@ try {
   if (!(error instanceof ValidationError)) {
     await logError(supabase, {
       user_id: userId,
-      error_type: 'daily_progress_fetch_failed',
+      error_type: "daily_progress_fetch_failed",
       error_message: error.message,
       error_details: { stack: error.stack },
-      context: { endpoint, params }
+      context: { endpoint, params },
     });
   }
 
   // Return appropriate error response
-  return new Response(
-    JSON.stringify({ error: 'INTERNAL_SERVER_ERROR', message: 'An unexpected error occurred' }),
-    { status: 500, headers: { 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ error: "INTERNAL_SERVER_ERROR", message: "An unexpected error occurred" }), {
+    status: 500,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 ```
 
@@ -463,9 +500,9 @@ try {
    - **Optymalizacja:** Istniejące indeksy: `idx_meals_user_timestamp`
    - **Monitoring:** Sprawdzić EXPLAIN ANALYZE dla view
 
-2. **COUNT(*) query dla paginacji:**
+2. **COUNT(\*) query dla paginacji:**
    - Może być kosztowny dla dużej liczby rekordów
-   - **Optymalizacja:** Użyć COUNT(*) OVER() window function w jednym query
+   - **Optymalizacja:** Użyć COUNT(\*) OVER() window function w jednym query
    - **Alternatywa:** Cursor-based pagination (dla przyszłości)
 
 3. **Funkcja get_current_calorie_goal():**
@@ -479,6 +516,7 @@ try {
 ### Strategie optymalizacji:
 
 1. **Single query z COUNT OVER():**
+
    ```sql
    SELECT *, COUNT(*) OVER() as total_count
    FROM daily_progress
@@ -521,6 +559,7 @@ try {
 **Lokalizacja:** `src/lib/helpers/date.ts`
 
 **Zadania:**
+
 - Funkcja `isValidDateFormat(date: string): boolean` - waliduje format YYYY-MM-DD
 - Funkcja `isDateInFuture(date: string): boolean` - sprawdza czy data jest w przyszłości
 
@@ -533,6 +572,7 @@ try {
 **Lokalizacja:** `src/lib/services/daily-progress.service.ts`
 
 **Zadania:**
+
 1. Zdefiniować interfejsy:
    - `GetDailyProgressListParams`
    - `DailyProgressViewRow`
@@ -549,7 +589,7 @@ try {
 
    - `async getDailyProgressList(supabase: SupabaseClient, params: GetDailyProgressListParams): Promise<DailyProgressListResponseDTO>`
      - Query do view daily_progress z filtrami
-     - Użyj COUNT(*) OVER() dla total
+     - Użyj COUNT(\*) OVER() dla total
      - Transform results
      - Return { data, pagination }
 
@@ -572,6 +612,7 @@ try {
 **Lokalizacja:** `src/lib/helpers/error-logger.ts` (jeśli nie istnieje)
 
 **Zadania:**
+
 - Funkcja `logError(supabase: SupabaseClient, errorData: ErrorLogData): Promise<void>`
 - Insert do tabeli error_logs
 - Obsługa przypadku gdy insert się nie powiedzie (console.error fallback)
@@ -585,14 +626,16 @@ try {
 **Lokalizacja:** `src/pages/api/v1/daily-progress/index.ts`
 
 **Zadania:**
+
 1. `export const prerender = false`
 
 2. Zdefiniować Zod schema:
    - `dailyProgressListQuerySchema`
 
 3. Implementować handler `GET`:
+
    ```typescript
-   export async function GET(context: APIContext): Promise<Response>
+   export async function GET(context: APIContext): Promise<Response>;
    ```
 
 4. Flow:
@@ -618,14 +661,16 @@ try {
 **Lokalizacja:** `src/pages/api/v1/daily-progress/[date].ts`
 
 **Zadania:**
+
 1. `export const prerender = false`
 
 2. Zdefiniować Zod schema:
    - `dailyProgressDateSchema`
 
 3. Implementować handler `GET`:
+
    ```typescript
-   export async function GET(context: APIContext): Promise<Response>
+   export async function GET(context: APIContext): Promise<Response>;
    ```
 
 4. Flow:
@@ -652,6 +697,7 @@ try {
 **Lokalizacja:** `src/__tests__/api/daily-progress.test.ts`
 
 **Zadania:**
+
 1. Setup test database i test user
 2. Testy dla GET /api/v1/daily-progress:
    - Lista z meals (success)
@@ -678,6 +724,7 @@ try {
 ### Krok 7: Weryfikacja w bazie danych
 
 **Zadania:**
+
 1. Sprawdź czy view daily_progress działa poprawnie
 2. Sprawdź czy funkcja get_current_calorie_goal() zwraca prawidłowe wartości
 3. Sprawdź performance z EXPLAIN ANALYZE
@@ -688,6 +735,7 @@ try {
 ### Krok 8: Dokumentacja
 
 **Zadania:**
+
 1. Dodać JSDoc comments do service functions
 2. Dodać przykłady użycia w komentarzach
 3. Zaktualizować README z informacją o nowych endpointach
@@ -698,6 +746,7 @@ try {
 ### Krok 9: Code review i QA
 
 **Zadania:**
+
 1. Code review checklist:
    - Type safety (wszystkie typy zdefiniowane)
    - Error handling (wszystkie błędy obsłużone)
@@ -715,6 +764,7 @@ try {
 ### Krok 10: Deployment
 
 **Zadania:**
+
 1. Merge do głównej gałęzi
 2. Deploy na staging environment
 3. Smoke tests na staging
@@ -726,6 +776,7 @@ try {
 ## 10. Checklisty
 
 ### Pre-implementation checklist:
+
 - [ ] View daily_progress istnieje w bazie
 - [ ] Funkcja get_current_calorie_goal() istnieje w bazie
 - [ ] RLS policies są aktywne
@@ -733,6 +784,7 @@ try {
 - [ ] Typy w types.ts są aktualne
 
 ### Implementation checklist:
+
 - [ ] Helper functions utworzone i przetestowane
 - [ ] Service utworzony i przetestowany
 - [ ] Error logger utworzony
@@ -744,6 +796,7 @@ try {
 - [ ] Manual testing completed
 
 ### Post-deployment checklist:
+
 - [ ] Endpoints działają na staging
 - [ ] Error logs są puste
 - [ ] Response times są akceptowalne (< 500ms)

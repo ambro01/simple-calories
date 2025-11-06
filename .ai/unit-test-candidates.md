@@ -9,6 +9,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 1. `src/lib/helpers/meal-form.utils.ts` ⭐⭐⭐
 
 **Dlaczego testować:**
+
 - Pure functions - deterministyczne, łatwe do testowania
 - Kluczowa logika biznesowa - obliczenia kalorii i walidacja makroskładników
 - Używane w wielu miejscach (hook, komponenty)
@@ -18,6 +19,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Funkcje do przetestowania:**
 
 #### `calculateMacroCalories(protein, carbs, fats)`
+
 - ✅ Przypadek: wszystkie wartości null → zwraca 0
 - ✅ Przypadek: tylko białko (25g) → zwraca 100 kcal
 - ✅ Przypadek: tylko węglowodany (50g) → zwraca 200 kcal
@@ -28,6 +30,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: bardzo duże wartości (1000g każdego)
 
 #### `calculateMacroDifference(calculated, provided)`
+
 - ✅ Przypadek: identyczne wartości (500, 500) → zwraca 0
 - ✅ Przypadek: 5% różnica (500, 525) → zwraca ~0.05
 - ✅ Przypadek: 10% różnica (500, 550) → zwraca 0.10
@@ -36,6 +39,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: bardzo mała różnica (0.1%) → precyzja obliczeń
 
 #### `detectCategoryFromTime(time)`
+
 - ✅ Przypadek: "07:30" → "breakfast"
 - ✅ Przypadek: "09:59" → "breakfast"
 - ✅ Przypadek: "10:00" → null (poza zakresem)
@@ -51,6 +55,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: "" (pusty string) → null
 
 #### `formatPercentDifference(difference)`
+
 - ✅ Przypadek: 0.05 → "5%"
 - ✅ Przypadek: 0.15 → "15%"
 - ✅ Przypadek: 0.005 → "1%" (zaokrąglenie w dół)
@@ -59,12 +64,14 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: 1.0 → "100%"
 
 #### `getCurrentDate()` i `getCurrentTime()`
+
 - ⚠️ Trudniejsze do testowania (zależne od czasu systemowego)
 - ✅ Test: weryfikacja formatu zwracanego stringa (YYYY-MM-DD, HH:MM)
 - ✅ Test: mockowanie Date.now() do testowania konkretnych dat
 - ✅ Test: padding zer (miesiące 1-9, dni 1-9)
 
 #### `getDaysDifference(date1, date2)`
+
 - ✅ Przypadek: ta sama data → 0 dni
 - ✅ Przypadek: różnica 1 dzień → 1
 - ✅ Przypadek: różnica 7 dni → 7
@@ -77,6 +84,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 2. `src/lib/validation/meal-form.validation.ts` ⭐⭐⭐
 
 **Dlaczego testować:**
+
 - Krytyczna logika walidacji - błędy mogą pozwolić na przesłanie złych danych
 - Pure functions - łatwe do testowania
 - Dużo edge cases (granice, formaty, null values)
@@ -86,14 +94,16 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Funkcje do przetestowania:**
 
 #### `validatePrompt(prompt)`
+
 - ✅ Przypadek: pusty string → error "Opis posiłku jest wymagany"
-- ✅ Przypadek: tylko spacje "   " → error (trim)
+- ✅ Przypadek: tylko spacje " " → error (trim)
 - ✅ Przypadek: poprawny prompt (3+ znaków) → null
 - ✅ Przypadek: 500 znaków (max) → null
 - ✅ Przypadek: 501 znaków → error "Maksymalnie 500 znaków"
 - ✅ Edge: emoji w promptcie → poprawnie liczy znaki
 
 #### `validateDescription(description)`
+
 - ✅ Przypadek: pusty string → error
 - ✅ Przypadek: tylko spacje → error
 - ✅ Przypadek: poprawny opis → null
@@ -102,6 +112,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: znaki specjalne (🍕) → poprawnie liczy
 
 #### `validateCalories(calories)`
+
 - ✅ Przypadek: null → error "Kalorie są wymagane"
 - ✅ Przypadek: undefined → error
 - ✅ Przypadek: 1 (min) → null
@@ -115,6 +126,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: Infinity → error
 
 #### `validateMacro(value, field)`
+
 - ✅ Przypadek: null → null (opcjonalne)
 - ✅ Przypadek: undefined → null
 - ✅ Przypadek: 0 (min) → null
@@ -126,6 +138,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: "25" (string) → error (type check)
 
 #### `validateDate(date)`
+
 - ✅ Przypadek: dzisiejsza data → null
 - ✅ Przypadek: wczoraj → null
 - ✅ Przypadek: 7 dni temu → null
@@ -135,6 +148,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ⚠️ Wymaga mockowania getCurrentDate()
 
 #### `validateTime(time)`
+
 - ✅ Przypadek: "08:30" → null
 - ✅ Przypadek: "00:00" → null
 - ✅ Przypadek: "23:59" → null
@@ -145,6 +159,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: "" → error
 
 #### `validateAIGenerationId(id)`
+
 - ✅ Przypadek: null → error "Brak ID generacji AI"
 - ✅ Przypadek: "" → error
 - ✅ Przypadek: "valid-uuid" → null
@@ -155,6 +170,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 3. `src/lib/helpers/macronutrient-validator.ts` ⭐⭐⭐
 
 **Dlaczego testować:**
+
 - Logika biznesowa - konsystencja danych żywieniowych
 - Pure functions
 - Używane w backend przy tworzeniu/edycji posiłków
@@ -163,6 +179,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Funkcje do przetestowania:**
 
 #### `validateMacronutrients(calories, protein, carbs, fats)`
+
 - ✅ Przypadek: brak makro (null) → [] (brak ostrzeżeń)
 - ✅ Przypadek: tylko białko → [] (nie waliduje bez pełnych danych)
 - ✅ Przypadek: wszystkie makro, zgodne kalorie (420, 18.5, 25, 28) → []
@@ -174,6 +191,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Test: treść komunikatu ostrzeżenia zawiera obie wartości kalorii
 
 #### `shouldChangeToAIEdited(currentMeal, updateData)`
+
 - ✅ Przypadek: input_method = "ai", zmiana calories → true
 - ✅ Przypadek: input_method = "ai", zmiana description → true
 - ✅ Przypadek: input_method = "ai", zmiana protein → true
@@ -191,6 +209,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 4. `src/lib/helpers/date-formatter.ts` ⭐⭐
 
 **Dlaczego testować:**
+
 - Pure functions (większość)
 - Różne formaty dat - łatwo o błędy
 - Lokalizacja (pl-PL) - trzeba sprawdzić czy działa
@@ -199,6 +218,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Funkcje do przetestowania:**
 
 #### `createDateFormatter().format(date, format)`
+
 - ✅ Format "YYYY-MM-DD": new Date("2025-01-27") → "2025-01-27"
 - ✅ Format "full": weryfikacja polskich nazw dni/miesięcy
 - ✅ Format "short": weryfikacja skrótów
@@ -207,6 +227,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Edge: przekazanie stringa vs Date object
 
 #### `parseAPIDate(date)` i `toAPIFormat(date)`
+
 - ✅ Konwersja tam i z powrotem daje tę samą datę
 - ✅ Format zgodny z YYYY-MM-DD
 
@@ -215,6 +236,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 5. `src/lib/helpers/status-colors.ts` ⭐
 
 **Dlaczego testować:**
+
 - Proste funkcje lookup
 - Niski priorytet, ale można łatwo przetestować
 - Sprawdzenie kompletności (wszystkie statusy mają kolory)
@@ -222,6 +244,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Funkcje do przetestowania:**
 
 #### `getStatusColor(status)`, `getStatusBgClass(status)`, etc.
+
 - ✅ Każdy status ma zdefiniowany kolor
 - ✅ Zwracana wartość nie jest null/undefined
 - ✅ Test: wszystkie możliwe statusy (under, at_goal, over, no_goal)
@@ -233,12 +256,14 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 6. `src/hooks/useAddMealForm.ts` ⭐⭐
 
 **Dlaczego testować:**
+
 - Złożona logika biznesowa
 - State management - łatwo o błędy
 - Wiele interakcji między funkcjami
 - Używa innych modułów (helpers, validation)
 
 **Wyzwania:**
+
 - Wymaga React Testing Library (renderHook)
 - Mockowanie fetch API
 - Testowanie efektów ubocznych (setState, setTimeout)
@@ -246,16 +271,19 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Co testować:**
 
 #### State initialization
+
 - ✅ Initial state with initialDate
 - ✅ Initial state without initialDate (uses current date)
 
 #### Mode switching
+
 - ✅ `switchToManual(false)` - zmienia mode, kopiuje aiPrompt do description
 - ✅ `switchToManual(true)` - prepopuluje z aiResult
 - ✅ `switchToAI()` - zmienia mode, kopiuje description do aiPrompt
 - ✅ `setMode()` - wrapper na powyższe
 
 #### Field updates
+
 - ✅ `updateField("calories", 500)` - aktualizuje state
 - ✅ Auto-calculate macro warning przy zmianie calories/macros
 - ✅ Auto-validate date przy zmianie date
@@ -263,6 +291,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ Czyszczenie validation errors przy zmianie pól
 
 #### AI Generation
+
 - ✅ `generateAI()` - sukces, ustawia aiResult
 - ✅ `generateAI()` - błąd walidacji promptu
 - ✅ `generateAI()` - błąd API (status 500)
@@ -270,6 +299,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ `acceptAIResult()` - prepopuluje formularz
 
 #### Form validation
+
 - ✅ `validateForm()` - AI mode bez aiResult → error
 - ✅ `validateForm()` - Manual mode bez description → error
 - ✅ `validateForm()` - Manual mode bez calories → error
@@ -277,6 +307,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ `validateForm()` - wszystkie pola OK → true
 
 #### Submit
+
 - ✅ `submitMeal()` - AI mode - POST z ai_generation_id
 - ✅ `submitMeal()` - Manual mode - POST z input_method: "manual"
 - ✅ `submitMeal()` - Edit mode - PATCH request
@@ -284,6 +315,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 - ✅ `submitMeal()` - meal not found (status 404)
 
 #### Load for edit
+
 - ✅ `loadMealForEdit(mealId)` - sukces, parsuje timestamp
 - ✅ `loadMealForEdit(mealId)` - ustawia mode based on input_method
 - ✅ `loadMealForEdit(mealId)` - błąd 404
@@ -297,6 +329,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 7. React Components (UI logic tests)
 
 **Dlaczego NIE priorytetowe:**
+
 - UI komponenty lepiej testować przez E2E (Playwright)
 - Unit testy komponentów często testują implementację, nie zachowanie
 - Wymaga React Testing Library + dużo setupu
@@ -305,16 +338,19 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Jeśli jednak testować:**
 
 #### `CharacterCounter.tsx`
+
 - ✅ Kolor zmienia się przy 90%+ usage
 - ✅ Kolor zmienia się przy 98%+ usage
 - ✅ Poprawnie formatuje liczby
 
 #### `SegmentedControl.tsx`
+
 - ✅ Wywołuje onChange przy kliknięciu
 - ✅ Disabled state działa
 - ✅ Poprawnie wyświetla selected state
 
 #### `LoadingState.tsx`
+
 - ✅ Wyświetla poprawny tekst dla stage 0, 1, 2
 - ✅ Poprawna liczba kropek postępu
 
@@ -327,11 +363,13 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ### 8. `src/lib/services/*.service.ts`
 
 **Dlaczego testować:**
+
 - Logika biznesowa w serwisach
 - Interakcje z bazą danych (Supabase)
 - Rate limiting logic
 
 **Wyzwania:**
+
 - Wymaga mockowania Supabase client
 - Wymaga mockowania transaction logic
 - Integration tests > unit tests dla serwisów
@@ -339,6 +377,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 **Przykłady:**
 
 #### `rate-limit.service.ts`
+
 - ✅ Tworzy nowy limit jeśli nie istnieje
 - ✅ Zwiększa count przy kolejnych requestach
 - ✅ Resetuje po upływie window_seconds
@@ -396,6 +435,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ## 📝 Rekomendowany plan działania:
 
 ### Faza 1: Foundation (Tydzień 1)
+
 ```
 ✅ meal-form.utils.ts (wszystkie funkcje)
 ✅ meal-form.validation.ts (wszystkie funkcje)
@@ -403,6 +443,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ```
 
 ### Faza 2: Extended (Tydzień 2)
+
 ```
 ✅ date-formatter.ts
 ✅ status-colors.ts
@@ -410,6 +451,7 @@ Analiza na podstawie struktury komponentów z `components_structure.md`
 ```
 
 ### Faza 3: E2E Coverage (Tydzień 3-4)
+
 ```
 ✅ Playwright tests dla całego flow AddMeal
 ✅ Testy API endpoints
@@ -424,15 +466,15 @@ Już masz skonfigurowany Vitest (vitest.config.ts), więc możesz zacząć:
 
 ```typescript
 // src/lib/helpers/__tests__/meal-form.utils.test.ts
-import { describe, it, expect } from 'vitest';
-import { calculateMacroCalories } from '../meal-form.utils';
+import { describe, it, expect } from "vitest";
+import { calculateMacroCalories } from "../meal-form.utils";
 
-describe('calculateMacroCalories', () => {
-  it('returns 0 when all values are null', () => {
+describe("calculateMacroCalories", () => {
+  it("returns 0 when all values are null", () => {
     expect(calculateMacroCalories(null, null, null)).toBe(0);
   });
 
-  it('calculates calories from protein only (25g = 100 kcal)', () => {
+  it("calculates calories from protein only (25g = 100 kcal)", () => {
     expect(calculateMacroCalories(25, null, null)).toBe(100);
   });
 

@@ -10,7 +10,7 @@ import type { DailyProgressResponseDTO, MealResponseDTO, MealCategory } from "..
 /**
  * Stan szczegółów dnia
  */
-export interface DayDetailsState {
+export type DayDetailsState = {
   date: string; // YYYY-MM-DD
   progress: DailyProgressResponseDTO | null;
   meals: MealResponseDTO[];
@@ -18,27 +18,27 @@ export interface DayDetailsState {
   error: string | null;
   deletingMealId: string | null; // ID posiłku obecnie usuwanego
   editingMeal: MealResponseDTO | null; // Posiłek obecnie edytowany
-}
+};
 
 /**
  * Stan delete confirmation
  * Może być zarządzany lokalnie w MealCard lub w parent state
  */
-export interface DeleteConfirmationState {
+export type DeleteConfirmationState = {
   isOpen: boolean;
   mealId: string | null;
   mealDescription: string;
   autoCollapseTimer: NodeJS.Timeout | null;
-}
+};
 
 /**
  * Mapowanie kategorii na ikony/kolory
  */
-export interface CategoryConfig {
+export type CategoryConfig = {
   label: string;
   icon: string;
   color: string;
-}
+};
 
 export const CATEGORY_CONFIG: Record<MealCategory, CategoryConfig> = {
   breakfast: {

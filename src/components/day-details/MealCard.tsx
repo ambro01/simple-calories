@@ -11,12 +11,12 @@ import type { MealResponseDTO } from "@/types";
 import { CATEGORY_CONFIG } from "@/types/day-details.types";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 
-interface MealCardProps {
+type MealCardProps = {
   meal: MealResponseDTO;
   onEdit: (meal: MealResponseDTO) => void;
   onDelete: (mealId: string) => void;
   isDeleting?: boolean;
-}
+};
 
 export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCardProps) {
   const dateFormatter = useDateFormatter();
@@ -93,7 +93,9 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
               Wygenerowane przez AI
             </span>
           )}
-          <span className="text-sm text-muted-foreground" data-testid="meal-card-time">{mealTime}</span>
+          <span className="text-sm text-muted-foreground" data-testid="meal-card-time">
+            {mealTime}
+          </span>
         </div>
       </div>
 
@@ -151,7 +153,10 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
           </div>
         </div>
       ) : (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3" data-testid="delete-confirm-dialog">
+        <div
+          className="bg-destructive/10 border border-destructive/20 rounded-md p-3"
+          data-testid="delete-confirm-dialog"
+        >
           <p className="text-sm text-destructive mb-2">Czy na pewno chcesz usunąć ten posiłek?</p>
           <div className="flex gap-2">
             <button

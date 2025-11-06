@@ -5,10 +5,10 @@
  * Wyświetlany na mobile w prawym dolnym rogu.
  */
 
-interface FABProps {
+type FABProps = {
   onClick: () => void;
   ariaLabel?: string;
-}
+};
 
 export function FAB({ onClick, ariaLabel = "Dodaj posiłek" }: FABProps) {
   return (

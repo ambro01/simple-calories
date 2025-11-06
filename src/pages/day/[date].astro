@@ -33,7 +33,9 @@ const formattedDate = new Intl.DateTimeFormat("pl-PL", {
     date={date}
     onBack={() => {
       // Client-side navigation back to dashboard
+
       if (typeof window !== "undefined") {
+        // eslint-disable-next-line no-undef
         window.location.href = "/";
       }
     }}

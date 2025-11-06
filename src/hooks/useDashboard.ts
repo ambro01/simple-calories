@@ -10,14 +10,14 @@ import type { DailyProgressResponseDTO } from "@/types";
 import type { DashboardState } from "@/types/dashboard.types";
 import { PAGINATION_LIMITS } from "@/types/dashboard.types";
 
-interface UseDashboardReturn {
+type UseDashboardReturn = {
   state: DashboardState;
   loadInitialDays: () => Promise<void>;
   loadMoreDays: () => Promise<void>;
   refreshDays: () => Promise<void>;
   selectDay: (date: string) => void;
   refetchAfterMealChange: () => Promise<void>;
-}
+};
 
 /**
  * Pobiera daily progress z API

@@ -2,23 +2,23 @@
 export type MessageRole = "system" | "user" | "assistant";
 
 // Pojedyncza wiadomość
-export interface Message {
+export type Message = {
   role: MessageRole;
   content: string;
-}
+};
 
 // Parametry modelu
-export interface ModelParameters {
+export type ModelParameters = {
   temperature?: number; // 0-2, default: 1
   max_tokens?: number; // Max tokens w odpowiedzi
   top_p?: number; // 0-1, default: 1
   frequency_penalty?: number; // -2 do 2, default: 0
   presence_penalty?: number; // -2 do 2, default: 0
   stop?: string[]; // Stop sequences
-}
+};
 
 // JSON Schema format dla ustrukturyzowanych odpowiedzi
-export interface ResponseFormat {
+export type ResponseFormat = {
   type: "json_schema";
   json_schema: {
     name: string;
@@ -30,10 +30,10 @@ export interface ResponseFormat {
       additionalProperties?: boolean;
     };
   };
-}
+};
 
 // Request do OpenRouter API
-export interface OpenRouterRequest {
+export type OpenRouterRequest = {
   model: string;
   messages: Message[];
   temperature?: number;
@@ -43,40 +43,40 @@ export interface OpenRouterRequest {
   presence_penalty?: number;
   response_format?: ResponseFormat;
   stop?: string[];
-}
+};
 
 // Response z OpenRouter API
-export interface OpenRouterResponse {
+export type OpenRouterResponse = {
   id: string;
   model: string;
   created: number;
-  choices: Array<{
+  choices: {
     index: number;
     message: {
       role: string;
       content: string;
     };
     finish_reason: string;
-  }>;
+  }[];
   usage: {
     prompt_tokens: number;
     completion_tokens: number;
     total_tokens: number;
   };
-}
+};
 
 // Opcje dla pojedynczego zapytania
-export interface ChatCompletionOptions {
+export type ChatCompletionOptions = {
   systemPrompt?: string;
   userMessage: string;
   model?: string;
   parameters?: ModelParameters;
   responseFormat?: ResponseFormat;
   conversationHistory?: Message[];
-}
+};
 
 // Wynik parsowania odpowiedzi
-export interface ParsedResponse<T = any> {
+export type ParsedResponse<T = any> = {
   content: string;
   data?: T;
   usage: {
@@ -84,4 +84,4 @@ export interface ParsedResponse<T = any> {
     completionTokens: number;
     totalTokens: number;
   };
-}
+};

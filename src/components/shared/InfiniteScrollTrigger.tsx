@@ -7,11 +7,11 @@
 
 import { useEffect, useRef } from "react";
 
-interface InfiniteScrollTriggerProps {
+type InfiniteScrollTriggerProps = {
   onIntersect: () => void;
   hasMore: boolean;
   loading: boolean;
-}
+};
 
 export function InfiniteScrollTrigger({ onIntersect, hasMore, loading }: InfiniteScrollTriggerProps) {
   const triggerRef = useRef<HTMLDivElement>(null);

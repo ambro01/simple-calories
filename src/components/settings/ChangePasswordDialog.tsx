@@ -81,18 +81,14 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Zmiana hasła</DialogTitle>
-          <DialogDescription>
-            Wprowadź aktualne hasło oraz nowe hasło, które chcesz ustawić.
-          </DialogDescription>
+          <DialogDescription>Wprowadź aktualne hasło oraz nowe hasło, które chcesz ustawić.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
           {/* Info Alert */}
           <Alert className="mb-4 border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-100">
             <Info className="h-4 w-4" />
-            <AlertDescription className="text-sm">
-              Nowe hasło musi mieć co najmniej 8 znaków.
-            </AlertDescription>
+            <AlertDescription className="text-sm">Nowe hasło musi mieć co najmniej 8 znaków.</AlertDescription>
           </Alert>
 
           <div className="space-y-4">
@@ -110,7 +106,9 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
                   onChange={(e) => form.updateCurrentPassword(e.target.value)}
                   onKeyDown={handleKeyDown}
                   disabled={form.state.isSaving}
-                  className={form.state.validationError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                  className={
+                    form.state.validationError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"
+                  }
                   aria-invalid={!!form.state.validationError}
                   aria-describedby={form.state.validationError ? "password-error" : undefined}
                   autoFocus
@@ -141,7 +139,9 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
                   onChange={(e) => form.updateNewPassword(e.target.value)}
                   onKeyDown={handleKeyDown}
                   disabled={form.state.isSaving}
-                  className={form.state.validationError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
+                  className={
+                    form.state.validationError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"
+                  }
                   aria-invalid={!!form.state.validationError}
                   aria-describedby={form.state.validationError ? "password-error" : undefined}
                 />

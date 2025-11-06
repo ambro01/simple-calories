@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PasswordInput } from "./PasswordInput";
 
-interface ResetPasswordFormState {
+type ResetPasswordFormState = {
   password: string;
   passwordConfirm: string;
   isLoading: boolean;
@@ -22,7 +22,7 @@ interface ResetPasswordFormState {
     passwordConfirm?: string;
     general?: string;
   };
-}
+};
 
 export function ResetPasswordForm() {
   const [state, setState] = useState<ResetPasswordFormState>({
@@ -151,10 +151,7 @@ export function ResetPasswordForm() {
               {state.errors.general}
               {state.errors.general.includes("wygasł") && (
                 <div className="mt-2">
-                  <a
-                    href="/auth/forgot-password"
-                    className="text-sm underline hover:no-underline"
-                  >
+                  <a href="/auth/forgot-password" className="text-sm underline hover:no-underline">
                     Poproś o nowy link do resetu hasła
                   </a>
                 </div>
@@ -164,69 +161,66 @@ export function ResetPasswordForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-        {/* New Password */}
-        <div className="space-y-2">
-          <Label htmlFor="password">Nowe hasło</Label>
-          <PasswordInput
-            id="password"
-            value={state.password}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                password: e.target.value,
-                errors: { ...prev.errors, password: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("password")}
-            placeholder="Minimum 8 znaków"
-            error={state.errors.password}
-            disabled={state.isLoading}
-            autoComplete="new-password"
-          />
-          {state.errors.password && (
-            <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.password}
-            </p>
-          )}
-        </div>
+          {/* New Password */}
+          <div className="space-y-2">
+            <Label htmlFor="password">Nowe hasło</Label>
+            <PasswordInput
+              id="password"
+              value={state.password}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                  errors: { ...prev.errors, password: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("password")}
+              placeholder="Minimum 8 znaków"
+              error={state.errors.password}
+              disabled={state.isLoading}
+              autoComplete="new-password"
+            />
+            {state.errors.password && (
+              <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.password}
+              </p>
+            )}
+          </div>
 
-        {/* Password Confirm */}
-        <div className="space-y-2">
-          <Label htmlFor="passwordConfirm">Powtórz nowe hasło</Label>
-          <PasswordInput
-            id="passwordConfirm"
-            value={state.passwordConfirm}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                passwordConfirm: e.target.value,
-                errors: { ...prev.errors, passwordConfirm: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("passwordConfirm")}
-            placeholder="Powtórz hasło"
-            error={state.errors.passwordConfirm}
-            disabled={state.isLoading}
-            autoComplete="new-password"
-          />
-          {state.errors.passwordConfirm && (
-            <p id="passwordConfirm-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.passwordConfirm}
-            </p>
-          )}
-        </div>
+          {/* Password Confirm */}
+          <div className="space-y-2">
+            <Label htmlFor="passwordConfirm">Powtórz nowe hasło</Label>
+            <PasswordInput
+              id="passwordConfirm"
+              value={state.passwordConfirm}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  passwordConfirm: e.target.value,
+                  errors: { ...prev.errors, passwordConfirm: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("passwordConfirm")}
+              placeholder="Powtórz hasło"
+              error={state.errors.passwordConfirm}
+              disabled={state.isLoading}
+              autoComplete="new-password"
+            />
+            {state.errors.passwordConfirm && (
+              <p id="passwordConfirm-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.passwordConfirm}
+              </p>
+            )}
+          </div>
 
-        {/* Submit button */}
+          {/* Submit button */}
           <Button type="submit" disabled={state.isLoading} className="w-full">
             {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {state.isLoading ? "Zapisywanie..." : "Zmień hasło"}
           </Button>
 
           <div className="text-center">
-            <a
-              href="/auth/login"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <a href="/auth/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               ← Wróć do logowania
             </a>
           </div>

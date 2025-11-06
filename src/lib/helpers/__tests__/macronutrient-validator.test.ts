@@ -228,7 +228,7 @@ describe("shouldChangeToAIEdited", () => {
       const currentMeal = { input_method: "ai", calories: 420 };
       const updateData = {
         category: "lunch",
-        meal_timestamp: "2025-01-27T12:00:00Z"
+        meal_timestamp: "2025-01-27T12:00:00Z",
       };
 
       expect(shouldChangeToAIEdited(currentMeal, updateData)).toBe(false);
@@ -273,11 +273,11 @@ describe("shouldChangeToAIEdited", () => {
         description: "Eggs",
         protein: 25,
         carbs: 50,
-        fats: 20
+        fats: 20,
       };
       const updateData = {
         calories: 420,
-        description: "Eggs"
+        description: "Eggs",
       };
 
       expect(shouldChangeToAIEdited(currentMeal, updateData)).toBe(false);
@@ -287,12 +287,12 @@ describe("shouldChangeToAIEdited", () => {
       const currentMeal = {
         input_method: "ai",
         calories: 420,
-        description: "Eggs"
+        description: "Eggs",
       };
       const updateData = {
         calories: 420, // same
         description: "Scrambled eggs", // changed
-        category: "breakfast" // non-nutritional
+        category: "breakfast", // non-nutritional
       };
 
       expect(shouldChangeToAIEdited(currentMeal, updateData)).toBe(true);
@@ -302,11 +302,11 @@ describe("shouldChangeToAIEdited", () => {
       const currentMeal = {
         input_method: "ai",
         calories: 420,
-        protein: 25
+        protein: 25,
       };
       const updateData = {
         calories: 450,
-        protein: 30
+        protein: 30,
       };
 
       expect(shouldChangeToAIEdited(currentMeal, updateData)).toBe(true);

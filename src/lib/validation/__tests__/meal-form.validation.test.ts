@@ -133,6 +133,7 @@ describe("validateCalories", () => {
   });
 
   it("returns error for undefined value", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = validateCalories(undefined as any);
     expect(result).toEqual({
       field: "calories",
@@ -213,6 +214,7 @@ describe("validateMacro", () => {
   });
 
   it("returns null for undefined value (optional field)", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = validateMacro(undefined as any, fieldName);
     expect(result).toBeNull();
   });
@@ -257,6 +259,7 @@ describe("validateMacro", () => {
   });
 
   it("returns error for string value", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = validateMacro("25" as any, fieldName);
     expect(result).toEqual({
       field: fieldName,
@@ -457,6 +460,7 @@ describe("validateAIGenerationId", () => {
   });
 
   it("returns error for undefined", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = validateAIGenerationId(undefined as any);
     expect(result).toEqual({
       field: "aiGenerationId",

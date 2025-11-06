@@ -9,11 +9,11 @@ import { useEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 
-interface UseThemeReturn {
+type UseThemeReturn = {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
-}
+};
 
 export function useTheme(): UseThemeReturn {
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -56,6 +56,7 @@ export function useTheme(): UseThemeReturn {
     if (currentTheme && currentTheme !== theme) {
       setTheme(currentTheme);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

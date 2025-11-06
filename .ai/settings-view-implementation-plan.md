@@ -3,10 +3,12 @@
 ## 1. Przegląd
 
 Widok Settings składa się z dwóch głównych ekranów:
+
 - **Settings** (`/settings`) - główny ekran ustawień z listą opcji konfiguracyjnych
 - **EditCalorieGoal** (`/settings/calorie-goal`) - modal/ekran do edycji dziennego celu kalorycznego
 
 Głównym celem widoku Settings jest umożliwienie użytkownikowi zarządzania ustawieniami aplikacji, w tym:
+
 - Przeglądanie profilu użytkownika (email, data utworzenia konta)
 - Edycja dziennego celu kalorycznego
 - Ponowne uruchomienie onboardingu
@@ -77,6 +79,7 @@ Settings (Page - src/pages/settings.astro lub settings/index.astro)
 **Opis**: Główna strona ustawień wyświetlająca listę opcji konfiguracyjnych w formie kart. Odpowiedzialna za pobieranie danych profilu i aktualnego celu kalorycznego oraz koordynację akcji użytkownika.
 
 **Główne elementy**:
+
 - `AppLayout` - layout aplikacji z headerem i nawigacją
 - `PageTitle` - tytuł strony "Ustawienia"
 - Lista `SettingsCard` - karty z opcjami ustawień
@@ -86,6 +89,7 @@ Settings (Page - src/pages/settings.astro lub settings/index.astro)
 - `Toast` - powiadomienia o sukcesie/błędzie
 
 **Obsługiwane interakcje**:
+
 - Kliknięcie na kartę "Profil" → nawigacja do widoku profilu (readonly, placeholder na przyszłość)
 - Kliknięcie na kartę "Cel kaloryczny" → otwarcie `EditCalorieGoalDialog`
 - Kliknięcie na kartę "Onboarding" → restart onboardingu (ustawienie flagi w localStorage i nawigacja)
@@ -95,6 +99,7 @@ Settings (Page - src/pages/settings.astro lub settings/index.astro)
 **Obsługiwana walidacja**: Brak walidacji na poziomie tego komponentu
 
 **Typy**:
+
 - `ProfileResponseDTO` - dane profilu użytkownika
 - `CalorieGoalResponseDTO` - dane aktualnego celu kalorycznego
 - `User` (z `@supabase/supabase-js`) - dane użytkownika z Auth
@@ -103,6 +108,7 @@ Settings (Page - src/pages/settings.astro lub settings/index.astro)
 **Props**: Brak (page component)
 
 **State**:
+
 ```typescript
 interface SettingsViewModel {
   profile: ProfileResponseDTO | null;
@@ -120,6 +126,7 @@ interface SettingsViewModel {
 **Opis**: Reużywalny komponent reprezentujący pojedynczą opcję w ustawieniach. Wyświetla tytuł, opcjonalny podtytuł, ikonę oraz chevron wskazujący możliwość kliknięcia.
 
 **Główne elementy**:
+
 - `Card` (shadcn/ui) - kontener karty
 - `CardContent` - zawartość karty
 - Icon (opcjonalnie) - ikona po lewej stronie
@@ -129,23 +136,26 @@ interface SettingsViewModel {
 - `ChevronRight` (opcjonalnie) - ikona strzałki po prawej
 
 **Obsługiwane interakcje**:
+
 - `onClick` - kliknięcie na kartę
 
 **Obsługiwana walidacja**: Brak
 
 **Typy**:
+
 ```typescript
 interface SettingsCardProps {
   title: string;
   subtitle?: string;
   icon?: React.ReactNode;
   onClick?: () => void;
-  variant?: 'default' | 'destructive';
+  variant?: "default" | "destructive";
   showChevron?: boolean;
 }
 ```
 
 **Props**:
+
 - `title: string` - tytuł karty (wymagane)
 - `subtitle?: string` - podtytuł/opis (opcjonalnie)
 - `icon?: React.ReactNode` - ikona (opcjonalnie)
@@ -158,6 +168,7 @@ interface SettingsCardProps {
 **Opis**: Modalny dialog do edycji dziennego celu kalorycznego. Wyświetla aktualny cel, pozwala wprowadzić nową wartość (z walidacją 1-10000), informuje o tym, że zmiana będzie efektywna od jutra. Na desktopie wyświetlany jako dialog (max-width: 500px), na mobile jako fullscreen.
 
 **Główne elementy**:
+
 - `Dialog` (shadcn/ui) - kontener dialogu
 - `DialogContent` - zawartość dialogu
 - `DialogHeader` - nagłówek z tytułem i opisem
@@ -174,12 +185,14 @@ interface SettingsCardProps {
   - `Button` (Zapisz, type="submit")
 
 **Obsługiwane interakcje**:
+
 - `onChange` - zmiana wartości w polu input
 - `onSubmit` - submit formularza (zapisanie nowego celu)
 - `onCancel` - anulowanie i zamknięcie dialogu
 - `onOpenChange` - zmiana stanu otwarcia dialogu
 
 **Obsługiwana walidacja**:
+
 - **Wymagane pole**: Wartość nie może być pusta
 - **Zakres**: Wartość musi być liczbą całkowitą w zakresie 1-10000
 - **Walidacja po stronie klienta**: Przed wysłaniem żądania do API
@@ -191,12 +204,14 @@ interface SettingsCardProps {
   - 409 Conflict → Informacja o istniejącym celu na jutro
 
 **Typy**:
+
 - `CalorieGoalResponseDTO` - aktualny cel kaloryczny
 - `CreateCalorieGoalRequestDTO` - dane do utworzenia nowego celu
 - `ErrorResponseDTO` - odpowiedź błędu z API
 - `EditCalorieGoalViewModel` - model widoku (state)
 
 **Props**:
+
 ```typescript
 interface EditCalorieGoalDialogProps {
   open: boolean;
@@ -207,6 +222,7 @@ interface EditCalorieGoalDialogProps {
 ```
 
 **State**:
+
 ```typescript
 interface EditCalorieGoalViewModel {
   goalValue: string;
@@ -221,6 +237,7 @@ interface EditCalorieGoalViewModel {
 **Opis**: Dialog potwierdzenia wylogowania. Wyświetla pytanie "Czy na pewno chcesz się wylogować?" z przyciskami Anuluj i Wyloguj.
 
 **Główne elementy**:
+
 - `AlertDialog` (shadcn/ui) - kontener dialogu
 - `AlertDialogContent` - zawartość dialogu
 - `AlertDialogHeader` - nagłówek
@@ -231,6 +248,7 @@ interface EditCalorieGoalViewModel {
   - `AlertDialogAction` - przycisk "Wyloguj" (variant="destructive")
 
 **Obsługiwane interakcje**:
+
 - `onCancel` - anulowanie wylogowania (zamknięcie dialogu)
 - `onConfirm` - potwierdzenie wylogowania (wywołanie supabase.auth.signOut())
 - `onOpenChange` - zmiana stanu otwarcia dialogu
@@ -240,6 +258,7 @@ interface EditCalorieGoalViewModel {
 **Typy**: Brak specyficznych typów
 
 **Props**:
+
 ```typescript
 interface LogoutAlertDialogProps {
   open: boolean;
@@ -309,7 +328,7 @@ interface SettingsCardProps {
   subtitle?: string; // Podtytuł, np. "Aktualnie: 2500 kcal"
   icon?: React.ReactNode; // Ikona po lewej stronie
   onClick?: () => void; // Handler kliknięcia
-  variant?: 'default' | 'destructive'; // Wariant stylistyczny
+  variant?: "default" | "destructive"; // Wariant stylistyczny
   showChevron?: boolean; // Czy pokazywać strzałkę (domyślnie true jeśli onClick)
 }
 
@@ -376,20 +395,20 @@ const useSettings = () => {
 
   const fetchSettingsData = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       // Równoległe pobieranie danych
       const [profileRes, goalRes, userRes] = await Promise.all([
-        fetch('/api/v1/profile'),
-        fetch('/api/v1/calorie-goals/current'),
-        supabase.auth.getUser()
+        fetch("/api/v1/profile"),
+        fetch("/api/v1/calorie-goals/current"),
+        supabase.auth.getUser(),
       ]);
 
       const profile = profileRes.ok ? await profileRes.json() : null;
       const currentGoal = goalRes.ok ? await goalRes.json() : null;
       const userEmail = userRes.data?.user?.email || null;
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         profile,
         currentGoal,
@@ -397,9 +416,9 @@ const useSettings = () => {
         isLoading: false,
       }));
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        error: 'Nie udało się pobrać danych ustawień',
+        error: "Nie udało się pobrać danych ustawień",
         isLoading: false,
       }));
     }
@@ -409,18 +428,18 @@ const useSettings = () => {
     try {
       await supabase.auth.signOut();
       // Redirect do /login
-      window.location.href = '/login';
+      window.location.href = "/login";
     } catch (error) {
-      toast.error('Błąd podczas wylogowania');
+      toast.error("Błąd podczas wylogowania");
     }
   };
 
   return {
     ...state,
-    openEditGoalDialog: () => setState(prev => ({ ...prev, showEditGoalDialog: true })),
-    closeEditGoalDialog: () => setState(prev => ({ ...prev, showEditGoalDialog: false })),
-    openLogoutDialog: () => setState(prev => ({ ...prev, showLogoutDialog: true })),
-    closeLogoutDialog: () => setState(prev => ({ ...prev, showLogoutDialog: false })),
+    openEditGoalDialog: () => setState((prev) => ({ ...prev, showEditGoalDialog: true })),
+    closeEditGoalDialog: () => setState((prev) => ({ ...prev, showEditGoalDialog: false })),
+    openLogoutDialog: () => setState((prev) => ({ ...prev, showLogoutDialog: true })),
+    closeLogoutDialog: () => setState((prev) => ({ ...prev, showLogoutDialog: false })),
     handleLogout,
     refetchData: fetchSettingsData,
   };
@@ -434,7 +453,7 @@ Stan formularza będzie zarządzany przez custom hook `useCalorieGoalForm`:
 ```typescript
 const useCalorieGoalForm = (currentGoal: CalorieGoalResponseDTO | null) => {
   const [state, setState] = useState<EditCalorieGoalViewModel>({
-    goalValue: currentGoal?.daily_goal.toString() || '',
+    goalValue: currentGoal?.daily_goal.toString() || "",
     isSaving: false,
     validationError: null,
     apiError: null,
@@ -443,28 +462,28 @@ const useCalorieGoalForm = (currentGoal: CalorieGoalResponseDTO | null) => {
   // Aktualizacja wartości początkowej gdy currentGoal się zmieni
   useEffect(() => {
     if (currentGoal) {
-      setState(prev => ({ ...prev, goalValue: currentGoal.daily_goal.toString() }));
+      setState((prev) => ({ ...prev, goalValue: currentGoal.daily_goal.toString() }));
     }
   }, [currentGoal]);
 
   const validateGoalValue = (value: string): boolean => {
-    if (!value || value.trim() === '') {
-      setState(prev => ({ ...prev, validationError: 'Pole jest wymagane' }));
+    if (!value || value.trim() === "") {
+      setState((prev) => ({ ...prev, validationError: "Pole jest wymagane" }));
       return false;
     }
 
     const numValue = parseInt(value);
     if (isNaN(numValue)) {
-      setState(prev => ({ ...prev, validationError: 'Wartość musi być liczbą' }));
+      setState((prev) => ({ ...prev, validationError: "Wartość musi być liczbą" }));
       return false;
     }
 
     if (numValue < 1 || numValue > 10000) {
-      setState(prev => ({ ...prev, validationError: 'Wartość musi być w zakresie 1-10000' }));
+      setState((prev) => ({ ...prev, validationError: "Wartość musi być w zakresie 1-10000" }));
       return false;
     }
 
-    setState(prev => ({ ...prev, validationError: null }));
+    setState((prev) => ({ ...prev, validationError: null }));
     return true;
   };
 
@@ -473,12 +492,12 @@ const useCalorieGoalForm = (currentGoal: CalorieGoalResponseDTO | null) => {
       return;
     }
 
-    setState(prev => ({ ...prev, isSaving: true, apiError: null }));
+    setState((prev) => ({ ...prev, isSaving: true, apiError: null }));
 
     try {
-      const response = await fetch('/api/v1/calorie-goals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/v1/calorie-goals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ daily_goal: parseInt(state.goalValue) }),
       });
 
@@ -487,37 +506,37 @@ const useCalorieGoalForm = (currentGoal: CalorieGoalResponseDTO | null) => {
 
         if (response.status === 409) {
           // Konflikt - cel na jutro już istnieje
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
-            apiError: 'Cel na jutro już istnieje. Operacja anulowana.',
-            isSaving: false
+            apiError: "Cel na jutro już istnieje. Operacja anulowana.",
+            isSaving: false,
           }));
           return;
         }
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          apiError: error.message || 'Wystąpił błąd podczas zapisywania',
-          isSaving: false
+          apiError: error.message || "Wystąpił błąd podczas zapisywania",
+          isSaving: false,
         }));
         return;
       }
 
       // Sukces
-      toast.success('Cel kaloryczny zaktualizowany');
+      toast.success("Cel kaloryczny zaktualizowany");
       onSuccess();
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        apiError: 'Błąd połączenia z serwerem',
-        isSaving: false
+        apiError: "Błąd połączenia z serwerem",
+        isSaving: false,
       }));
     }
   };
 
   return {
     ...state,
-    setGoalValue: (value: string) => setState(prev => ({ ...prev, goalValue: value })),
+    setGoalValue: (value: string) => setState((prev) => ({ ...prev, goalValue: value })),
     handleSubmit,
   };
 };
@@ -544,6 +563,7 @@ interface ProfileResponseDTO {
 **Użycie**: Pobieranie danych profilu użytkownika przy ładowaniu strony Settings
 
 **Obsługa błędów**:
+
 - 401 Unauthorized → Redirect do /login
 - 404 Not Found → Wyświetlenie komunikatu o braku profilu (nie powinno się zdarzyć)
 - 500 Internal Server Error → Wyświetlenie błędu, przycisk retry
@@ -553,6 +573,7 @@ interface ProfileResponseDTO {
 **Endpoint**: `GET /api/v1/calorie-goals/current`
 
 **Request**: Query parameters (opcjonalnie)
+
 - `date?: string` - Data w formacie YYYY-MM-DD (domyślnie dzisiaj)
 
 **Response Type**: `CalorieGoalResponseDTO`
@@ -571,6 +592,7 @@ interface CalorieGoalResponseDTO {
 **Użycie**: Pobieranie aktualnego celu kalorycznego przy ładowaniu strony Settings i po zapisaniu nowego celu
 
 **Obsługa błędów**:
+
 - 404 Not Found → Wyświetlenie domyślnej wartości 2000 kcal z komunikatem "Brak ustawionego celu"
 - 401 Unauthorized → Redirect do /login
 - 500 Internal Server Error → Wyświetlenie błędu, przycisk retry
@@ -588,6 +610,7 @@ interface CreateCalorieGoalRequestDTO {
 ```
 
 **Request Example**:
+
 ```json
 {
   "daily_goal": 2500
@@ -599,6 +622,7 @@ interface CreateCalorieGoalRequestDTO {
 **Użycie**: Utworzenie nowego celu kalorycznego efektywnego od jutra (CURRENT_DATE + 1)
 
 **Obsługa błędów**:
+
 - 400 Bad Request → Wyświetlenie błędów walidacji z `details` object
 - 409 Conflict → Cel na jutro już istnieje - wyświetlenie komunikatu
 - 401 Unauthorized → Redirect do /login
@@ -629,6 +653,7 @@ interface User {
 **Użycie**: Wylogowanie użytkownika
 
 **Po sukcesie**:
+
 1. Czyszczenie local state
 2. Redirect do /login
 
@@ -636,58 +661,61 @@ interface User {
 
 ### 8.1. Na stronie Settings
 
-| Interakcja | Oczekiwany wynik |
-|------------|------------------|
-| Wejście na `/settings` | Pobieranie danych profilu i aktualnego celu, wyświetlenie loadera, następnie wyświetlenie kart ustawień |
-| Kliknięcie karty "Profil" | Nawigacja do widoku profilu (obecnie placeholder - readonly view) |
-| Kliknięcie karty "Cel kaloryczny" | Otwarcie dialogu `EditCalorieGoalDialog` z aktualnym celem |
-| Kliknięcie karty "Onboarding" | Ustawienie flagi w localStorage `showOnboarding=true`, nawigacja do dashboard |
-| Kliknięcie karty "Informacje" | Nawigacja do strony "O aplikacji" (`/about`) |
-| Kliknięcie karty "Wyloguj" | Otwarcie dialogu potwierdzenia `LogoutAlertDialog` |
-| Błąd podczas ładowania danych | Wyświetlenie komunikatu błędu i przycisku "Spróbuj ponownie" |
+| Interakcja                        | Oczekiwany wynik                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Wejście na `/settings`            | Pobieranie danych profilu i aktualnego celu, wyświetlenie loadera, następnie wyświetlenie kart ustawień |
+| Kliknięcie karty "Profil"         | Nawigacja do widoku profilu (obecnie placeholder - readonly view)                                       |
+| Kliknięcie karty "Cel kaloryczny" | Otwarcie dialogu `EditCalorieGoalDialog` z aktualnym celem                                              |
+| Kliknięcie karty "Onboarding"     | Ustawienie flagi w localStorage `showOnboarding=true`, nawigacja do dashboard                           |
+| Kliknięcie karty "Informacje"     | Nawigacja do strony "O aplikacji" (`/about`)                                                            |
+| Kliknięcie karty "Wyloguj"        | Otwarcie dialogu potwierdzenia `LogoutAlertDialog`                                                      |
+| Błąd podczas ładowania danych     | Wyświetlenie komunikatu błędu i przycisku "Spróbuj ponownie"                                            |
 
 ### 8.2. W dialogu EditCalorieGoalDialog
 
-| Interakcja | Oczekiwany wynik |
-|------------|------------------|
-| Otwarcie dialogu | Prepopulacja pola input aktualnym celem, focus na input |
-| Wpisanie wartości poza zakresem (np. 0, 15000) | Wyświetlenie błędu walidacji "Wartość musi być w zakresie 1-10000" |
-| Wpisanie nieprawidłowej wartości (np. tekst) | Wyświetlenie błędu walidacji "Wartość musi być liczbą" |
-| Pozostawienie pola pustego | Wyświetlenie błędu walidacji "Pole jest wymagane" |
-| Kliknięcie "Anuluj" | Zamknięcie dialogu bez zapisywania zmian |
-| Kliknięcie "Zapisz" z prawidłową wartością | Wysłanie POST request, wyświetlenie loadera, po sukcesie: toast "Cel kaloryczny zaktualizowany", zamknięcie dialogu, odświeżenie danych |
-| Błąd 409 (Conflict) | Wyświetlenie komunikatu "Cel na jutro już istnieje. Operacja anulowana." |
-| Błąd 400 (Validation) | Wyświetlenie błędów walidacji z API |
-| Błąd sieci/500 | Wyświetlenie komunikatu błędu, możliwość retry |
-| Naciśnięcie Escape | Zamknięcie dialogu (standardowe zachowanie Dialog) |
+| Interakcja                                     | Oczekiwany wynik                                                                                                                        |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Otwarcie dialogu                               | Prepopulacja pola input aktualnym celem, focus na input                                                                                 |
+| Wpisanie wartości poza zakresem (np. 0, 15000) | Wyświetlenie błędu walidacji "Wartość musi być w zakresie 1-10000"                                                                      |
+| Wpisanie nieprawidłowej wartości (np. tekst)   | Wyświetlenie błędu walidacji "Wartość musi być liczbą"                                                                                  |
+| Pozostawienie pola pustego                     | Wyświetlenie błędu walidacji "Pole jest wymagane"                                                                                       |
+| Kliknięcie "Anuluj"                            | Zamknięcie dialogu bez zapisywania zmian                                                                                                |
+| Kliknięcie "Zapisz" z prawidłową wartością     | Wysłanie POST request, wyświetlenie loadera, po sukcesie: toast "Cel kaloryczny zaktualizowany", zamknięcie dialogu, odświeżenie danych |
+| Błąd 409 (Conflict)                            | Wyświetlenie komunikatu "Cel na jutro już istnieje. Operacja anulowana."                                                                |
+| Błąd 400 (Validation)                          | Wyświetlenie błędów walidacji z API                                                                                                     |
+| Błąd sieci/500                                 | Wyświetlenie komunikatu błędu, możliwość retry                                                                                          |
+| Naciśnięcie Escape                             | Zamknięcie dialogu (standardowe zachowanie Dialog)                                                                                      |
 
 ### 8.3. W dialogu LogoutAlertDialog
 
-| Interakcja | Oczekiwany wynik |
-|------------|------------------|
-| Otwarcie dialogu | Wyświetlenie pytania "Czy na pewno chcesz się wylogować?", focus na przycisku "Anuluj" |
-| Kliknięcie "Anuluj" | Zamknięcie dialogu, pozostanie na stronie Settings |
+| Interakcja           | Oczekiwany wynik                                                                             |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| Otwarcie dialogu     | Wyświetlenie pytania "Czy na pewno chcesz się wylogować?", focus na przycisku "Anuluj"       |
+| Kliknięcie "Anuluj"  | Zamknięcie dialogu, pozostanie na stronie Settings                                           |
 | Kliknięcie "Wyloguj" | Wywołanie `supabase.auth.signOut()`, wyświetlenie loadera, po sukcesie: redirect do `/login` |
-| Błąd wylogowania | Wyświetlenie toast "Błąd podczas wylogowania", możliwość retry |
-| Naciśnięcie Escape | Zamknięcie dialogu (standardowe zachowanie AlertDialog) |
+| Błąd wylogowania     | Wyświetlenie toast "Błąd podczas wylogowania", możliwość retry                               |
+| Naciśnięcie Escape   | Zamknięcie dialogu (standardowe zachowanie AlertDialog)                                      |
 
 ## 9. Warunki i walidacja
 
 ### 9.1. Walidacja w EditCalorieGoalDialog
 
 **Warunek 1: Pole wymagane**
+
 - **Komponent**: `EditCalorieGoalDialog` - pole input
 - **Warunek**: Wartość nie może być pusta
 - **Walidacja**: `if (!value || value.trim() === '') { error }`
 - **Wpływ na UI**: Wyświetlenie komunikatu "Pole jest wymagane" pod inputem, zablokowanie przycisku "Zapisz"
 
 **Warunek 2: Wartość musi być liczbą**
+
 - **Komponent**: `EditCalorieGoalDialog` - pole input
 - **Warunek**: Wartość musi być liczbą całkowitą
 - **Walidacja**: `if (isNaN(parseInt(value))) { error }`
 - **Wpływ na UI**: Wyświetlenie komunikatu "Wartość musi być liczbą" pod inputem, zablokowanie przycisku "Zapisz"
 
 **Warunek 3: Zakres 1-10000**
+
 - **Komponent**: `EditCalorieGoalDialog` - pole input
 - **Warunek**: Wartość musi być w zakresie 1-10000
 - **Walidacja**: `if (value < 1 || value > 10000) { error }`
@@ -695,6 +723,7 @@ interface User {
 - **Dodatkowa walidacja HTML**: `<input type="number" min={1} max={10000} />`
 
 **Warunek 4: Unikalność celu na dany dzień (z API)**
+
 - **Komponent**: `EditCalorieGoalDialog` - obsługa response z API
 - **Warunek**: Na dany dzień (jutro) nie może istnieć już cel
 - **Walidacja**: Obsługa błędu 409 Conflict z API
@@ -703,6 +732,7 @@ interface User {
 ### 9.2. Walidacja autentykacji
 
 **Warunek: Użytkownik musi być zalogowany**
+
 - **Komponent**: `Settings` (page)
 - **Warunek**: Obecność sesji użytkownika
 - **Walidacja**: Sprawdzenie `supabase.auth.getUser()` przy ładowaniu
@@ -711,11 +741,13 @@ interface User {
 ### 9.3. Warunki wyświetlania danych
 
 **Warunek: Brak ustawionego celu kalorycznego**
+
 - **Komponent**: `SettingsCard` (Cel kaloryczny)
 - **Warunek**: API zwraca 404 dla `/api/v1/calorie-goals/current`
 - **Wpływ na UI**: Wyświetlenie "Nie ustawiono (domyślnie: 2000 kcal)" jako subtitle
 
 **Warunek: Brak danych profilu**
+
 - **Komponent**: `SettingsCard` (Profil)
 - **Warunek**: `profile === null` lub `userEmail === null`
 - **Wpływ na UI**: Wyświetlenie "Ładowanie..." lub "Brak danych"
@@ -725,26 +757,31 @@ interface User {
 ### 10.1. Błędy na stronie Settings
 
 **Błąd: Brak autoryzacji (401)**
+
 - **Scenariusz**: Token wygasł lub użytkownik nie jest zalogowany
 - **Obsługa**: Redirect do `/login`
 - **UI**: Brak komunikatu (natychmiastowy redirect)
 
 **Błąd: Błąd serwera (500)**
+
 - **Scenariusz**: Błąd podczas pobierania profilu lub aktualnego celu
 - **Obsługa**: Wyświetlenie komunikatu błędu i przycisku retry
 - **UI**: Alert z komunikatem "Nie udało się pobrać danych ustawień" + Button "Spróbuj ponownie"
 
 **Błąd: Brak profilu (404)**
+
 - **Scenariusz**: Profil nie został znaleziony (nie powinno się zdarzyć)
 - **Obsługa**: Logowanie błędu, wyświetlenie komunikatu
 - **UI**: Alert "Profil nie został znaleziony. Skontaktuj się z administratorem."
 
 **Błąd: Brak celu kalorycznego (404)**
+
 - **Scenariusz**: Użytkownik nie ustawił jeszcze celu
 - **Obsługa**: Wyświetlenie domyślnej wartości 2000 kcal
 - **UI**: Subtitle w karcie "Nie ustawiono (domyślnie: 2000 kcal)"
 
 **Błąd: Błąd sieci**
+
 - **Scenariusz**: Brak połączenia z internetem
 - **Obsługa**: Wyświetlenie komunikatu o błędzie sieci
 - **UI**: Toast "Sprawdź połączenie z internetem"
@@ -752,26 +789,31 @@ interface User {
 ### 10.2. Błędy w EditCalorieGoalDialog
 
 **Błąd: Walidacja po stronie klienta**
+
 - **Scenariusz**: Wartość poza zakresem, puste pole, nie liczba
 - **Obsługa**: Zablokowanie przycisku submit, wyświetlenie komunikatu
 - **UI**: FormMessage pod inputem z odpowiednim komunikatem
 
 **Błąd: Konflikt (409)**
+
 - **Scenariusz**: Cel na jutro już istnieje
 - **Obsługa**: Wyświetlenie komunikatu, możliwość zamknięcia dialogu
 - **UI**: Alert w dialogu "Cel na jutro już istnieje. Operacja anulowana."
 
 **Błąd: Walidacja po stronie serwera (400)**
+
 - **Scenariusz**: API zwraca błędy walidacji (details object)
 - **Obsługa**: Wyświetlenie szczegółowych komunikatów z API
 - **UI**: FormMessage z komunikatem z `details.daily_goal`
 
 **Błąd: Błąd serwera (500)**
+
 - **Scenariusz**: Nieoczekiwany błąd podczas zapisywania
 - **Obsługa**: Wyświetlenie komunikatu, możliwość retry
 - **UI**: Alert "Wystąpił błąd podczas zapisywania. Spróbuj ponownie."
 
 **Błąd: Błąd sieci**
+
 - **Scenariusz**: Brak połączenia podczas POST request
 - **Obsługa**: Wyświetlenie komunikatu o błędzie sieci
 - **UI**: Alert "Błąd połączenia z serwerem. Sprawdź internet."
@@ -779,6 +821,7 @@ interface User {
 ### 10.3. Błędy podczas wylogowania
 
 **Błąd: Błąd wylogowania**
+
 - **Scenariusz**: `supabase.auth.signOut()` zwraca błąd
 - **Obsługa**: Wyświetlenie toast z błędem, pozostawienie użytkownika w aplikacji
 - **UI**: Toast "Błąd podczas wylogowania. Spróbuj ponownie."
@@ -788,6 +831,7 @@ interface User {
 ## 11. Kroki implementacji
 
 ### Krok 1: Przygotowanie środowiska
+
 1. Zainstaluj wymagane komponenty z shadcn/ui:
    ```bash
    npx shadcn-ui@latest add card
@@ -806,6 +850,7 @@ interface User {
    ```
 
 ### Krok 2: Utworzenie typów ViewModels
+
 1. Utwórz plik `src/types/settings.types.ts`
 2. Dodaj interfejsy:
    - `SettingsViewModel`
@@ -816,12 +861,14 @@ interface User {
    - `CalorieGoalFormData`
 
 ### Krok 3: Implementacja komponentu SettingsCard
+
 1. Utwórz plik `src/components/settings/SettingsCard.tsx`
 2. Zaimplementuj komponent zgodnie ze specyfikacją z sekcji 4.2
 3. Dodaj style dla wariantu `destructive` (czerwony kolor dla Wyloguj)
 4. Dodaj testy (opcjonalnie)
 
 ### Krok 4: Implementacja custom hooka useSettings
+
 1. Utwórz plik `src/hooks/useSettings.ts`
 2. Zaimplementuj logikę pobierania danych (profile, current goal, user email)
 3. Dodaj funkcje do zarządzania stanem dialogów
@@ -829,12 +876,14 @@ interface User {
 5. Dodaj obsługę błędów
 
 ### Krok 5: Implementacja custom hooka useCalorieGoalForm
+
 1. Utwórz plik `src/hooks/useCalorieGoalForm.ts`
 2. Zaimplementuj walidację po stronie klienta
 3. Dodaj logikę submit (POST request)
 4. Dodaj obsługę błędów z API (400, 409, 500)
 
 ### Krok 6: Implementacja komponentu EditCalorieGoalDialog
+
 1. Utwórz plik `src/components/settings/EditCalorieGoalDialog.tsx`
 2. Zaimplementuj formularz z polem input (type="number")
 3. Dodaj walidację z wykorzystaniem `useCalorieGoalForm`
@@ -845,12 +894,14 @@ interface User {
 8. Dodaj responsywność (fullscreen na mobile, max-width 500px na desktop)
 
 ### Krok 7: Implementacja komponentu LogoutAlertDialog
+
 1. Utwórz plik `src/components/settings/LogoutAlertDialog.tsx`
 2. Zaimplementuj AlertDialog z pytaniem o wylogowanie
 3. Dodaj przyciski Anuluj i Wyloguj (destructive)
 4. Podłącz handler wylogowania
 
 ### Krok 8: Implementacja strony Settings
+
 1. Utwórz plik `src/pages/settings.astro` lub `src/pages/settings/index.astro`
 2. Utwórz komponent React `SettingsPage.tsx` w `src/components/settings/`
 3. Wykorzystaj hook `useSettings` do zarządzania stanem
@@ -868,20 +919,24 @@ interface User {
 7. Podłącz handlery kliknięć dla każdej karty
 
 ### Krok 9: Obsługa stanów ładowania i błędów
+
 1. Dodaj loader/skeleton podczas początkowego ładowania danych
 2. Dodaj wyświetlanie komunikatów błędów
 3. Dodaj przycisk "Spróbuj ponownie" w przypadku błędów
 
 ### Krok 10: Dodanie nawigacji do Settings
+
 1. Zaktualizuj nawigację/menu aplikacji, aby zawierało link do `/settings`
 2. Dodaj ikonę ustawień (Settings icon z lucide-react)
 
 ### Krok 11: Implementacja toastów
+
 1. Skonfiguruj toast provider (jeśli jeszcze nie istnieje)
 2. Dodaj toast po udanym zapisie celu: "Cel kaloryczny zaktualizowany"
 3. Dodaj toast po błędzie wylogowania: "Błąd podczas wylogowania"
 
 ### Krok 12: Accessibility i Keyboard Navigation
+
 1. Dodaj ARIA labels do wszystkich kart (`aria-label`)
 2. Sprawdź fokus w dialogach (focus trap)
 3. Sprawdź nawigację Tab/Shift+Tab
@@ -889,11 +944,13 @@ interface User {
 5. Sprawdź czytniki ekranu (NVDA/VoiceOver)
 
 ### Krok 13: Responsywność
+
 1. Przetestuj layout na różnych rozmiarach ekranów (mobile, tablet, desktop)
 2. Sprawdź czy dialog EditCalorieGoal jest fullscreen na mobile
 3. Sprawdź czy karty są czytelne i łatwe do kliknięcia na mobile (min 44x44px)
 
 ### Krok 14: Testowanie
+
 1. Testy jednostkowe dla hooków (`useSettings`, `useCalorieGoalForm`)
 2. Testy komponentów (SettingsCard, EditCalorieGoalDialog, LogoutAlertDialog)
 3. Testy integracyjne (flow: otwarcie Settings → edycja celu → zapis → weryfikacja)
@@ -904,6 +961,7 @@ interface User {
    - Obsługa błędów
 
 ### Krok 15: Finalizacja
+
 1. Code review
 2. Poprawki po code review
 3. Aktualizacja dokumentacji (jeśli istnieje)

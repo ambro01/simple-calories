@@ -17,7 +17,7 @@ import type { CategorySelectorProps } from "../../../types/add-meal.types";
 import type { MealCategory } from "../../../types";
 import { CATEGORY_ICONS } from "../../../lib/constants/meal-form.constants";
 
-const CATEGORIES: Array<{ value: MealCategory; label: string }> = [
+const CATEGORIES: { value: MealCategory; label: string }[] = [
   { value: "breakfast", label: "Śniadanie" },
   { value: "lunch", label: "Obiad" },
   { value: "dinner", label: "Kolacja" },

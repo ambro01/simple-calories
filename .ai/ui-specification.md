@@ -3,9 +3,11 @@
 ## 1. Przegląd
 
 ### Filozofia Projektu
+
 Aplikacja Simple Calories MVP jest zaprojektowana z równym priorytetem dla mobile (50%) i desktop (45%). Kluczowym założeniem jest prostota, intuicyjność i szybkość działania.
 
 ### Priorytety Platformowe
+
 - **Mobile:** 50% użytkowników - bottom navigation, single column layouts
 - **Desktop:** 45% użytkowników - sidebar navigation, two-pane layouts
 - **Tablet:** 5% użytkowników - adaptacja między mobile a desktop
@@ -15,22 +17,26 @@ Aplikacja Simple Calories MVP jest zaprojektowana z równym priorytetem dla mobi
 ### Kolory
 
 **Status Kalorii:**
+
 - `under` (poniżej celu): gray-300
 - `on_track` (cel osiągnięty): green-500
 - `over` (powyżej celu): orange-500
 
 **Akcje:**
+
 - Primary: green-500 (przyciski główne, success)
 - Destructive: red-500 (usuwanie, wylogowanie)
 - Accent: blue-500 (linki, interactive elements)
 
 **Kategorie Posiłków:**
+
 - 🌅 Śniadanie: yellow
 - ☀️ Lunch: orange
 - 🌙 Kolacja: blue
 - 🍪 Przekąska: green
 
 **UI:**
+
 - Background: white (light mode)
 - Text: gray-900 (primary), gray-600 (secondary)
 - Border: gray-200
@@ -71,6 +77,7 @@ xl:             1280px+    - max-width 1200px, centered
 ### Mobile (<1024px)
 
 **Bottom Navigation Bar:**
+
 - Pozycja: fixed bottom, full width
 - Height: 64px
 - 3 główne ikony:
@@ -83,6 +90,7 @@ xl:             1280px+    - max-width 1200px, centered
 ### Desktop (≥1024px)
 
 **Left Sidebar:**
+
 - Szerokość: 240px (expanded), 64px (collapsed)
 - Pozycja: fixed left, full height
 - Zawartość:
@@ -102,6 +110,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Layout Mobile
 
 **Struktura:**
+
 ```
 ┌─────────────────────────────────┐
 │ [Header: Logo + Avatar]         │
@@ -132,6 +141,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Layout Desktop
 
 **Struktura:**
+
 ```
 ┌──────────┬────────────────────────────────────┐
 │ Sidebar  │ Dashboard Content                  │
@@ -161,6 +171,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### DayCard Component
 
 **Wygląd:**
+
 ```
 ┌─────────────────────────────────┐
 │ Dzisiaj, 30 paź 2025        [>] │ ← Data + chevron
@@ -171,6 +182,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Elementy:**
+
 - **Data:**
   - Dzisiaj: "Dzisiaj, 30 paź 2025"
   - Wczoraj: "Wczoraj, 29 paź 2025"
@@ -188,6 +200,7 @@ xl:             1280px+    - max-width 1200px, centered
 - **Liczba posiłków:** Ikona 🍽️ + tekst
 
 **Style:**
+
 - Background: white
 - Border-radius: 12px
 - Padding: 16px (mobile), 12px (desktop)
@@ -200,6 +213,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Layout
 
 **Header (Sticky):**
+
 ```
 ┌─────────────────────────────────────────┐
 │ [←] Poniedziałek, 30 października 2025  │ ← Back (mobile only)
@@ -218,6 +232,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Lista Posiłków:**
+
 - Scrollable pod headerem
 - Sortowanie: chronologiczne (od najstarszego)
 - Empty state: "Brak posiłków w tym dniu. Dodaj swój pierwszy!"
@@ -225,6 +240,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### MealCard Component
 
 **Wygląd:**
+
 ```
 ┌─────────────────────────────────────────┐
 │ 14:30  🍽️ Lunch               [✏️] [🗑️] │ ← Czas, kategoria, akcje
@@ -235,6 +251,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Elementy:**
+
 - **Czas:** Format 24h - "14:30"
 - **Kategoria:**
   - Ikona + badge z nazwą
@@ -255,17 +272,20 @@ xl:             1280px+    - max-width 1200px, centered
   - Mobile: zawsze widoczne
 
 **Interakcje:**
+
 - Kliknięcie karty: expand do full view
 - Edit icon: otwiera modal edycji
 - Delete icon: inline confirmation
 
 **Delete Confirmation:**
+
 ```
 ┌──────────────────────────────────┐
 │ Czy na pewno usunąć?             │
 │ [Anuluj]  [Usuń]                 │ ← Usuń w red
 └──────────────────────────────────┘
 ```
+
 - Expand karty, pokazuj inline
 - Auto-collapse po 5s bez akcji
 
@@ -274,11 +294,13 @@ xl:             1280px+    - max-width 1200px, centered
 #### Modal Layout
 
 **Mobile (<768px):**
+
 - Pełnoekranowy overlay
 - Slide-up animation z dołu
 - Header z przyciskami: "Anuluj" (lewo) + "Zapisz" (prawo)
 
 **Desktop (≥768px):**
+
 - Wyśrodkowany dialog
 - Max-width: 600px
 - Backdrop blur
@@ -287,6 +309,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Toggle AI/Manual
 
 **Segmented Control:**
+
 ```
 ┌─────────────────────────────────┐
 │ [✨ AI] | [ ✏️ Manual]           │
@@ -294,6 +317,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Style:**
+
 - Full width na mobile, auto na desktop
 - Active: background green-500, text white
 - Inactive: background gray-100, text gray-600
@@ -304,6 +328,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Tryb AI
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────┐
 │ [✨ AI] | [ ✏️ Manual]           │
@@ -326,6 +351,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Elementy:**
+
 - **Textarea:**
   - 4-6 linii wysokości
   - Placeholder: "Opisz swój posiłek, np. 'kanapka z szynką i serem, kawa z mlekiem'"
@@ -341,6 +367,7 @@ xl:             1280px+    - max-width 1200px, centered
   - Disabled gdy textarea puste
 
 **Loading State:**
+
 ```
 ┌─────────────────────────────┐
 │  [spinner] Analizuję opis...│ ← 0-1s
@@ -348,12 +375,14 @@ xl:             1280px+    - max-width 1200px, centered
 │  Obliczam makroskładniki... │ ← 3-5s
 └─────────────────────────────┘
 ```
+
 - Multi-stage feedback
 - Animowany spinner
 - Progress dots: ● ○ ○ → ○ ● ○ → ○ ○ ●
 - Disable textarea i przycisk
 
 **Wynik AI:**
+
 ```
 ┌─────────────────────────────────┐
 │ Wynik analizy                   │
@@ -372,6 +401,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Akcje:**
+
 - **Dodaj:** Kontynuuj do opcjonalnych pól (kategoria, data/czas)
 - **Generuj ponownie:** Nowe wywołanie API z tym samym opisem
 - **Edytuj ręcznie:** Przełącz na tryb Manual z prepopulowanymi wartościami
@@ -379,6 +409,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Tryb Manual
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────┐
 │ [✨ AI] | [✏️ Manual]            │
@@ -416,6 +447,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Elementy:**
+
 - **Opis:** Textarea 2 linie, max 500 znaków, required
 - **Kalorie:** Number input, 1-10000, required
 - **Makroskładniki:**
@@ -445,6 +477,7 @@ xl:             1280px+    - max-width 1200px, centered
   - Warning jeśli >7 dni wstecz
 
 **Przełączanie AI ↔ Manual:**
+
 - AI → Manual: prepopuluj wartości z AI
 - Manual → AI: wyczyść formularz, zachowaj opis
 - Smooth transition: fade 200ms
@@ -454,6 +487,7 @@ xl:             1280px+    - max-width 1200px, centered
 #### Layout
 
 **Lista opcji (karty):**
+
 ```
 ┌─────────────────────────────────┐
 │ Profil                       [>]│
@@ -474,6 +508,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Struktura:**
+
 - Każda opcja jako karta z chevron right
 - Separator między sekcjami
 - Profil i email readonly (z Supabase)
@@ -485,6 +520,7 @@ xl:             1280px+    - max-width 1200px, centered
 **Desktop:** Modal (max-width: 500px)
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────┐
 │ Cel kaloryczny                  │
@@ -506,12 +542,14 @@ xl:             1280px+    - max-width 1200px, centered
 ### Onboarding
 
 #### Trigger
+
 - Pierwszy raz po zalogowaniu
 - Flag w localStorage: `onboarding_completed`
 
 #### Layout
 
 **Pełnoekranowy overlay:**
+
 ```
 ┌─────────────────────────────────┐
 │ Krok 1/3              [Pomiń]   │ ← Top bar
@@ -532,6 +570,7 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **3 Kroki:**
+
 1. **Powitanie + AI concept:**
    - Ilustracja: ✨ (sparkles)
    - Tytuł: "Witaj w Simple Calories! 🎉"
@@ -546,6 +585,7 @@ xl:             1280px+    - max-width 1200px, centered
    - Tekst: Pasek postępu, kolory statusu
 
 **Elementy:**
+
 - Przycisk "Pomiń" (top-right) - zawsze widoczny
 - Dots indicator: ● (aktywny), ○ (nieaktywny)
 - Nawigacja: "Dalej" / "Wstecz" + "Rozpocznij!" (ostatni krok)
@@ -553,6 +593,7 @@ xl:             1280px+    - max-width 1200px, centered
 - Ilustracje: duże emoji (text-8xl) lub simple SVG
 
 **Zakończenie:**
+
 - "Rozpocznij!" → redirect na dashboard
 - Zapisz flagę completed
 
@@ -571,12 +612,14 @@ xl:             1280px+    - max-width 1200px, centered
 ```
 
 **Wygląd:**
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ← Progress bar (kolorowy)
 2150 / 2500 kcal                  86% ← Label
 ```
 
 **Style:**
+
 - Height: 8px (mobile), 12px (desktop)
 - Border-radius: full
 - Gradient fill
@@ -590,11 +633,13 @@ xl:             1280px+    - max-width 1200px, centered
 **3 Warianty:**
 
 **1. Inline (karty posiłków):**
+
 ```
 B: 25g | T: 18g | W: 52g | Bł: 4g
 ```
 
 **2. Grid (header dnia, wynik AI):**
+
 ```
 ┌──────┬──────┬──────┬──────┐
 │ 95g  │ 68g  │ 245g │ 18g  │
@@ -603,11 +648,13 @@ B: 25g | T: 18g | W: 52g | Bł: 4g
 ```
 
 **3. Compact (gdy brak miejsca):**
+
 ```
 520 kcal • B: 25g T: 18g W: 52g
 ```
 
 **Null Handling:**
+
 - Grid: pokazuj "-"
 - Inline: nie pokazuj linii w ogóle
 - Compact: pomiń null wartości
@@ -615,22 +662,26 @@ B: 25g | T: 18g | W: 52g | Bł: 4g
 ### Toast Notifications
 
 **Pozycja:**
+
 - Mobile: top-center
 - Desktop: top-right
 
 **Warianty:**
+
 - Success: ✓ ikona, green accent
 - Error: ✕ ikona, red accent
 - Warning: ⚠️ ikona, orange accent
 - Info: ℹ️ ikona, blue accent
 
 **Behavior:**
+
 - Auto-dismiss: 3s (success), 5s (error)
 - Stack: max 3 jednocześnie
 - Animation: slide-in-from-top (200ms)
 - Close button (X) po prawej
 
 **Przykłady:**
+
 - "Posiłek dodany"
 - "Cel kaloryczny zaktualizowany"
 - "Nie udało się usunąć posiłku. Spróbuj ponownie"
@@ -638,11 +689,13 @@ B: 25g | T: 18g | W: 52g | Bł: 4g
 ### Loading States
 
 **Skeleton Loaders:**
+
 - Lista dni: 3 szare karty z pulsing animation
 - Szczegóły dnia: header skeleton + 2-3 meal skeletons
 - Używaj `animate-pulse` z Tailwind
 
 **Spinners:**
+
 - Przyciski podczas akcji: mały spinner w przycisku
 - AI generowanie: duży spinner + multi-stage tekst
 - Standard: `animate-spin` icon
@@ -652,6 +705,7 @@ B: 25g | T: 18g | W: 52g | Bł: 4g
 **Empty States:**
 
 **1. Dashboard bez dni:**
+
 ```
 ┌─────────────────────────────┐
 │    [Ilustracja 🍽️]          │
@@ -664,6 +718,7 @@ B: 25g | T: 18g | W: 52g | Bł: 4g
 ```
 
 **2. Dzień bez posiłków:**
+
 ```
 ┌─────────────────────────────┐
 │   [Ikona 🍴]                │
@@ -676,6 +731,7 @@ B: 25g | T: 18g | W: 52g | Bł: 4g
 ```
 
 **Error Messages:**
+
 - Ikona błędu (⚠️)
 - Przyjazny tekst wyjaśniający
 - Przycisk akcji (Retry/Home)
@@ -696,12 +752,14 @@ Progress bar: transition-all duration-500 ease-out
 ### Hover States
 
 **Desktop:**
+
 - Cards: shadow-lg + scale(1.02)
 - Buttons: scale(1.05) + brightness increase
 - Links: underline + color change
 - Meal card actions: opacity 0 → 1 (edit/delete icons)
 
 **Mobile:**
+
 - Active state zamiast hover
 - Touch feedback: scale(0.98) during press
 - Ripple effect dla buttons
@@ -716,6 +774,7 @@ Progress bar: transition-all duration-500 ease-out
 ### Animations
 
 **Subtle, nie przesadzone:**
+
 - Progress bar fill: ease-out, 500ms
 - Modal open: fade + slide, 300ms
 - Toast: slide-in, 200ms
@@ -724,6 +783,7 @@ Progress bar: transition-all duration-500 ease-out
 - Skeleton: `animate-pulse`
 
 **Accessibility:**
+
 - Respektuj `prefers-reduced-motion: reduce`
 - Disable animations jeśli użytkownik preferuje
 - Max duration: 500ms
@@ -733,36 +793,43 @@ Progress bar: transition-all duration-500 ease-out
 ### Layout Adaptations
 
 **Navigation:**
+
 - Mobile: Bottom bar (3 ikony)
 - Desktop: Left sidebar (expandable)
 
 **Dashboard:**
+
 - Mobile: Single column list
 - Desktop: Two-pane (list + details)
 
 **Modals:**
+
 - Mobile: Fullscreen overlay
 - Desktop: Centered dialog (600px)
 
 **Forms:**
+
 - Mobile: Full width inputs, stack vertical
 - Desktop: Grid layout dla pól (2 kolumny gdzie sens)
 
 ### Touch Targets
 
 **Mobile:**
+
 - Minimum: 44x44px
 - Buttons: 44px height
 - Icons: 24x24px z padding do 44px
 - List items: 60px minimum height
 
 **Desktop:**
+
 - Minimum: 40x40px
 - Smaller targets acceptable (precyzyjniejszy kursor)
 
 ### Typography Scaling
 
 **Base (mobile):**
+
 ```
 h1: 24px (text-2xl)
 h2: 20px (text-xl)
@@ -771,6 +838,7 @@ small: 14px (text-sm)
 ```
 
 **Desktop (lg+):**
+
 ```
 h1: 30px (text-3xl)
 h2: 24px (text-2xl)
@@ -789,21 +857,34 @@ small: 14px (text-sm)
 ### Semantic HTML
 
 ```html
-<main> - główna treść
-<nav> - nawigacja
-<header> - nagłówki sekcji
-<form> - formularze
-<button> - akcje (NIE <div onClick>)
+<main>
+  - główna treść
+  <nav>
+    - nawigacja
+    <header>
+      - nagłówki sekcji
+      <form>
+        - formularze
+        <button>
+          - akcje (NIE
+          <div onClick>)</div>
+        </button>
+      </form>
+    </header>
+  </nav>
+</main>
 ```
 
 ### ARIA Labels
 
 **Przykłady:**
+
 ```html
 <button aria-label="Dodaj posiłek">+</button>
-<progress aria-label="Postęp kaloryczny" value={86} max={100} />
+<progress aria-label="Postęp kaloryczny" value="{86}" max="{100}" />
 <nav aria-label="Główna nawigacja">
-<div role="alert" aria-live="polite"> <!-- toasty -->
+  <div role="alert" aria-live="polite"><!-- toasty --></div>
+</nav>
 ```
 
 ### Keyboard Navigation
@@ -911,6 +992,7 @@ small: 14px (text-sm)
 **Źródło:** Lucide Icons (lub Emoji jako fallback)
 
 **Standardowe ikony:**
+
 - Home (Dashboard): `home`
 - Add: `plus`, `plus-circle`
 - Settings: `settings`, `gear`
@@ -923,6 +1005,7 @@ small: 14px (text-sm)
 - User: `user`, `user-circle`
 
 **Rozmiary:**
+
 - Small: 16px
 - Default: 20px
 - Medium: 24px
@@ -931,6 +1014,7 @@ small: 14px (text-sm)
 ### Emoji
 
 **Kategorie posiłków:**
+
 - 🌅 Śniadanie
 - ☀️ Lunch
 - 🌙 Kolacja
@@ -938,15 +1022,18 @@ small: 14px (text-sm)
 - 🍽️ Nieokreślona
 
 **Empty states:**
+
 - 🍽️ Brak dni
 - 🍴 Brak posiłków
 
 **Onboarding:**
+
 - ✨ AI (krok 1)
 - ➕ Dodawanie (krok 2)
 - 📊 Dashboard (krok 3)
 
 **Feedback:**
+
 - ✅ Success
 - ❌ Error
 - ⚠️ Warning
@@ -991,6 +1078,7 @@ Color: gray-200 (default), primary (active)
 ```
 
 **Użycie:**
+
 - Padding wewnętrzny: 4 (mobile), 6 (desktop)
 - Margin między elementami: 3-4
 - Gap w grid/flex: 3-4
@@ -999,12 +1087,14 @@ Color: gray-200 (default), primary (active)
 ## 11. Podsumowanie Kluczowych Decyzji
 
 ### Layout
+
 - ✅ Mobile (50%) i Desktop (45%) równy priorytet
 - ✅ Bottom nav (mobile) + Sidebar (desktop)
 - ✅ Dashboard: lista (mobile) vs two-pane (desktop)
 - ✅ Modals: fullscreen (mobile) vs dialog (desktop)
 
 ### Formularze
+
 - ✅ Jeden komponent MealForm dla create/edit
 - ✅ Toggle AI/Manual na górze (segmented control)
 - ✅ AI: textarea → wynik → akcje
@@ -1013,12 +1103,14 @@ Color: gray-200 (default), primary (active)
 - ✅ Date/time: pickers z defaultami (dzisiaj, teraz)
 
 ### Wizualizacja Danych
+
 - ✅ Progress bar kolorowy (gray/green/orange) według statusu
 - ✅ Makroskładniki: grid (header) vs inline (karty)
 - ✅ Daty: kontekstowe ("Dzisiaj", "Wczoraj", data)
 - ✅ Kalorie: bold, prominent, z goalem i procentem
 
 ### UX Patterns
+
 - ✅ Toast notifications dla feedbacku
 - ✅ Inline confirmation dla delete
 - ✅ Modal confirmation dla logout
@@ -1027,6 +1119,7 @@ Color: gray-200 (default), primary (active)
 - ✅ Onboarding: 3 kroki, fullscreen, możliwość skip
 
 ### Accessibility
+
 - ✅ Semantic HTML + ARIA labels
 - ✅ Keyboard navigation + focus management
 - ✅ WCAG AA color contrast
@@ -1034,6 +1127,7 @@ Color: gray-200 (default), primary (active)
 - ✅ prefers-reduced-motion support
 
 ### Design System
+
 - ✅ Tailwind CSS + Shadcn/ui
 - ✅ Kolory: green (success), orange (warning), gray (neutral), red (destructive)
 - ✅ Typography: system-ui, responsive scale

@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PasswordInput } from "./PasswordInput";
 import { AuthFormFooter } from "./AuthFormFooter";
 
-interface SignupFormState {
+type SignupFormState = {
   email: string;
   password: string;
   passwordConfirm: string;
@@ -27,7 +27,7 @@ interface SignupFormState {
     passwordConfirm?: string;
     general?: string;
   };
-}
+};
 
 export function SignupForm() {
   const [state, setState] = useState<SignupFormState>({

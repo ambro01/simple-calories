@@ -11,6 +11,7 @@ Uporządkowanie 10 chaotycznych migracji RLS, które powstały podczas rozwiązy
 ### 1. Utworzone pliki
 
 #### Nowe migracje (uporządkowane):
+
 - ✅ [`20250205235959_cleanup_old_rls.sql`](../supabase/migrations/20250205235959_cleanup_old_rls.sql)
   - Usuwa wszystkie stare polityki RLS
   - Przygotowuje bazę do skonsolidowanej migracji
@@ -21,6 +22,7 @@ Uporządkowanie 10 chaotycznych migracji RLS, które powstały podczas rozwiązy
   - Zawiera komentarze bezpieczeństwa i best practices
 
 #### Dokumentacja:
+
 - ✅ [`migration-cleanup-plan.md`](./migration-cleanup-plan.md)
   - Szczegółowy plan migracji
   - Instrukcje dla opcji A (fresh start) i B (produkcja)
@@ -34,6 +36,7 @@ Uporządkowanie 10 chaotycznych migracji RLS, które powstały podczas rozwiązy
   - Link do nowych plików
 
 #### Skrypty pomocnicze:
+
 - ✅ [`archive-old-migrations.sh`](./archive-old-migrations.sh) (Linux/Mac)
 - ✅ [`archive-old-migrations.bat`](./archive-old-migrations.bat) (Windows)
   - Automatyczne przenoszenie starych migracji do archiwum
@@ -42,25 +45,25 @@ Uporządkowanie 10 chaotycznych migracji RLS, które powstały podczas rozwiązy
 
 **10 chaotycznych migracji RLS:**
 
-| Timestamp | Plik | Status | Powód |
-|-----------|------|--------|-------|
-| 20250127110800 | setup_rls_policies.sql | ❌ Usunąć | Zastąpione przez consolidated |
-| 20250127111000 | disable_rls_policies.sql | ❌ Usunąć | Dev workaround |
-| 20250127111100 | disable_rls.sql | ❌ Usunąć | Dev workaround |
-| 20250129120000 | temp_disable_trigger.sql | ❌ Usunąć | Tymczasowe wyłączenie |
-| 20250204120000 | update_profile_trigger.sql | ❌ Usunąć | Niepotrzebna zmiana architektury |
-| 20250205000000 | enable_rls_security.sql | ❌ Usunąć | Duplikat (zastąpiony) |
-| 20250205000100 | re_enable_user_trigger.sql | ❌ Usunąć | Duplikat trigger'a |
-| 20250205000200 | fix_rls_for_registration.sql | ❌ Usunąć | Nieudana próba (service_role) |
-| 20250205000300 | fix_trigger_rls.sql | ❌ Usunąć | Nieudana próba (set role) |
-| 20250205000400 | fix_trigger_rls_v2.sql | ❌ Usunąć | Scalone do consolidated |
+| Timestamp      | Plik                         | Status    | Powód                            |
+| -------------- | ---------------------------- | --------- | -------------------------------- |
+| 20250127110800 | setup_rls_policies.sql       | ❌ Usunąć | Zastąpione przez consolidated    |
+| 20250127111000 | disable_rls_policies.sql     | ❌ Usunąć | Dev workaround                   |
+| 20250127111100 | disable_rls.sql              | ❌ Usunąć | Dev workaround                   |
+| 20250129120000 | temp_disable_trigger.sql     | ❌ Usunąć | Tymczasowe wyłączenie            |
+| 20250204120000 | update_profile_trigger.sql   | ❌ Usunąć | Niepotrzebna zmiana architektury |
+| 20250205000000 | enable_rls_security.sql      | ❌ Usunąć | Duplikat (zastąpiony)            |
+| 20250205000100 | re_enable_user_trigger.sql   | ❌ Usunąć | Duplikat trigger'a               |
+| 20250205000200 | fix_rls_for_registration.sql | ❌ Usunąć | Nieudana próba (service_role)    |
+| 20250205000300 | fix_trigger_rls.sql          | ❌ Usunąć | Nieudana próba (set role)        |
+| 20250205000400 | fix_trigger_rls_v2.sql       | ❌ Usunąć | Scalone do consolidated          |
 
 **Migracje, które ZACHOWUJEMY:**
 
-| Timestamp | Plik | Status | Powód |
-|-----------|------|--------|-------|
-| 20250127110500 | create_functions.sql | ✅ Zachować | Funkcja `handle_new_user()` |
-| 20250127110600 | create_triggers.sql | ✅ Zachować | Trigger `on_auth_user_created` |
+| Timestamp      | Plik                 | Status      | Powód                          |
+| -------------- | -------------------- | ----------- | ------------------------------ |
+| 20250127110500 | create_functions.sql | ✅ Zachować | Funkcja `handle_new_user()`    |
+| 20250127110600 | create_triggers.sql  | ✅ Zachować | Trigger `on_auth_user_created` |
 
 ## 🔧 Jak zastosować refaktoring?
 
@@ -96,6 +99,7 @@ Zobacz szczegóły w [`migration-cleanup-plan.md`](./migration-cleanup-plan.md)
 ## 📈 Korzyści z refaktoringu
 
 ### Przed refaktoringiem:
+
 - ❌ 10 chaotycznych migracji
 - ❌ 3 nieudane próby (service_role, set role postgres, etc.)
 - ❌ Duplikaty i workaround'y
@@ -103,6 +107,7 @@ Zobacz szczegóły w [`migration-cleanup-plan.md`](./migration-cleanup-plan.md)
 - ❌ Historia eksperymentów w produkcyjnych migracjach
 
 ### Po refaktoringu:
+
 - ✅ 2 czyste migracje (cleanup + consolidated)
 - ✅ Jedna źródłowa migracja dla RLS
 - ✅ Dobrze udokumentowana
@@ -156,9 +161,11 @@ Po zastosowaniu refaktoringu:
 **✅ ZAKOŃCZONE (2025-02-06)**
 
 Wszystkie stare migracje zostały usunięte. Projekt używa teraz czystej, skonsolidowanej migracji RLS:
+
 - `20250206000000_consolidated_rls_setup.sql`
 
 **Pozostałe migracje (10 plików):**
+
 ```
 20250127110000_create_enums.sql
 20250127110100_create_profiles.sql

@@ -21,39 +21,37 @@ const PUBLIC_PATHS = [
   "/api/v1/auth/logout",
 ];
 
-export const onRequest = defineMiddleware(
-  async ({ locals, cookies, url, request, redirect }, next) => {
-    // Create Supabase server instance for all requests
-    const supabase = createSupabaseServerInstance({
-      cookies,
-      headers: request.headers,
-    });
+export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
+  // Create Supabase server instance for all requests
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
 
-    // Make supabase client available on locals for API routes
-    locals.supabase = supabase;
+  // Make supabase client available on locals for API routes
+  locals.supabase = supabase;
 
-    // Skip auth check for public paths
-    if (PUBLIC_PATHS.includes(url.pathname)) {
-      return next();
-    }
-
-    // IMPORTANT: Always get user session first before any other operations
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // User is authenticated - set user info on locals
-      locals.user = {
-        email: user.email,
-        id: user.id,
-      };
-    } else if (!PUBLIC_PATHS.includes(url.pathname)) {
-      // User is not authenticated and trying to access protected route
-      // Redirect to login page
-      return redirect("/auth/login");
-    }
-
+  // Skip auth check for public paths
+  if (PUBLIC_PATHS.includes(url.pathname)) {
     return next();
-  },
-);
+  }
+
+  // IMPORTANT: Always get user session first before any other operations
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    // User is authenticated - set user info on locals
+    locals.user = {
+      email: user.email,
+      id: user.id,
+    };
+  } else if (!PUBLIC_PATHS.includes(url.pathname)) {
+    // User is not authenticated and trying to access protected route
+    // Redirect to login page
+    return redirect("/auth/login");
+  }
+
+  return next();
+});

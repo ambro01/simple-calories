@@ -1,6 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export interface Database {
+export type Database = {
   graphql_public: {
     Tables: Record<never, never>;
     Views: Record<never, never>;
@@ -320,7 +320,7 @@ export interface Database {
     };
     CompositeTypes: Record<never, never>;
   };
-}
+};
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 

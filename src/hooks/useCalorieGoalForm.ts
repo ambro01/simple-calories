@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from "react";
-import type { EditCalorieGoalViewModel, CalorieGoalFormData } from "@/types/settings.types";
+import type { EditCalorieGoalViewModel } from "@/types/settings.types";
 import type { CalorieGoalResponseDTO, CreateCalorieGoalRequestDTO, ErrorResponseDTO } from "@/types";
 
 // Stałe walidacji (zgodne z backendem - createCalorieGoalSchema)
@@ -15,13 +15,13 @@ const VALIDATION_LIMITS = {
   MAX_GOAL: 10000,
 };
 
-interface UseCalorieGoalFormReturn {
+type UseCalorieGoalFormReturn = {
   state: EditCalorieGoalViewModel;
   updateGoalValue: (value: string) => void;
   validateField: () => boolean;
   submitGoal: () => Promise<CalorieGoalResponseDTO>;
   reset: () => void;
-}
+};
 
 /**
  * Tworzy początkowy stan formularza
@@ -179,7 +179,7 @@ export function useCalorieGoalForm(currentGoal: CalorieGoalResponseDTO | null): 
 
       let method: "POST" | "PATCH";
       let url: string;
-      let existingGoalId: string | null = null;
+      const existingGoalId: string | null = null;
 
       if (checkResponse.status === 200) {
         // Goal exists - check if it's immutable
@@ -194,7 +194,6 @@ export function useCalorieGoalForm(currentGoal: CalorieGoalResponseDTO | null): 
           // Goal is mutable (not started yet) - safe to update with PATCH
           method = "PATCH";
           url = `/api/v1/calorie-goals/${existingGoal.id}`;
-          existingGoalId = existingGoal.id;
         }
       } else if (checkResponse.status === 404) {
         // Goal doesn't exist - use POST to create it

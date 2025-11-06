@@ -5,22 +5,26 @@
 Simple Calories to aplikacja webowa zaprojektowana z równym priorytetem dla urządzeń mobilnych i desktopowych. Architektura UI opiera się na trzech głównych filarach:
 
 ### Filozofia projektowa
+
 - **Mobile-first approach** z adaptacją do desktop
 - **AI-first interface** - domyślnie tryb AI przy dodawaniu posiłków
 - **Minimalistyczny design** - prostota i szybkość działania
 - **Wizualny feedback** - progress bars, kolorowe statusy, animacje
 
 ### Struktura nawigacji
+
 - **Mobile (<1024px)**: Bottom Navigation Bar (3 główne akcje)
 - **Desktop (≥1024px)**: Left Sidebar z możliwością zwinięcia
 - **Prominent action**: FAB "Dodaj posiłek" zawsze dostępny
 
 ### Przepływ danych
+
 ```
 User Action → Component → API Call → State Update → UI Re-render
 ```
 
 ### Główne obszary funkcjonalne
+
 1. **Authentication Flow** - rejestracja, logowanie, reset hasła
 2. **Main App Flow** - dashboard, szczegóły dnia, zarządzanie posiłkami
 3. **Settings Flow** - profil, cel kaloryczny, onboarding
@@ -33,6 +37,7 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 2.1. Widoki Autentykacji (Unauthenticated)
 
 #### Login
+
 - **Ścieżka**: `/login`
 - **Główny cel**: Umożliwienie zalogowania się użytkownikowi do aplikacji
 - **Kluczowe informacje**:
@@ -66,6 +71,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Secure password handling
 
 #### Register
+
 - **Ścieżka**: `/register`
 - **Główny cel**: Rejestracja nowego użytkownika
 - **Kluczowe informacje**:
@@ -97,6 +103,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Zabezpieczenie przed bot'ami (opcjonalnie captcha)
 
 #### ForgotPassword
+
 - **Ścieżka**: `/forgot-password`
 - **Główny cel**: Inicjowanie procesu resetu hasła
 - **Kluczowe informacje**:
@@ -123,6 +130,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Nie ujawniaj czy email istnieje w systemie
 
 #### ResetPassword
+
 - **Ścieżka**: `/reset-password` (z tokenem w URL)
 - **Główny cel**: Ustawienie nowego hasła po resecie
 - **Kluczowe informacje**:
@@ -153,6 +161,7 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 2.2. Widoki Główne (Authenticated)
 
 #### Dashboard
+
 - **Ścieżka**: `/` (default authenticated view)
 - **Główny cel**: Przegląd postępów użytkownika - lista dni z podsumowaniem kalorycznym
 - **Kluczowe informacje**:
@@ -191,6 +200,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - RLS na poziomie bazy danych
 
 #### DayDetails
+
 - **Ścieżka**: `/day/:date` (format: YYYY-MM-DD)
 - **Główny cel**: Szczegółowy widok pojedynczego dnia z listą wszystkich posiłków
 - **Kluczowe informacje**:
@@ -233,6 +243,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Weryfikacja ownership posiłków (RLS)
 
 #### AddMeal
+
 - **Ścieżka**: `/add-meal` (modal/overlay)
 - **Główny cel**: Dodanie nowego posiłku (AI lub manual)
 - **Kluczowe informacje**:
@@ -291,6 +302,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Timestamp validation
 
 #### EditMeal
+
 - **Ścieżka**: `/edit-meal/:id` (modal/overlay)
 - **Główny cel**: Edycja istniejącego posiłku
 - **Kluczowe informacje**:
@@ -321,6 +333,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Walidacja jak w AddMeal
 
 #### Settings
+
 - **Ścieżka**: `/settings`
 - **Główny cel**: Zarządzanie ustawieniami użytkownika
 - **Kluczowe informacje**:
@@ -355,6 +368,7 @@ User Action → Component → API Call → State Update → UI Re-render
   - Confirmation dla destructive actions (wylogowanie)
 
 #### EditCalorieGoal
+
 - **Ścieżka**: `/settings/calorie-goal` (modal/screen)
 - **Główny cel**: Edycja dziennego celu kalorycznego
 - **Kluczowe informacje**:
@@ -390,6 +404,7 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 2.3. Widoki Specjalne
 
 #### Onboarding
+
 - **Ścieżka**: `/onboarding`
 - **Główny cel**: Wprowadzenie nowych użytkowników do aplikacji
 - **Kluczowe informacje**:
@@ -715,6 +730,7 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 4.1. Nawigacja Mobile (<1024px)
 
 #### Bottom Navigation Bar
+
 - **Pozycja**: Fixed bottom, full width
 - **Height**: 64px
 - **Background**: White, border-top (gray-200)
@@ -736,6 +752,7 @@ User Action → Component → API Call → State Update → UI Re-render
      - Inactive: gray-600
 
 #### Top Bar (w widokach)
+
 - **Dashboard**: Logo/nazwa aplikacji (lewo) + Avatar (prawo)
 - **DayDetails**: Back button ← (lewo) + Data (center)
 - **Settings**: "Ustawienia" (center)
@@ -743,6 +760,7 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 4.2. Nawigacja Desktop (≥1024px)
 
 #### Left Sidebar
+
 - **Szerokość**:
   - Expanded: 240px
   - Collapsed: 64px (tylko ikony)
@@ -774,12 +792,14 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 4.3. Routing i nawigacja między widokami
 
 #### Public routes (unauthenticated)
+
 - `/login` - Login
 - `/register` - Register
 - `/forgot-password` - ForgotPassword
 - `/reset-password` - ResetPassword (z tokenem)
 
 #### Protected routes (authenticated, require JWT)
+
 - `/` - Dashboard (default)
 - `/day/:date` - DayDetails
 - `/add-meal` - AddMeal (modal)
@@ -789,11 +809,13 @@ User Action → Component → API Call → State Update → UI Re-render
 - `/onboarding` - Onboarding (opcjonalnie, jeśli nie completed)
 
 #### Route guards
+
 - **Unauthenticated routes**: Jeśli zalogowany → redirect to `/`
 - **Protected routes**: Jeśli niezalogowany → redirect to `/login`
 - **Onboarding check**: Po pierwszym loginie → redirect to `/onboarding` (jeśli flag nie ustawiona)
 
 #### Navigation behavior
+
 - **Dashboard**: Zawsze dostępny (home)
 - **DayDetails**:
   - Mobile: navigate (`/day/:date`)
@@ -807,6 +829,7 @@ User Action → Component → API Call → State Update → UI Re-render
 ### 4.4. Breadcrumbs (opcjonalnie dla desktop)
 
 Dla lepszej orientacji użytkownika:
+
 - Dashboard > Dzień 30 paź 2025
 - Settings > Cel kaloryczny
 
@@ -817,6 +840,7 @@ Dla lepszej orientacji użytkownika:
 ### 5.1. Layout Components
 
 #### AppLayout
+
 - **Cel**: Główny layout aplikacji z nawigacją
 - **Warianty**:
   - Mobile: Bottom navigation bar
@@ -831,6 +855,7 @@ Dla lepszej orientacji użytkownika:
   - Logout action
 
 #### Modal
+
 - **Cel**: Uniwersalny modal/overlay
 - **Warianty**:
   - Mobile: Fullscreen overlay
@@ -854,6 +879,7 @@ Dla lepszej orientacji użytkownika:
 ### 5.2. Data Display Components
 
 #### DayCard
+
 - **Cel**: Karta pojedynczego dnia na dashboardzie
 - **Props**:
   - `date` - data (YYYY-MM-DD)
@@ -877,6 +903,7 @@ Dla lepszej orientacji użytkownika:
   - Active (desktop): border-left green-500 (4px), background green-50
 
 #### MealCard
+
 - **Cel**: Karta pojedynczego posiłku
 - **Props**:
   - `meal` - obiekt posiłku (description, calories, macros, category, timestamp, etc.)
@@ -900,6 +927,7 @@ Dla lepszej orientacji użytkownika:
   - Delete: inline confirmation (expand karty)
 
 #### CalorieProgress
+
 - **Cel**: Progress bar z kolorowaniem statusu
 - **Props**:
   - `current` - aktualne kalorie
@@ -924,6 +952,7 @@ Dla lepszej orientacji użytkownika:
   - ARIA label: "Postęp kaloryczny: 2150 z 2500 kcal, 86%"
 
 #### MacroDisplay
+
 - **Cel**: Wyświetlanie makroskładników
 - **Warianty**:
   1. **Grid** (header dnia, wynik AI):
@@ -942,6 +971,7 @@ Dla lepszej orientacji użytkownika:
   - Compact: pomiń null wartości
 
 #### DayHeader
+
 - **Cel**: Header szczegółów dnia (sticky)
 - **Props**:
   - `date` - data
@@ -967,6 +997,7 @@ Dla lepszej orientacji użytkownika:
 ### 5.3. Form Components
 
 #### MealForm
+
 - **Cel**: Formularz dodawania/edycji posiłku (AI + Manual)
 - **Props**:
   - `mode` - 'create' / 'edit'
@@ -999,6 +1030,7 @@ Dla lepszej orientacji użytkownika:
   - Error handling
 
 #### SegmentedControl
+
 - **Cel**: Toggle między opcjami (AI/Manual)
 - **Props**:
   - `options` - array opcji [{value, label, icon}]
@@ -1015,6 +1047,7 @@ Dla lepszej orientacji użytkownika:
   - Arrow keys navigation
 
 #### CategorySelector
+
 - **Cel**: Wybór kategorii posiłku (visual buttons)
 - **Props**:
   - `value` - wybrana kategoria
@@ -1034,6 +1067,7 @@ Dla lepszej orientacji użytkownika:
   - Click wybranej → deselect (null)
 
 #### DatePicker
+
 - **Cel**: Wybór daty
 - **Props**:
   - `value` - wybrana data (Date lub string)
@@ -1046,6 +1080,7 @@ Dla lepszej orientacji użytkownika:
   - Warning jeśli >7 dni wstecz
 
 #### TimePicker
+
 - **Cel**: Wybór czasu
 - **Props**:
   - `value` - wybrany czas (string HH:mm)
@@ -1056,6 +1091,7 @@ Dla lepszej orientacji użytkownika:
   - Format: 24h
 
 #### LoginForm, RegisterForm, CalorieGoalForm
+
 - **Cel**: Specjalizowane formularze
 - **Cechy**:
   - Walidacja w czasie rzeczywistym
@@ -1068,6 +1104,7 @@ Dla lepszej orientacji użytkownika:
 ### 5.4. Feedback Components
 
 #### Toast
+
 - **Cel**: Powiadomienia użytkownika
 - **Props**:
   - `variant` - success/error/warning/info
@@ -1094,6 +1131,7 @@ Dla lepszej orientacji użytkownika:
   - ARIA live: polite/assertive
 
 #### Spinner
+
 - **Cel**: Loading indicator
 - **Warianty**:
   - Small (16px) - w buttonach
@@ -1105,6 +1143,7 @@ Dla lepszej orientacji użytkownika:
   - `animate-spin`
 
 #### Skeleton
+
 - **Cel**: Skeleton loaders podczas ładowania
 - **Warianty**:
   - DayCardSkeleton
@@ -1116,6 +1155,7 @@ Dla lepszej orientacji użytkownika:
   - Background: gray-200/gray-300 gradient
 
 #### EmptyState
+
 - **Cel**: Empty state z ilustracją i CTA
 - **Props**:
   - `icon` - duże emoji lub SVG
@@ -1127,6 +1167,7 @@ Dla lepszej orientacji użytkownika:
   - Dzień bez posiłków: 🍴 "Brak posiłków w tym dniu. Dodaj swój pierwszy!" + [+ Dodaj]
 
 #### ErrorState
+
 - **Cel**: Error state z retry
 - **Props**:
   - `error` - obiekt błędu lub message
@@ -1142,6 +1183,7 @@ Dla lepszej orientacji użytkownika:
 ### 5.5. UI Components (Atomic)
 
 #### Button
+
 - **Warianty**:
   - Primary: green-500 background, white text
   - Secondary: gray-200 background, gray-900 text
@@ -1154,6 +1196,7 @@ Dla lepszej orientacji użytkownika:
   - `variant`, `size`, `disabled`, `loading`, `onClick`
 
 #### Input
+
 - **Types**: text, number, email, password
 - **Props**:
   - `type`, `value`, `onChange`, `placeholder`, `disabled`, `error`
@@ -1167,12 +1210,14 @@ Dla lepszej orientacji użytkownika:
   - Focus: ring-2 ring-blue-500
 
 #### Textarea
+
 - **Props**: podobne do Input + `rows` (liczba linii)
 - **Cechy**:
   - Auto-resize (opcjonalnie)
   - Character counter (np. 0/500)
 
 #### Avatar
+
 - **Props**:
   - `src` - URL obrazka
   - `alt` - alt text
@@ -1183,6 +1228,7 @@ Dla lepszej orientacji użytkownika:
   - Fallback: inicjały na kolorowym tle (hash z email)
 
 #### Badge
+
 - **Cel**: Mały status badge
 - **Props**:
   - `variant` - default/success/warning/error
@@ -1190,6 +1236,7 @@ Dla lepszej orientacji użytkownika:
 - **Przykład**: Kategoria posiłku jako badge
 
 #### Alert
+
 - **Cel**: Info/warning box
 - **Props**:
   - `variant` - info/warning/error/success
@@ -1206,6 +1253,7 @@ Dla lepszej orientacji użytkownika:
 ### 5.6. Advanced Components
 
 #### InfiniteScroll
+
 - **Cel**: Lazy loading list (dashboard)
 - **Props**:
   - `items` - array elementów
@@ -1219,6 +1267,7 @@ Dla lepszej orientacji użytkownika:
   - Pokazuje SkeletonLoader podczas ładowania
 
 #### AlertDialog
+
 - **Cel**: Modal z pytaniem (confirmation)
 - **Props**:
   - `isOpen`, `onClose`
@@ -1231,6 +1280,7 @@ Dla lepszej orientacji użytkownika:
 - **Przykład**: Confirmation wylogowania, usuwania posiłku (backup do inline)
 
 #### OnboardingSlide
+
 - **Cel**: Pojedynczy slajd onboardingu
 - **Props**:
   - `icon` - duże emoji
@@ -1246,6 +1296,7 @@ Dla lepszej orientacji użytkownika:
   - Dots indicator na dole
 
 #### DotsIndicator
+
 - **Cel**: Wskaźnik kroków (onboarding, carousel)
 - **Props**:
   - `total` - liczba kropek
@@ -1260,6 +1311,7 @@ Dla lepszej orientacji użytkownika:
 ## 6. Względy techniczne
 
 ### 6.1. State Management
+
 - **Local state**: React useState/useReducer dla komponentów
 - **Global state**: Context API lub Zustand dla:
   - User auth state (JWT, user info)
@@ -1270,6 +1322,7 @@ Dla lepszej orientacji użytkownika:
   - Auto-refetch
 
 ### 6.2. Data Fetching Strategy
+
 - **React Query** (rekomendowane):
   - Queries dla GET endpoints
   - Mutations dla POST/PATCH/DELETE
@@ -1282,6 +1335,7 @@ Dla lepszej orientacji użytkownika:
   - Loading states
 
 ### 6.3. Performance Optimization
+
 - **Code splitting**: Lazy load routes i modals
 - **Image optimization**: Next.js Image lub lazy loading
 - **Virtualization**: Jeśli listy >100 elementów (opcjonalnie)
@@ -1289,11 +1343,13 @@ Dla lepszej orientacji użytkownika:
 - **Debounce**: Search/filter inputs
 
 ### 6.4. Error Boundaries
+
 - Catch React errors
 - Fallback UI: ErrorState z retry
 - Log errors do error-logs API (opcjonalnie)
 
 ### 6.5. Accessibility Checklist
+
 - ✅ Semantic HTML
 - ✅ ARIA labels i descriptions
 - ✅ Keyboard navigation (Tab, Enter, Escape, Arrows)
@@ -1304,6 +1360,7 @@ Dla lepszej orientacji użytkownika:
 - ✅ `prefers-reduced-motion` support
 
 ### 6.6. Security Considerations
+
 - ✅ JWT w HttpOnly cookies (jeśli możliwe) lub secure localStorage
 - ✅ CSRF protection (Supabase handles)
 - ✅ Input sanitization (XSS prevention)
@@ -1315,28 +1372,29 @@ Dla lepszej orientacji użytkownika:
 
 ## 7. Mapowanie User Stories na UI
 
-| ID | User Story | Widoki | Komponenty |
-|----|-----------|---------|------------|
-| US-001 | Rejestracja | Register | RegisterForm, Input, Button, PasswordStrengthIndicator |
-| US-002 | Logowanie | Login | LoginForm, Input, Button |
-| US-003 | Reset hasła | ForgotPassword, ResetPassword | ForgotPasswordForm, ResetPasswordForm |
-| US-004 | Pierwszy cel | EditCalorieGoal (po rejestracji) | CalorieGoalForm |
-| US-005 | Dodawanie AI | AddMeal (AI mode) | MealForm, Textarea, Button, Spinner, MacroDisplay |
-| US-006 | Dodawanie manual | AddMeal (Manual mode) | MealForm, Input, Alert (warning) |
-| US-007 | Niejednoznaczny opis | AddMeal (AI error handling) | ErrorState, Button (regenerate) |
-| US-008 | Kategoryzacja | AddMeal, EditMeal | CategorySelector |
-| US-009 | Anulowanie | AddMeal, EditMeal | Button (Cancel) |
-| US-010 | Dashboard | Dashboard | DayCard, CalorieProgress, InfiniteScroll |
-| US-011 | Szczegóły dnia | DayDetails | DayHeader, MealCard, MacroDisplay |
-| US-012 | Edycja wpisu | EditMeal | MealForm (prepopulated) |
-| US-013 | Usuwanie wpisu | DayDetails | MealCard (delete icon), AlertDialog (inline) |
-| US-014 | Aktualizacja celu | EditCalorieGoal | CalorieGoalForm |
+| ID     | User Story           | Widoki                           | Komponenty                                             |
+| ------ | -------------------- | -------------------------------- | ------------------------------------------------------ |
+| US-001 | Rejestracja          | Register                         | RegisterForm, Input, Button, PasswordStrengthIndicator |
+| US-002 | Logowanie            | Login                            | LoginForm, Input, Button                               |
+| US-003 | Reset hasła          | ForgotPassword, ResetPassword    | ForgotPasswordForm, ResetPasswordForm                  |
+| US-004 | Pierwszy cel         | EditCalorieGoal (po rejestracji) | CalorieGoalForm                                        |
+| US-005 | Dodawanie AI         | AddMeal (AI mode)                | MealForm, Textarea, Button, Spinner, MacroDisplay      |
+| US-006 | Dodawanie manual     | AddMeal (Manual mode)            | MealForm, Input, Alert (warning)                       |
+| US-007 | Niejednoznaczny opis | AddMeal (AI error handling)      | ErrorState, Button (regenerate)                        |
+| US-008 | Kategoryzacja        | AddMeal, EditMeal                | CategorySelector                                       |
+| US-009 | Anulowanie           | AddMeal, EditMeal                | Button (Cancel)                                        |
+| US-010 | Dashboard            | Dashboard                        | DayCard, CalorieProgress, InfiniteScroll               |
+| US-011 | Szczegóły dnia       | DayDetails                       | DayHeader, MealCard, MacroDisplay                      |
+| US-012 | Edycja wpisu         | EditMeal                         | MealForm (prepopulated)                                |
+| US-013 | Usuwanie wpisu       | DayDetails                       | MealCard (delete icon), AlertDialog (inline)           |
+| US-014 | Aktualizacja celu    | EditCalorieGoal                  | CalorieGoalForm                                        |
 
 ---
 
 ## 8. Podsumowanie kluczowych decyzji architektonicznych
 
 ### UI/UX
+
 - ✅ **Mobile-first** z adaptacją desktop (Bottom nav vs Sidebar)
 - ✅ **AI-first interface** - domyślny tryb AI w dodawaniu posiłków
 - ✅ **Two-pane layout** na desktop (Dashboard: lista + szczegóły)
@@ -1346,6 +1404,7 @@ Dla lepszej orientacji użytkownika:
 - ✅ **Inline actions** - edycja/usuwanie bez opuszczania widoku
 
 ### Komponenty
+
 - ✅ **Reusable MealForm** dla create/edit (DRY)
 - ✅ **CalorieProgress** z kolorowaniem statusu (gray/green/orange)
 - ✅ **MacroDisplay** z wariantami (grid/inline/compact)
@@ -1354,23 +1413,27 @@ Dla lepszej orientacji użytkownika:
 - ✅ **Skeleton loaders** dla lepszego UX podczas ładowania
 
 ### Nawigacja
+
 - ✅ **Bottom bar** (mobile) - 3 główne akcje
 - ✅ **Sidebar** (desktop) - expandable/collapsible
 - ✅ **FAB** - prominent "Dodaj posiłek" zawsze dostępny
 - ✅ **Modals z routing** - deep linking, back button support
 
 ### Data Flow
+
 - ✅ **React Query** - caching, optimistic updates, auto-refetch
 - ✅ **Optimistic UI** - instant feedback, revert on error
 - ✅ **Infinite scroll** - dashboard (30 dni per batch)
 
 ### Accessibility
+
 - ✅ **WCAG AA compliance**
 - ✅ **Keyboard navigation** - wszystkie akcje dostępne
 - ✅ **Screen reader support** - semantic HTML, ARIA labels
 - ✅ **Focus management** - modals, forms
 
 ### Security
+
 - ✅ **JWT authentication** (Supabase)
 - ✅ **RLS policies** - data isolation
 - ✅ **Rate limiting** - AI endpoints

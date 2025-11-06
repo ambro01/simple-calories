@@ -5,6 +5,7 @@
 Endpoint `POST /api/v1/ai-generations` służy do generowania wartości odżywczych (kalorie, białko, węglowodany, tłuszcze) z opisu tekstowego posiłku przy użyciu modeli AI dostępnych przez OpenRouter.ai.
 
 **Główne funkcje:**
+
 - Przyjmuje opis tekstowy posiłku (prompt)
 - Wywołuje model AI do wygenerowania oszacowań wartości odżywczych
 - Zapisuje pełną historię generowania w bazie danych
@@ -22,12 +23,14 @@ Endpoint `POST /api/v1/ai-generations` służy do generowania wartości odżywcz
 **Rate Limiting:** 10 żądań na minutę na użytkownika
 
 **Parametry:**
+
 - **Wymagane:**
   - `prompt` (string): Opis tekstowy posiłku, min 1 znak, max 1000 znaków
 
 - **Opcjonalne:** Brak
 
 **Request Body:**
+
 ```json
 {
   "prompt": "dwa jajka sadzone na maśle i kromka chleba"
@@ -41,6 +44,7 @@ Endpoint `POST /api/v1/ai-generations` służy do generowania wartości odżywcz
 Wszystkie typy są już zdefiniowane w [src/types.ts](src/types.ts):
 
 ### Request DTO
+
 ```typescript
 CreateAIGenerationRequestDTO {
   prompt: string;
@@ -48,6 +52,7 @@ CreateAIGenerationRequestDTO {
 ```
 
 ### Response DTOs
+
 ```typescript
 AIGenerationResponseDTO = Tables<"ai_generations"> {
   id: string;
@@ -68,6 +73,7 @@ AIGenerationResponseDTO = Tables<"ai_generations"> {
 ```
 
 ### Error DTOs
+
 ```typescript
 ErrorResponseDTO {
   error: string;
@@ -81,22 +87,26 @@ RateLimitErrorResponseDTO extends ErrorResponseDTO {
 ```
 
 ### Dodatkowe typy do utworzenia
+
 **Walidacja Zod:**
+
 ```typescript
 const CreateAIGenerationSchema = z.object({
-  prompt: z.string()
+  prompt: z
+    .string()
     .min(1, "Prompt is required and cannot be empty")
     .max(1000, "Prompt cannot exceed 1000 characters")
-    .trim()
+    .trim(),
 });
 ```
 
 **OpenRouter API Types** (nowy plik: `src/lib/ai/openrouter.types.ts`):
+
 ```typescript
 interface OpenRouterRequest {
   model: string;
   messages: Array<{
-    role: 'system' | 'user' | 'assistant';
+    role: "system" | "user" | "assistant";
     content: string;
   }>;
   temperature?: number;
@@ -135,6 +145,7 @@ interface NutritionalEstimate {
 ### Success Response (201 Created)
 
 **Scenariusz 1: Pomyślne generowanie (status = 'completed')**
+
 ```json
 {
   "id": "uuid",
@@ -155,6 +166,7 @@ interface NutritionalEstimate {
 ```
 
 **Scenariusz 2: Opis zbyt ogólny (status = 'failed')**
+
 ```json
 {
   "id": "uuid",
@@ -177,6 +189,7 @@ interface NutritionalEstimate {
 ### Error Responses
 
 **400 Bad Request (Validation Error)**
+
 ```json
 {
   "error": "Validation Error",
@@ -188,6 +201,7 @@ interface NutritionalEstimate {
 ```
 
 **401 Unauthorized**
+
 ```json
 {
   "error": "Unauthorized",
@@ -196,6 +210,7 @@ interface NutritionalEstimate {
 ```
 
 **429 Too Many Requests**
+
 ```json
 {
   "error": "Rate Limit Exceeded",
@@ -205,6 +220,7 @@ interface NutritionalEstimate {
 ```
 
 **500 Internal Server Error**
+
 ```json
 {
   "error": "AI Service Error",
@@ -215,6 +231,7 @@ interface NutritionalEstimate {
 ## 5. Przepływ danych
 
 ### Diagram przepływu:
+
 ```
 Request → Middleware (Auth) → Rate Limit Check → Validation
     ↓
@@ -285,11 +302,13 @@ Call OpenRouter API (with timeout)
 ### Interakcje z zewnętrznymi usługami:
 
 **Supabase (PostgreSQL):**
+
 - Authentication check (JWT verification)
 - Rate limit tracking
 - Zapis historii generowań (`ai_generations` table)
 
 **OpenRouter.ai:**
+
 - Endpoint: `https://openrouter.ai/api/v1/chat/completions`
 - Headers:
   - `Authorization: Bearer ${OPENROUTER_API_KEY}`
@@ -304,24 +323,33 @@ Call OpenRouter API (with timeout)
 ### 6.1. Autentykacja i Autoryzacja
 
 **Mechanizm:**
+
 - Supabase JWT token w header `Authorization: Bearer <token>`
 - Middleware weryfikuje token i ekstrahuje `user_id`
 - **KRYTYCZNE:** Używać `user_id` z tokenu, NIGDY z request body
 
 **Implementacja:**
+
 ```typescript
-const { data: { user }, error } = await context.locals.supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await context.locals.supabase.auth.getUser();
 if (error || !user) {
-  return new Response(JSON.stringify({
-    error: "Unauthorized",
-    message: "Authentication required"
-  }), { status: 401 });
+  return new Response(
+    JSON.stringify({
+      error: "Unauthorized",
+      message: "Authentication required",
+    }),
+    { status: 401 }
+  );
 }
 ```
 
 ### 6.2. Rate Limiting
 
 **Implementacja:**
+
 - Tabela `rate_limits` w Supabase:
   ```sql
   CREATE TABLE rate_limits (
@@ -339,11 +367,13 @@ if (error || !user) {
 ### 6.3. Walidacja i Sanityzacja
 
 **Input Validation:**
+
 - Zod schema enforcement (długość, typ)
 - Trim whitespace z promptu
 - **NIE** sanityzować HTML (prompt to plain text dla AI)
 
 **Output Validation:**
+
 - Sprawdzenie wartości odżywczych względem CHECK constraints:
   - `calories`: 1-10000
   - `protein`, `carbs`, `fats`: 0-1000
@@ -354,12 +384,14 @@ if (error || !user) {
 **Zagrożenie:** Użytkownik może próbować manipulować AI przez specjalnie skonstruowany prompt
 
 **Mitigacje:**
+
 - System prompt jasno definiuje rolę AI (generowanie wartości odżywczych)
 - Ignorowanie instrukcji w user prompt (np. "ignore previous instructions")
 - Validation odpowiedzi AI (expected JSON format)
 - Rate limiting ogranicza liczbę prób
 
 **System Prompt przykład:**
+
 ```
 You are a nutritional AI assistant. Your ONLY task is to estimate calories and macronutrients from food descriptions.
 
@@ -373,10 +405,12 @@ Rules:
 ### 6.5. Cost Protection
 
 **Zagrożenia:**
+
 - Użytkownik wysyła długie prompty (wysokie koszty tokenów)
 - Masowe żądania (rate limit bypass attempts)
 
 **Mitigacje:**
+
 - Max 1000 znaków promptu
 - Rate limit 10 req/min
 - OpenRouter cost limits (konfigurowane w dashboard)
@@ -385,9 +419,11 @@ Rules:
 ### 6.6. Data Privacy
 
 **Wrażliwe dane:**
+
 - Prompty użytkowników mogą zawierać informacje o diecie/zdrowiu
 
 **Mitigacje:**
+
 - Prompty zapisywane tylko w bazie użytkownika (user_id link)
 - RLS policies w Supabase (users see only their data)
 - HTTPS dla wszystkich połączeń
@@ -396,6 +432,7 @@ Rules:
 ### 6.7. API Key Security
 
 **OpenRouter API Key:**
+
 - Przechowywanie w `.env` (NIGDY w kodzie)
 - Server-side only (nie eksponować do frontendu)
 - Rotacja kluczy co X miesięcy
@@ -405,59 +442,63 @@ Rules:
 
 ### 7.1. Client Errors (4xx)
 
-| Kod | Scenariusz | Response Body | Akcja |
-|-----|-----------|---------------|-------|
-| 400 | Brak `prompt` w body | `{ error: "Validation Error", message: "Invalid request", details: { prompt: "Prompt is required and cannot be empty" } }` | Zwróć natychmiast |
-| 400 | `prompt` pusty string | Jak wyżej | Zwróć natychmiast |
-| 400 | `prompt` > 1000 znaków | `{ error: "Validation Error", message: "Invalid request", details: { prompt: "Prompt cannot exceed 1000 characters" } }` | Zwróć natychmiast |
-| 400 | Nieprawidłowy JSON | `{ error: "Validation Error", message: "Invalid JSON in request body" }` | Zwróć natychmiast |
-| 401 | Brak tokenu autentykacji | `{ error: "Unauthorized", message: "Authentication required" }` | Zwróć natychmiast |
-| 401 | Nieprawidłowy token | Jak wyżej | Zwróć natychmiast |
-| 401 | Token wygasł | Jak wyżej | Zwróć natychmiast |
-| 429 | > 10 req/min | `{ error: "Rate Limit Exceeded", message: "Too many AI generation requests. Please wait before trying again.", retry_after: 45 }` | Zwróć z `Retry-After` header |
+| Kod | Scenariusz               | Response Body                                                                                                                     | Akcja                        |
+| --- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| 400 | Brak `prompt` w body     | `{ error: "Validation Error", message: "Invalid request", details: { prompt: "Prompt is required and cannot be empty" } }`        | Zwróć natychmiast            |
+| 400 | `prompt` pusty string    | Jak wyżej                                                                                                                         | Zwróć natychmiast            |
+| 400 | `prompt` > 1000 znaków   | `{ error: "Validation Error", message: "Invalid request", details: { prompt: "Prompt cannot exceed 1000 characters" } }`          | Zwróć natychmiast            |
+| 400 | Nieprawidłowy JSON       | `{ error: "Validation Error", message: "Invalid JSON in request body" }`                                                          | Zwróć natychmiast            |
+| 401 | Brak tokenu autentykacji | `{ error: "Unauthorized", message: "Authentication required" }`                                                                   | Zwróć natychmiast            |
+| 401 | Nieprawidłowy token      | Jak wyżej                                                                                                                         | Zwróć natychmiast            |
+| 401 | Token wygasł             | Jak wyżej                                                                                                                         | Zwróć natychmiast            |
+| 429 | > 10 req/min             | `{ error: "Rate Limit Exceeded", message: "Too many AI generation requests. Please wait before trying again.", retry_after: 45 }` | Zwróć z `Retry-After` header |
 
 ### 7.2. Server Errors (5xx)
 
-| Kod | Scenariusz | Response Body | Akcja |
-|-----|-----------|---------------|-------|
-| 500 | OpenRouter API timeout (> 30s) | `{ error: "AI Service Error", message: "Failed to generate nutritional estimates. Please try again." }` | Update DB (status='failed'), log error |
-| 500 | OpenRouter API zwraca błąd | Jak wyżej | Update DB (status='failed'), log error |
-| 500 | Błąd parsowania odpowiedzi AI | Jak wyżej | Update DB (status='failed'), log error |
-| 500 | Błąd zapisu do DB (INSERT) | `{ error: "Database Error", message: "Failed to save generation request." }` | Log error, zwróć 500 |
-| 500 | Błąd zapisu do DB (UPDATE) | Jak wyżej | Log error, zwróć 500 (orphaned pending record) |
-| 500 | Network error (OpenRouter unreachable) | `{ error: "AI Service Error", message: "AI service is currently unavailable. Please try again later." }` | Update DB (status='failed'), log error |
+| Kod | Scenariusz                             | Response Body                                                                                            | Akcja                                          |
+| --- | -------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 500 | OpenRouter API timeout (> 30s)         | `{ error: "AI Service Error", message: "Failed to generate nutritional estimates. Please try again." }`  | Update DB (status='failed'), log error         |
+| 500 | OpenRouter API zwraca błąd             | Jak wyżej                                                                                                | Update DB (status='failed'), log error         |
+| 500 | Błąd parsowania odpowiedzi AI          | Jak wyżej                                                                                                | Update DB (status='failed'), log error         |
+| 500 | Błąd zapisu do DB (INSERT)             | `{ error: "Database Error", message: "Failed to save generation request." }`                             | Log error, zwróć 500                           |
+| 500 | Błąd zapisu do DB (UPDATE)             | Jak wyżej                                                                                                | Log error, zwróć 500 (orphaned pending record) |
+| 500 | Network error (OpenRouter unreachable) | `{ error: "AI Service Error", message: "AI service is currently unavailable. Please try again later." }` | Update DB (status='failed'), log error         |
 
 ### 7.3. AI-Specific Errors (201 z status='failed')
 
 Nie są to HTTP errors, ale business logic failures:
 
-| Scenariusz | Status | Response (status='failed') |
-|-----------|--------|---------------------------|
-| Opis zbyt ogólny | 201 | `error_message: "Opis jest zbyt ogólny. Proszę podać więcej szczegółów: jakie składniki, ile porcji, sposób przygotowania."` |
-| AI nie może oszacować | 201 | `error_message: "Nie udało się oszacować wartości odżywczych dla podanego opisu. Spróbuj podać więcej szczegółów."` |
-| Wartości poza zakresem | 201 | `error_message: "Wygenerowane wartości są poza dopuszczalnym zakresem. Spróbuj podać realistyczny opis posiłku."` |
+| Scenariusz             | Status | Response (status='failed')                                                                                                   |
+| ---------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Opis zbyt ogólny       | 201    | `error_message: "Opis jest zbyt ogólny. Proszę podać więcej szczegółów: jakie składniki, ile porcji, sposób przygotowania."` |
+| AI nie może oszacować  | 201    | `error_message: "Nie udało się oszacować wartości odżywczych dla podanego opisu. Spróbuj podać więcej szczegółów."`          |
+| Wartości poza zakresem | 201    | `error_message: "Wygenerowane wartości są poza dopuszczalnym zakresem. Spróbuj podać realistyczny opis posiłku."`            |
 
 **Ważne:** Te scenariusze zwracają 201 Created (sukces HTTP), ale `status='failed'` w DB i response body.
 
 ### 7.4. Error Logging Strategy
 
 **Co logować:**
+
 - Wszystkie 5xx errors (server-side)
 - OpenRouter API errors (response body, status code)
 - Database errors (query, error message)
 - Timeout events
 
 **Gdzie logować:**
+
 - Console logs (development)
 - Structured logging system (production) - np. Winston, Pino
 - Error tracking service (opcjonalnie) - np. Sentry
 
 **Co NIE logować:**
+
 - Pełne prompty użytkowników (privacy)
 - API keys
 - JWT tokens
 
 **Format logu:**
+
 ```typescript
 {
   timestamp: "2025-01-27T10:00:00Z",
@@ -474,11 +515,13 @@ Nie są to HTTP errors, ale business logic failures:
 ### 7.5. Graceful Degradation
 
 **Jeśli OpenRouter jest niedostępny:**
+
 - Zwróć 500 z informacją o niedostępności usługi
 - Zapisz w DB (status='failed')
 - **NIE** próbuj alternatywnego modelu automatycznie (koszt/consistency)
 
 **Jeśli DB jest niedostępny:**
+
 - Zwróć 500 immediately
 - **NIE** wywołuj OpenRouter (nie można zapisać wyniku)
 
@@ -520,16 +563,19 @@ Nie są to HTTP errors, ale business logic failures:
 ### 8.2. Strategie optymalizacji
 
 **Immediate (MVP):**
+
 - Timeout 30s na OpenRouter requests
 - Indexy DB: `ai_generations(user_id, created_at)`, `rate_limits(user_id, endpoint, window_start)`
 - Connection pooling (Supabase domyślnie)
 
 **Short-term:**
+
 - Caching rate limit checks (Redis/in-memory) - zamiast DB query każdorazowo
 - Database cleanup job dla starych `rate_limits` records (> 24h)
 - Monitorowanie average response times (alerty przy > 10s)
 
 **Long-term (optional):**
+
 - Asynchroniczna generacja:
   - POST zwraca 202 Accepted z `generation_id`
   - Webhook/polling dla wyniku
@@ -540,6 +586,7 @@ Nie są to HTTP errors, ale business logic failures:
 ### 8.3. Monitoring i Metryki
 
 **Kluczowe metryki:**
+
 - Average response time (target: < 5s, max: 30s)
 - Success rate (target: > 95%)
 - Rate limit hits per user (wykrywanie abuse)
@@ -547,12 +594,14 @@ Nie są to HTTP errors, ale business logic failures:
 - Database query times
 
 **Alerty:**
+
 - Response time > 10s (sustained)
 - Success rate < 90%
 - OpenRouter cost > threshold per day
 - Database errors (any)
 
 **Dashboard:**
+
 - Grafana/Metabase z metrykami:
   - Total generations per day
   - Success/Failed ratio
@@ -640,6 +689,7 @@ Nie są to HTTP errors, ale business logic failures:
    - Export: `POST` handler
 
 10. **Implementacja POST handler:**
+
     ```typescript
     export const prerender = false;
 
@@ -649,7 +699,7 @@ Nie są to HTTP errors, ale business logic failures:
       // 3. Validation (Zod)
       // 4. Call AIGenerationService
       // 5. Return response (201 or error)
-    }
+    };
     ```
 
 11. **Response headers:**
@@ -725,10 +775,10 @@ Nie są to HTTP errors, ale business logic failures:
 ### src/lib/ai/openrouter.service.ts
 
 ```typescript
-import type { OpenRouterRequest, OpenRouterResponse, NutritionalEstimate } from './openrouter.types';
+import type { OpenRouterRequest, OpenRouterResponse, NutritionalEstimate } from "./openrouter.types";
 
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const TIMEOUT_MS = parseInt(import.meta.env.OPENROUTER_TIMEOUT || '30000');
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+const TIMEOUT_MS = parseInt(import.meta.env.OPENROUTER_TIMEOUT || "30000");
 
 export class OpenRouterService {
   private apiKey: string;
@@ -736,7 +786,7 @@ export class OpenRouterService {
 
   constructor() {
     this.apiKey = import.meta.env.OPENROUTER_API_KEY;
-    this.model = import.meta.env.OPENROUTER_MODEL || 'gpt-4';
+    this.model = import.meta.env.OPENROUTER_MODEL || "gpt-4";
   }
 
   async generateNutritionEstimate(prompt: string): Promise<NutritionalEstimate> {
@@ -747,15 +797,15 @@ export class OpenRouterService {
       const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
       const response = await fetch(OPENROUTER_API_URL, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': import.meta.env.PUBLIC_APP_URL || '',
-          'X-Title': 'Szybkie Kalorie'
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": import.meta.env.PUBLIC_APP_URL || "",
+          "X-Title": "Szybkie Kalorie",
         },
         body: JSON.stringify(this.buildRequest(prompt)),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -766,10 +816,9 @@ export class OpenRouterService {
 
       const data: OpenRouterResponse = await response.json();
       return this.parseAIResponse(data);
-
     } catch (error) {
-      if (error.name === 'AbortError') {
-        throw new Error('OpenRouter request timeout');
+      if (error.name === "AbortError") {
+        throw new Error("OpenRouter request timeout");
       }
       throw error;
     }
@@ -780,16 +829,16 @@ export class OpenRouterService {
       model: this.model,
       messages: [
         {
-          role: 'system',
-          content: this.buildSystemPrompt()
+          role: "system",
+          content: this.buildSystemPrompt(),
         },
         {
-          role: 'user',
-          content: userPrompt
-        }
+          role: "user",
+          content: userPrompt,
+        },
       ],
       temperature: 0.3, // Lower temperature for more consistent results
-      max_tokens: 500
+      max_tokens: 500,
     };
   }
 
@@ -830,13 +879,13 @@ Odpowiadaj WYŁĄCZNIE poprawnym JSON-em, bez dodatkowego tekstu.`;
     try {
       const content = response.choices[0]?.message?.content;
       if (!content) {
-        throw new Error('Empty AI response');
+        throw new Error("Empty AI response");
       }
 
       // Parse JSON from AI response (remove markdown code blocks if present)
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        throw new Error('No JSON found in AI response');
+        throw new Error("No JSON found in AI response");
       }
 
       const parsed = JSON.parse(jsonMatch[0]);
@@ -849,22 +898,22 @@ Odpowiadaj WYŁĄCZNIE poprawnym JSON-em, bez dodatkowego tekstu.`;
           carbs: null,
           fats: null,
           assumptions: null,
-          error: parsed.error
+          error: parsed.error,
         };
       }
 
       // Validate ranges
       if (parsed.calories !== null && (parsed.calories < 1 || parsed.calories > 10000)) {
-        throw new Error('Calories out of range');
+        throw new Error("Calories out of range");
       }
       if (parsed.protein !== null && (parsed.protein < 0 || parsed.protein > 1000)) {
-        throw new Error('Protein out of range');
+        throw new Error("Protein out of range");
       }
       if (parsed.carbs !== null && (parsed.carbs < 0 || parsed.carbs > 1000)) {
-        throw new Error('Carbs out of range');
+        throw new Error("Carbs out of range");
       }
       if (parsed.fats !== null && (parsed.fats < 0 || parsed.fats > 1000)) {
-        throw new Error('Fats out of range');
+        throw new Error("Fats out of range");
       }
 
       return {
@@ -872,12 +921,11 @@ Odpowiadaj WYŁĄCZNIE poprawnym JSON-em, bez dodatkowego tekstu.`;
         protein: parsed.protein,
         carbs: parsed.carbs,
         fats: parsed.fats,
-        assumptions: parsed.assumptions
+        assumptions: parsed.assumptions,
       };
-
     } catch (error) {
-      console.error('Failed to parse AI response:', error);
-      throw new Error('Invalid AI response format');
+      console.error("Failed to parse AI response:", error);
+      throw new Error("Invalid AI response format");
     }
   }
 }
@@ -888,56 +936,57 @@ export const openRouterService = new OpenRouterService();
 ### src/pages/api/v1/ai-generations/index.ts
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
+import type { APIRoute } from "astro";
+import { z } from "zod";
 
-import type { ErrorResponseDTO, RateLimitErrorResponseDTO } from '@/types';
-import { aiGenerationService } from '@/lib/services/ai-generation.service';
-import { rateLimitService } from '@/lib/services/rate-limit.service';
+import type { ErrorResponseDTO, RateLimitErrorResponseDTO } from "@/types";
+import { aiGenerationService } from "@/lib/services/ai-generation.service";
+import { rateLimitService } from "@/lib/services/rate-limit.service";
 
 export const prerender = false;
 
 const CreateAIGenerationSchema = z.object({
-  prompt: z.string()
+  prompt: z
+    .string()
     .min(1, "Prompt is required and cannot be empty")
     .max(1000, "Prompt cannot exceed 1000 characters")
-    .trim()
+    .trim(),
 });
 
 export const POST: APIRoute = async (context) => {
   try {
     // 1. Authentication check
-    const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await context.locals.supabase.auth.getUser();
 
     if (authError || !user) {
       const errorResponse: ErrorResponseDTO = {
         error: "Unauthorized",
-        message: "Authentication required"
+        message: "Authentication required",
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 401,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // 2. Rate limit check
-    const rateLimitCheck = await rateLimitService.checkRateLimit(
-      user.id,
-      '/api/v1/ai-generations'
-    );
+    const rateLimitCheck = await rateLimitService.checkRateLimit(user.id, "/api/v1/ai-generations");
 
     if (!rateLimitCheck.allowed) {
       const errorResponse: RateLimitErrorResponseDTO = {
         error: "Rate Limit Exceeded",
         message: "Too many AI generation requests. Please wait before trying again.",
-        retry_after: rateLimitCheck.retryAfter || 60
+        retry_after: rateLimitCheck.retryAfter || 60,
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 429,
         headers: {
-          'Content-Type': 'application/json',
-          'Retry-After': String(rateLimitCheck.retryAfter || 60)
-        }
+          "Content-Type": "application/json",
+          "Retry-After": String(rateLimitCheck.retryAfter || 60),
+        },
       });
     }
 
@@ -948,11 +997,11 @@ export const POST: APIRoute = async (context) => {
     } catch {
       const errorResponse: ErrorResponseDTO = {
         error: "Validation Error",
-        message: "Invalid JSON in request body"
+        message: "Invalid JSON in request body",
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -961,18 +1010,16 @@ export const POST: APIRoute = async (context) => {
       const errorResponse: ErrorResponseDTO = {
         error: "Validation Error",
         message: "Invalid request",
-        details: Object.fromEntries(
-          validation.error.errors.map(err => [err.path.join('.'), err.message])
-        )
+        details: Object.fromEntries(validation.error.errors.map((err) => [err.path.join("."), err.message])),
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // 4. Increment rate limit counter
-    await rateLimitService.incrementRateLimit(user.id, '/api/v1/ai-generations');
+    await rateLimitService.incrementRateLimit(user.id, "/api/v1/ai-generations");
 
     // 5. Generate AI estimation
     const result = await aiGenerationService.createAIGeneration(
@@ -984,20 +1031,19 @@ export const POST: APIRoute = async (context) => {
     // 6. Return success response
     return new Response(JSON.stringify(result), {
       status: 201,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error) {
-    console.error('AI Generation endpoint error:', error);
+    console.error("AI Generation endpoint error:", error);
 
     const errorResponse: ErrorResponseDTO = {
       error: "AI Service Error",
-      message: "Failed to generate nutritional estimates. Please try again."
+      message: "Failed to generate nutritional estimates. Please try again.",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
@@ -1008,6 +1054,7 @@ export const POST: APIRoute = async (context) => {
 ## Podsumowanie
 
 Ten plan zapewnia:
+
 - ✅ Pełną implementację endpointu zgodnie ze specyfikacją
 - ✅ Bezpieczną autentykację i rate limiting
 - ✅ Robustną obsługę błędów
@@ -1020,6 +1067,7 @@ Ten plan zapewnia:
 **Szacowany czas implementacji:** 15-20 godzin (z testami i dokumentacją)
 
 **Kolejne kroki po implementacji:**
+
 1. Integracja z frontendem (UI dla generowania)
 2. Endpoint GET /api/v1/ai-generations (lista historii)
 3. Endpoint GET /api/v1/ai-generations/:id (pojedynczy wpis)

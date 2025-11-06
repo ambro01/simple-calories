@@ -1,20 +1,26 @@
 # Problem z RLS i Triggerami w Supabase
 
 ## Data
+
 2025-02-05
 
 ## Problem
+
 Po włączeniu Row Level Security (RLS) na wszystkich tabelach, rejestracja nowych użytkowników przestała działać. Użytkownik otrzymywał błąd:
+
 ```
 Error 400: Database error saving new user
 ```
 
 ### Przyczyna
+
 Trigger `handle_new_user()` uruchamiany podczas rejestracji (INSERT do `auth.users`) próbował utworzyć:
+
 1. Profil użytkownika w tabeli `profiles`
 2. Domyślny cel kaloryczny w tabeli `calorie_goals`
 
 Jednak polityki RLS blokowały te operacje, ponieważ:
+
 - Nowy użytkownik nie był jeszcze uwierzytelniony (`auth.uid()` zwracało NULL)
 - Polityki INSERT wymagały `auth.uid() = user_id`
 - Trigger działał w kontekście, gdzie użytkownik nie miał jeszcze sesji
@@ -22,6 +28,7 @@ Jednak polityki RLS blokowały te operacje, ponieważ:
 ## Próby rozwiązania (nieudane)
 
 ### 1. Dodanie polityki dla `service_role`
+
 ```sql
 create policy "service role can insert profiles"
   on profiles
@@ -29,9 +36,11 @@ create policy "service role can insert profiles"
   to service_role
   with check (true);
 ```
+
 **Nie zadziałało** - triggery nie działają jako `service_role`
 
 ### 2. Użycie `set local role postgres` w funkcji
+
 ```sql
 create or replace function handle_new_user()
 returns trigger as $$
@@ -41,19 +50,23 @@ begin
 end;
 $$ language plpgsql security definer;
 ```
+
 **Nie zadziałało** - brak uprawnień do zmiany roli w Supabase
 
 ### 3. Dynamiczne wyłączanie RLS w funkcji
+
 ```sql
 execute 'alter table public.profiles disable row level security';
 -- insert operations
 execute 'alter table public.profiles enable row level security';
 ```
+
 **Nie zadziałało** - nie można dynamicznie zmieniać RLS w triggerze
 
 ## Rozwiązanie (zadziałało)
 
 ### Dodanie permisywnych polityk INSERT
+
 Utworzono polityki, które pozwalają na INSERT bez sprawdzania `auth.uid()`, ale walidują strukturę danych:
 
 ```sql
@@ -99,17 +112,16 @@ create policy "allow insert for trigger"
 ## Zmiany w kodzie aplikacji
 
 ### Usunięto ręczne tworzenie profilu
+
 W `src/pages/api/v1/auth/signup.ts` usunięto kod, który ręcznie tworzył profil w application layer:
 
 ```typescript
 // BEFORE (usunięto):
-const { error: profileError } = await supabase
-  .from("profiles")
-  .insert({
-    id: data.user.id,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  });
+const { error: profileError } = await supabase.from("profiles").insert({
+  id: data.user.id,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+});
 
 // AFTER:
 // Note: profile and default calorie_goal are created automatically by the
@@ -117,7 +129,9 @@ const { error: profileError } = await supabase
 ```
 
 ### Dodano szczegółowe logowanie
+
 Dodano logi do debugowania problemu:
+
 - `[SIGNUP]` - logi backendu
 - `[SIGNUP FORM]` - logi frontendu
 
@@ -172,6 +186,7 @@ Wszystkie chaotyczne migracje RLS (20250127110800 - 20250205000400) zostały **z
 ### Aktualne pliki (po refactoringu):
 
 **Kluczowe pliki:**
+
 - `supabase/migrations/20250127110500_create_functions.sql` - funkcja `handle_new_user()`
 - `supabase/migrations/20250127110600_create_triggers.sql` - trigger `on_auth_user_created`
 - **`supabase/migrations/20250206000000_consolidated_rls_setup.sql`** - **wszystkie polityki RLS (skonsolidowane)**
@@ -185,6 +200,7 @@ Zobacz `.ai/migration-cleanup-plan.md` - instrukcje migracji i weryfikacji
 ## Testowanie
 
 Po zmianach należy przetestować:
+
 1. ✅ Rejestracja nowego użytkownika
 2. ✅ Automatyczne utworzenie profilu
 3. ✅ Automatyczne utworzenie domyślnego celu kalorycznego (2000 kcal)
@@ -200,6 +216,7 @@ Po wdrożeniu skonsolidowanych migracji RLS, odkryto **dwa dodatkowe, krytyczne 
 ### Problem #1: Brak polityk RLS na tabeli `auth.users`
 
 **Objawy:**
+
 ```
 Error: Database error saving new user
 ```
@@ -208,6 +225,7 @@ Error: Database error saving new user
 Tabela `auth.users` miała **włączony RLS, ale bez żadnych polityk**. Supabase Auth używa roli `supabase_auth_admin` do zarządzania użytkownikami, ale bez polityk RLS, **wszystkie operacje były blokowane**.
 
 **Diagnoza:**
+
 ```bash
 # Sprawdzenie RLS na auth.users
 docker exec supabase_db_simple-calories psql -U postgres -d postgres -c \
@@ -242,11 +260,13 @@ CREATE POLICY "supabase_auth_admin can select users"
 
 **Objawy:**
 Po naprawieniu Problem #1, błąd zmienił się na:
+
 ```
 Error: Database error finding user
 ```
 
 Logi auth pokazywały:
+
 ```json
 {
   "error": "relation \"profiles\" does not exist (SQLSTATE 42P01)",
@@ -256,6 +276,7 @@ Logi auth pokazywały:
 
 **Przyczyna:**
 Trigger `on_auth_user_created` uruchamia funkcję `handle_new_user()`, która była wywoływana w kontekście roli `supabase_auth_admin`. Ta rola ma ustawiony:
+
 ```
 search_path=auth
 ```
@@ -263,6 +284,7 @@ search_path=auth
 To oznacza, że PostgreSQL szukał tabel `profiles` i `calorie_goals` w schemacie `auth` (gdzie ich nie ma), zamiast w schemacie `public` (gdzie faktycznie są).
 
 **Diagnoza:**
+
 ```bash
 # Sprawdzenie search_path dla supabase_auth_admin
 docker exec supabase_db_simple-calories psql -U postgres -d postgres -c \
@@ -284,6 +306,7 @@ insert into public.profiles (id, created_at, updated_at)
 ```
 
 Zmieniono również:
+
 - `insert into calorie_goals` → `insert into public.calorie_goals`
 
 ### Dlaczego problem nie był widoczny wcześniej?
@@ -331,12 +354,13 @@ User Registration Flow (UPDATED):
 4. **RLS w produkcji** - zawsze testuj rejestrację po włączeniu RLS!
 5. **⚠️ NOWE: Zawsze używaj pełnych nazw tabel** (`schema.table_name`) w triggerach i funkcjach, które mogą być wywoływane z różnych kontekstów
 6. **⚠️ NOWE: Różne role mają różne `search_path`** - nie zakładaj, że trigger widzi te same tabele co ty
-7. **⚠️ NOWE: Tabele systemowe Supabase (auth.*) wymagają polityk RLS** dla ról systemowych (supabase_auth_admin, supabase_storage_admin, etc.)
+7. **⚠️ NOWE: Tabele systemowe Supabase (auth.\*) wymagają polityk RLS** dla ról systemowych (supabase_auth_admin, supabase_storage_admin, etc.)
 8. **⚠️ NOWE: Testuj z czystą bazą danych** - `npx supabase db reset` jest konieczny po zmianach w funkcjach i triggerach
 
 ### Status: ✅ ROZWIĄZANE (2025-11-05)
 
 Rejestracja użytkowników działa poprawnie z:
+
 - ✅ Automatycznym utworzeniem profilu
 - ✅ Automatycznym utworzeniem domyślnego celu kalorycznego (2000 kcal)
 - ✅ Pełną ochroną RLS na wszystkich tabelach

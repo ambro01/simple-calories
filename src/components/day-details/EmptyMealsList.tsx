@@ -4,9 +4,9 @@
  * Empty state dla listy posiłków - wyświetlany gdy brak posiłków w danym dniu.
  */
 
-interface EmptyMealsListProps {
+type EmptyMealsListProps = {
   onAddMeal: () => void;
-}
+};
 
 export function EmptyMealsList({ onAddMeal }: EmptyMealsListProps) {
   return (

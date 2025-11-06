@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from '@playwright/test';
+import { type Page, type Locator, expect } from "@playwright/test";
 
 /**
  * Page Object Model for Login Page
@@ -14,10 +14,10 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.loginForm = page.getByTestId('login-form');
-    this.emailInput = page.getByTestId('login-email-input');
-    this.passwordInput = page.getByTestId('login-password-input');
-    this.submitButton = page.getByTestId('login-submit-button');
+    this.loginForm = page.getByTestId("login-form");
+    this.emailInput = page.getByTestId("login-email-input");
+    this.passwordInput = page.getByTestId("login-password-input");
+    this.submitButton = page.getByTestId("login-submit-button");
     this.errorAlert = page.locator('[role="alert"]');
   }
 
@@ -25,7 +25,7 @@ export class LoginPage {
    * Navigate to login page
    */
   async goto() {
-    await this.page.goto('/auth/login');
+    await this.page.goto("/auth/login");
     await expect(this.loginForm).toBeVisible();
   }
 
@@ -65,9 +65,9 @@ export class LoginPage {
   async waitForSuccessfulLogin() {
     // Wait for URL to change to root path after login
     // Use 'load' instead of 'networkidle' because there might be ongoing network requests
-    await this.page.waitForURL('/', {
+    await this.page.waitForURL("/", {
       timeout: 60000,
-      waitUntil: 'load'
+      waitUntil: "load",
     });
   }
 
@@ -82,7 +82,7 @@ export class LoginPage {
    * Get error message
    */
   async getErrorMessage(): Promise<string> {
-    return await this.errorAlert.textContent() || '';
+    return (await this.errorAlert.textContent()) || "";
   }
 
   /**
@@ -97,6 +97,6 @@ export class LoginPage {
    */
   async isSubmitLoading(): Promise<boolean> {
     const text = await this.submitButton.textContent();
-    return text?.includes('Logowanie...') || false;
+    return text?.includes("Logowanie...") || false;
   }
 }

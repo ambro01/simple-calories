@@ -18,11 +18,11 @@ import type { NutritionalEstimate } from "./openrouter";
 /**
  * Result of creating an AI generation
  */
-export interface CreateAIGenerationResult {
+export type CreateAIGenerationResult = {
   success: boolean;
   data?: AIGenerationResponseDTO;
   error?: string;
-}
+};
 
 /**
  * AI Generation Service Class

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface ForgotPasswordFormState {
+type ForgotPasswordFormState = {
   email: string;
   isLoading: boolean;
   isSuccess: boolean;
@@ -21,7 +21,7 @@ interface ForgotPasswordFormState {
     email?: string;
     general?: string;
   };
-}
+};
 
 export function ForgotPasswordForm() {
   const [state, setState] = useState<ForgotPasswordFormState>({
@@ -100,9 +100,7 @@ export function ForgotPasswordForm() {
               <Mail className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
             <h2 className="text-xl font-bold text-foreground mb-2">Sprawdź swoją skrzynkę</h2>
-            <p className="text-sm text-muted-foreground">
-              Link do resetu hasła został wysłany na adres:
-            </p>
+            <p className="text-sm text-muted-foreground">Link do resetu hasła został wysłany na adres:</p>
             <p className="text-sm font-medium text-foreground mt-2">{state.email}</p>
           </div>
 
@@ -110,17 +108,13 @@ export function ForgotPasswordForm() {
             <CheckCircle2 className="h-4 w-4" />
             <AlertTitle>Email wysłany</AlertTitle>
             <AlertDescription>
-              Jeśli podany adres email istnieje w systemie, otrzymasz wiadomość z linkiem do
-              resetu hasła. Link jest ważny przez 1 godzinę.
+              Jeśli podany adres email istnieje w systemie, otrzymasz wiadomość z linkiem do resetu hasła. Link jest
+              ważny przez 1 godzinę.
             </AlertDescription>
           </Alert>
 
           <div className="space-y-3">
-            <Button
-              onClick={() => (window.location.href = "/auth/login")}
-              variant="outline"
-              className="w-full"
-            >
+            <Button onClick={() => (window.location.href = "/auth/login")} variant="outline" className="w-full">
               Wróć do logowania
             </Button>
 
@@ -148,9 +142,7 @@ export function ForgotPasswordForm() {
     <Card>
       <CardHeader>
         <CardTitle>Resetowanie hasła</CardTitle>
-        <CardDescription>
-          Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła.
-        </CardDescription>
+        <CardDescription>Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła.</CardDescription>
       </CardHeader>
       <CardContent>
         {state.errors.general && (
@@ -162,36 +154,36 @@ export function ForgotPasswordForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={state.email}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                email: e.target.value,
-                errors: { ...prev.errors, email: undefined },
-              }))
-            }
-            placeholder="jan@example.com"
-            disabled={state.isLoading}
-            className={state.errors.email ? "border-red-500" : ""}
-            aria-invalid={!!state.errors.email}
-            aria-describedby={state.errors.email ? "email-error" : undefined}
-            autoComplete="email"
-            autoFocus
-          />
-          {state.errors.email && (
-            <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.email}
-            </p>
-          )}
-        </div>
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={state.email}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                  errors: { ...prev.errors, email: undefined },
+                }))
+              }
+              placeholder="jan@example.com"
+              disabled={state.isLoading}
+              className={state.errors.email ? "border-red-500" : ""}
+              aria-invalid={!!state.errors.email}
+              aria-describedby={state.errors.email ? "email-error" : undefined}
+              autoComplete="email"
+              autoFocus
+            />
+            {state.errors.email && (
+              <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.email}
+              </p>
+            )}
+          </div>
 
-        {/* Submit button */}
+          {/* Submit button */}
           <Button type="submit" disabled={state.isLoading} className="w-full">
             {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {state.isLoading ? "Wysyłanie..." : "Wyślij link resetujący"}
@@ -199,10 +191,7 @@ export function ForgotPasswordForm() {
 
           {/* Back to login link */}
           <div className="text-center">
-            <a
-              href="/auth/login"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <a href="/auth/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               ← Wróć do logowania
             </a>
           </div>

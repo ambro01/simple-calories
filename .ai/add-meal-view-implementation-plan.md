@@ -3,10 +3,12 @@
 ## 1. Przegląd
 
 Widok **AddMeal** to modalny formularz służący do dodawania nowych posiłków do aplikacji. Stanowi kluczowy element interfejsu użytkownika, oferując dwa tryby wprowadzania danych:
+
 - **Tryb AI** (domyślny): użytkownik opisuje posiłek w języku naturalnym, a system AI automatycznie szacuje kalorie i makroskładniki
 - **Tryb Manual**: użytkownik ręcznie wprowadza wartości kaloryczne i makroskładniki
 
 Widok wykorzystuje zaawansowane funkcje UX, takie jak:
+
 - Multi-stage loading z wizualizacją postępu dla generacji AI
 - Inteligentne prepopulowanie danych przy przełączaniu trybów
 - Walidację w czasie rzeczywistym z ostrzeżeniami
@@ -18,11 +20,13 @@ Widok wykorzystuje zaawansowane funkcje UX, takie jak:
 Widok jest dostępny jako **modal/overlay** wywoływany programowo z innych części aplikacji (np. Dashboard, DayView).
 
 **Sposób wywoływania**:
+
 - Komponent `AddMealModal` przyjmuje props `isOpen: boolean` i `onClose: () => void`
 - Może być zaimplementowany w głównym layoucie aplikacji lub lokalnie w komponencie rodzica
 - Po zapisaniu posiłku wywołuje callback `onSuccess: (meal: CreateMealResponseDTO) => void`
 
 **Przykład użycia**:
+
 ```tsx
 const [isAddMealOpen, setIsAddMealOpen] = useState(false);
 
@@ -31,10 +35,10 @@ const [isAddMealOpen, setIsAddMealOpen] = useState(false);
   onClose={() => setIsAddMealOpen(false)}
   onSuccess={(meal) => {
     // Odśwież listę posiłków
-    toast.success('Posiłek dodany');
+    toast.success("Posiłek dodany");
     setIsAddMealOpen(false);
   }}
-/>
+/>;
 ```
 
 ## 3. Struktura komponentów
@@ -100,21 +104,25 @@ AddMealModal (kontener modalny)
 **Opis**: Główny kontener modalny opakowujący formularz. Zapewnia overlay, focus trap, escape handling i responsywność (fullscreen na mobile, dialog na desktop).
 
 **Główne elementy**:
+
 - `Dialog` z shadcn/ui (root)
 - `DialogOverlay` (backdrop)
 - `DialogContent` (kontener z zawartością)
 - `MealForm` (główny formularz)
 
 **Obsługiwane interakcje**:
+
 - `onClose`: zamknięcie modala (kliknięcie backdrop, ESC, przycisk Anuluj)
 - `onSuccess`: callback po pomyślnym zapisie posiłku
 
 **Walidacja**: Brak (przekazuje do MealForm)
 
 **Typy**:
+
 - Props: `AddMealModalProps`
 
 **Props**:
+
 ```typescript
 interface AddMealModalProps {
   isOpen: boolean;
@@ -130,6 +138,7 @@ interface AddMealModalProps {
 **Opis**: Główny komponent formularza zarządzający stanem, logiką biznesową i przepływem danych między trybami. Orkiestruje wszystkie sub-komponenty i komunikację z API.
 
 **Główne elementy**:
+
 - `form` element (HTML form)
 - `SegmentedControl` (toggle trybu)
 - `AIMode` lub `ManualMode` (warunkowe renderowanie)
@@ -137,6 +146,7 @@ interface AddMealModalProps {
 - `FormActions` (przyciski)
 
 **Obsługiwane interakcje**:
+
 - `onModeChange`: przełączanie między AI/Manual
 - `onFieldUpdate`: aktualizacja pól formularza
 - `onAIGenerate`: generacja AI
@@ -144,16 +154,19 @@ interface AddMealModalProps {
 - `onCancel`: anulowanie i zamknięcie
 
 **Walidacja**:
+
 - Przed generacją AI: prompt nie pusty, max 500 znaków
 - Przed submitem: wszystkie wymagane pola wypełnione, zakres wartości poprawny
 - Macro vs calories: różnica >5% → warning (nie blokuje)
 - Data: nie w przyszłości (blokuje), >7 dni wstecz (warning, nie blokuje)
 
 **Typy**:
+
 - State: `MealFormState`
 - Props: `MealFormProps`
 
 **Props**:
+
 ```typescript
 interface MealFormProps {
   onClose: () => void;
@@ -168,18 +181,22 @@ interface MealFormProps {
 **Opis**: Toggle umożliwiający przełączanie między trybem AI i Manual. Wizualnie wyróżnia aktywny tryb.
 
 **Główne elementy**:
+
 - 2x `Button` (AI, Manual)
 - Sliding indicator (animowany background)
 
 **Obsługiwane interakcje**:
+
 - `onChange`: zmiana aktywnego trybu
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `SegmentedControlProps`
 
 **Props**:
+
 ```typescript
 interface SegmentedControlProps {
   value: MealFormMode; // 'ai' | 'manual'
@@ -195,6 +212,7 @@ interface SegmentedControlProps {
 **Opis**: Interfejs trybu AI zawierający textarea do opisu posiłku, przyciski z przykładami, przycisk generacji oraz wyświetlanie rezultatów (loading state lub wynik AI).
 
 **Główne elementy**:
+
 - `Label` + `Textarea` (opis posiłku)
 - `CharacterCounter` (0/500)
 - `ExampleChips` (3-4 clickable chips)
@@ -204,6 +222,7 @@ interface SegmentedControlProps {
 - `Alert` (warunkowy - błąd AI)
 
 **Obsługiwane interakcje**:
+
 - `onPromptChange`: zmiana tekstu w textarea
 - `onExampleClick`: wypełnienie textarea przykładem
 - `onGenerate`: wywołanie generacji AI
@@ -212,14 +231,17 @@ interface SegmentedControlProps {
 - `onSwitchToManual`: przełączenie do trybu manual z prepopulacją
 
 **Walidacja**:
+
 - Prompt: required, max 500 znaków
 - Przycisk "Oblicz" disabled gdy prompt pusty lub >500 znaków
 
 **Typy**:
+
 - Props: `AIModeProps`
 - Local state: `prompt`, `aiResult`, `aiLoading`, `aiLoadingStage`, `aiError`
 
 **Props**:
+
 ```typescript
 interface AIModeProps {
   prompt: string;
@@ -242,17 +264,21 @@ interface AIModeProps {
 **Opis**: Zestaw clickable chipów z przykładowymi opisami posiłków, które po kliknięciu wypełniają textarea.
 
 **Główne elementy**:
+
 - 3-4x `Button` (variant: outline, size: sm)
 
 **Obsługiwane interakcje**:
+
 - `onSelect`: kliknięcie chipa
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `ExampleChipsProps`
 
 **Props**:
+
 ```typescript
 interface ExampleChipsProps {
   examples: string[]; // np. ["Kanapka z szynką", "Kurczak z ryżem", "Jogurt z owocami"]
@@ -268,6 +294,7 @@ interface ExampleChipsProps {
 **Opis**: Multi-stage loading indicator wyświetlający 3 etapy generacji AI z animowanymi progress dots i tekstem etapu.
 
 **Główne elementy**:
+
 - `Spinner` (animowany)
 - `ProgressDots` (● ○ ○ lub ○ ● ○ lub ○ ○ ●)
 - `StageText` ("Analizuję opis..." / "Szacuję kalorie..." / "Obliczam makroskładniki...")
@@ -277,9 +304,11 @@ interface ExampleChipsProps {
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `LoadingStateProps`
 
 **Props**:
+
 ```typescript
 interface LoadingStateProps {
   stage: AILoadingStage; // 0 | 1 | 2
@@ -293,12 +322,14 @@ interface LoadingStateProps {
 **Opis**: Wyświetlenie wyniku generacji AI: kalorie (duża liczba), makroskładniki (grid 2x2), założenia AI oraz przyciski akcji.
 
 **Główne elementy**:
+
 - `CaloriesDisplay` (duża liczba, np. 420 kcal)
 - `MacroGrid` (4 wartości: Białko, Węglowodany, Tłuszcze, Błonnik w grid 2x2)
 - `AssumptionsText` (mały tekst z założeniami AI)
 - `ResultActions` (3 przyciski)
 
 **Obsługiwane interakcje**:
+
 - `onAccept`: akceptacja wyniku
 - `onRegenerate`: ponowna generacja
 - `onEditManually`: przełączenie do manual z prepopulacją
@@ -306,9 +337,11 @@ interface LoadingStateProps {
 **Walidacja**: Brak (tylko wyświetlanie)
 
 **Typy**:
+
 - Props: `AIResultProps`
 
 **Props**:
+
 ```typescript
 interface AIResultProps {
   result: AIGenerationResponseDTO;
@@ -326,6 +359,7 @@ interface AIResultProps {
 **Opis**: Interfejs trybu manual z polami do ręcznego wprowadzenia opisu, kalorii i makroskładników.
 
 **Główne elementy**:
+
 - `Label` + `Textarea` (opis)
 - `CharacterCounter` (0/500)
 - `Label` + `Input` (kalorie, type: number, required)
@@ -333,19 +367,23 @@ interface AIResultProps {
 - `MacroWarning` (warunkowy)
 
 **Obsługiwane interakcje**:
+
 - `onFieldChange`: zmiana wartości pól
 - `onAutoCalculate`: automatyczne przeliczenie kalorii z makro
 
 **Walidacja**:
+
 - Opis: required, max 500 znaków
 - Kalorie: required, integer, 1-10000
 - Makro (każde): optional, decimal, 0-1000
 - Macro warning: |calculated - provided| / provided > 0.05
 
 **Typy**:
+
 - Props: `ManualModeProps`
 
 **Props**:
+
 ```typescript
 interface ManualModeProps {
   description: string;
@@ -368,25 +406,30 @@ interface ManualModeProps {
 **Opis**: Grupa 4 inputów dla makroskładników (Białko, Węglowodany, Tłuszcze, Błonnik) z labelami i walidacją.
 
 **Główne elementy**:
+
 - 4x (`Label` + `Input[type=number]`)
 
 **Obsługiwane interakcje**:
+
 - `onChange`: zmiana wartości makro
 
 **Walidacja**:
+
 - Każde pole: optional, 0-1000, decimal(6,2)
 
 **Typy**:
+
 - Props: `MacroInputsProps`
 
 **Props**:
+
 ```typescript
 interface MacroInputsProps {
   protein: number | null;
   carbs: number | null;
   fats: number | null;
   fiber: number | null;
-  onChange: (field: 'protein' | 'carbs' | 'fats' | 'fiber', value: number | null) => void;
+  onChange: (field: "protein" | "carbs" | "fats" | "fiber", value: number | null) => void;
   errors?: Record<string, string>;
 }
 ```
@@ -398,19 +441,23 @@ interface MacroInputsProps {
 **Opis**: Żółty alert box wyświetlany gdy suma kalorii z makroskładników różni się >5% od podanych kalorii. Zawiera komunikat i przycisk auto-przeliczenia.
 
 **Główne elementy**:
+
 - `Alert` (variant: warning)
 - Tekst komunikatu
 - `Button` "Przelicz automatycznie"
 
 **Obsługiwane interakcje**:
+
 - `onAutoCalculate`: automatyczne ustawienie kalorii na podstawie makro
 
 **Walidacja**: Brak (tylko informacyjny)
 
 **Typy**:
+
 - Props: `MacroWarningProps`
 
 **Props**:
+
 ```typescript
 interface MacroWarningProps {
   calculatedCalories: number;
@@ -427,24 +474,29 @@ interface MacroWarningProps {
 **Opis**: Grupa opcjonalnych pól wspólnych dla obu trybów: kategoria posiłku, data i czas.
 
 **Główne elementy**:
+
 - `Label` + `CategorySelector`
 - `Label` + `DatePicker`
 - `DateWarning` (warunkowy)
 - `Label` + `TimePicker`
 
 **Obsługiwane interakcje**:
+
 - `onCategoryChange`: zmiana kategorii
 - `onDateChange`: zmiana daty
 - `onTimeChange`: zmiana czasu
 
 **Walidacja**:
+
 - Data: nie w przyszłości (error, blokuje submit)
 - Data: >7 dni wstecz (warning, nie blokuje)
 
 **Typy**:
+
 - Props: `CommonFieldsProps`
 
 **Props**:
+
 ```typescript
 interface CommonFieldsProps {
   category: MealCategory | null;
@@ -464,18 +516,22 @@ interface CommonFieldsProps {
 **Opis**: Visual button group do wyboru kategorii posiłku (Śniadanie, Obiad, Kolacja, Przekąska) z ikonami.
 
 **Główne elementy**:
+
 - 4x `Button` (variant: outline, toggle state)
 - Ikony dla każdej kategorii
 
 **Obsługiwane interakcje**:
+
 - `onChange`: wybór/odznaczenie kategorii
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `CategorySelectorProps`
 
 **Props**:
+
 ```typescript
 interface CategorySelectorProps {
   value: MealCategory | null;
@@ -490,19 +546,23 @@ interface CategorySelectorProps {
 **Opis**: Footer formularza z przyciskami akcji: Anuluj i Dodaj posiłek.
 
 **Główne elementy**:
+
 - `Button` "Anuluj" (variant: ghost)
 - `Button` "Dodaj posiłek" (variant: default, z loading spinner)
 
 **Obsługiwane interakcje**:
+
 - `onCancel`: anulowanie i zamknięcie modala
 - `onSubmit`: zapisanie posiłku
 
 **Walidacja**: Brak (wykonywana w MealForm przed submit)
 
 **Typy**:
+
 - Props: `FormActionsProps`
 
 **Props**:
+
 ```typescript
 interface FormActionsProps {
   onCancel: () => void;
@@ -519,6 +579,7 @@ interface FormActionsProps {
 **Opis**: Licznik znaków dla textarea (np. "245/500"). Zmienia kolor w zależności od wykorzystania.
 
 **Główne elementy**:
+
 - `span` z tekstem i stylowaniem
 
 **Obsługiwane interakcje**: Brak (tylko wyświetlanie)
@@ -526,9 +587,11 @@ interface FormActionsProps {
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `CharacterCounterProps`
 
 **Props**:
+
 ```typescript
 interface CharacterCounterProps {
   current: number;
@@ -553,7 +616,7 @@ import type {
   MealWarningDTO,
   MealCategory,
   InputMethodType,
-} from '../types';
+} from "../types";
 ```
 
 ### 5.2. Nowe typy ViewModel
@@ -562,7 +625,7 @@ import type {
 /**
  * Tryb formularza dodawania posiłku
  */
-export type MealFormMode = 'ai' | 'manual';
+export type MealFormMode = "ai" | "manual";
 
 /**
  * Etap ładowania AI (0-2)
@@ -594,7 +657,7 @@ export interface FormValidationError {
  * Ostrzeżenie dotyczące daty
  */
 export interface DateValidationWarning {
-  type: 'future' | 'old';
+  type: "future" | "old";
   message: string;
 }
 
@@ -647,7 +710,7 @@ export interface AIGenerationResult {
   carbs: number | null;
   fats: number | null;
   assumptions: string | null;
-  status: 'completed' | 'failed';
+  status: "completed" | "failed";
   errorMessage: string | null;
 }
 ```
@@ -659,30 +722,30 @@ export interface AIGenerationResult {
  * Mapowanie kategorii na ikony
  */
 export const CATEGORY_ICONS: Record<MealCategory, string> = {
-  breakfast: '🍳',
-  lunch: '🍽️',
-  dinner: '🍲',
-  snack: '🍪',
-  other: '🍴',
+  breakfast: "🍳",
+  lunch: "🍽️",
+  dinner: "🍲",
+  snack: "🍪",
+  other: "🍴",
 };
 
 /**
  * Teksty dla etapów ładowania AI
  */
 export const AI_LOADING_STAGES: Record<AILoadingStage, string> = {
-  0: 'Analizuję opis...',
-  1: 'Szacuję kalorie...',
-  2: 'Obliczam makroskładniki...',
+  0: "Analizuję opis...",
+  1: "Szacuję kalorie...",
+  2: "Obliczam makroskładniki...",
 };
 
 /**
  * Przykłady opisów posiłków
  */
 export const MEAL_EXAMPLES = [
-  'Kanapka z szynką i serem',
-  'Kurczak z ryżem i warzywami',
-  'Jogurt naturalny z owocami',
-  'Jajecznica z trzech jajek',
+  "Kanapka z szynką i serem",
+  "Kurczak z ryżem i warzywami",
+  "Jogurt naturalny z owocami",
+  "Jajecznica z trzech jajek",
 ];
 
 /**
@@ -709,6 +772,7 @@ Zarządzanie stanem formularza jest scentralizowane w custom hooku `useAddMealFo
 **Lokalizacja**: `src/hooks/useAddMealForm.ts`
 
 **Odpowiedzialności**:
+
 - Zarządzanie stanem formularza (MealFormState)
 - Przełączanie między trybami AI/Manual
 - Obsługa generacji AI z multi-stage loading
@@ -730,10 +794,7 @@ interface UseAddMealFormReturn {
   switchToAI: () => void;
 
   // Akcje - aktualizacja pól
-  updateField: <K extends keyof MealFormState>(
-    field: K,
-    value: MealFormState[K]
-  ) => void;
+  updateField: <K extends keyof MealFormState>(field: K, value: MealFormState[K]) => void;
   updatePrompt: (prompt: string) => void;
 
   // Akcje - AI
@@ -782,8 +843,8 @@ export function useAddMealForm(): UseAddMealFormReturn {
     validateForm,
     submitMeal,
     reset,
-    isAIMode: state.mode === 'ai',
-    isManualMode: state.mode === 'manual',
+    isAIMode: state.mode === "ai",
+    isManualMode: state.mode === "manual",
     canSubmit: !state.submitLoading && state.validationErrors.length === 0,
     hasAIResult: state.aiResult !== null,
   };
@@ -795,12 +856,12 @@ export function useAddMealForm(): UseAddMealFormReturn {
 ```typescript
 function getInitialState(): MealFormState {
   const now = new Date();
-  const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
-  const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // HH:MM
+  const dateStr = now.toISOString().split("T")[0]; // YYYY-MM-DD
+  const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`; // HH:MM
 
   return {
-    mode: 'ai', // Domyślnie tryb AI
-    description: '',
+    mode: "ai", // Domyślnie tryb AI
+    description: "",
     calories: null,
     protein: null,
     carbs: null,
@@ -809,7 +870,7 @@ function getInitialState(): MealFormState {
     category: null,
     date: dateStr,
     time: timeStr,
-    aiPrompt: '',
+    aiPrompt: "",
     aiGenerationId: null,
     aiResult: null,
     aiLoading: false,
@@ -827,6 +888,7 @@ function getInitialState(): MealFormState {
 ### 6.3. Kluczowe funkcje hooka
 
 #### generateAI()
+
 ```typescript
 async function generateAI(): Promise<void> {
   // 1. Walidacja promptu
@@ -835,7 +897,7 @@ async function generateAI(): Promise<void> {
   }
 
   // 2. Reset stanu AI
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     aiLoading: true,
     aiLoadingStage: 0,
@@ -845,18 +907,18 @@ async function generateAI(): Promise<void> {
 
   // 3. Multi-stage loading simulation
   const stageTimer1 = setTimeout(() => {
-    setState(prev => ({ ...prev, aiLoadingStage: 1 }));
+    setState((prev) => ({ ...prev, aiLoadingStage: 1 }));
   }, 1000);
 
   const stageTimer2 = setTimeout(() => {
-    setState(prev => ({ ...prev, aiLoadingStage: 2 }));
+    setState((prev) => ({ ...prev, aiLoadingStage: 2 }));
   }, 2000);
 
   try {
     // 4. API call
-    const response = await fetch('/api/v1/ai-generations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/v1/ai-generations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: state.aiPrompt }),
     });
 
@@ -868,14 +930,14 @@ async function generateAI(): Promise<void> {
     const result: AIGenerationResponseDTO = await response.json();
 
     // 5. Obsługa rezultatu
-    if (result.status === 'failed') {
-      setState(prev => ({
+    if (result.status === "failed") {
+      setState((prev) => ({
         ...prev,
         aiLoading: false,
-        aiError: result.error_message || 'Nie udało się wygenerować oszacowania',
+        aiError: result.error_message || "Nie udało się wygenerować oszacowania",
       }));
     } else {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         aiLoading: false,
         aiResult: result,
@@ -883,10 +945,10 @@ async function generateAI(): Promise<void> {
       }));
     }
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       aiLoading: false,
-      aiError: 'Wystąpił błąd połączenia. Spróbuj ponownie.',
+      aiError: "Wystąpił błąd połączenia. Spróbuj ponownie.",
     }));
   } finally {
     clearTimeout(stageTimer1);
@@ -896,12 +958,13 @@ async function generateAI(): Promise<void> {
 ```
 
 #### acceptAIResult()
+
 ```typescript
 function acceptAIResult(): void {
   if (!state.aiResult) return;
 
   // Prepopulacja danych z AI
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     description: prev.aiPrompt,
     calories: prev.aiResult?.generated_calories || null,
@@ -916,11 +979,12 @@ function acceptAIResult(): void {
 ```
 
 #### switchToManual(prepopulate: boolean)
+
 ```typescript
 function switchToManual(prepopulate: boolean): void {
-  setState(prev => {
+  setState((prev) => {
     const newState: Partial<MealFormState> = {
-      mode: 'manual',
+      mode: "manual",
       aiError: null,
     };
 
@@ -948,21 +1012,22 @@ function switchToManual(prepopulate: boolean): void {
 ```
 
 #### submitMeal()
+
 ```typescript
 async function submitMeal(): Promise<CreateMealResponseDTO> {
   // 1. Walidacja
   if (!validateForm()) {
-    throw new Error('Formularz zawiera błędy');
+    throw new Error("Formularz zawiera błędy");
   }
 
-  setState(prev => ({ ...prev, submitLoading: true, submitError: null }));
+  setState((prev) => ({ ...prev, submitLoading: true, submitError: null }));
 
   try {
     // 2. Przygotowanie danych
     const timestamp = `${state.date}T${state.time}:00Z`;
 
     const requestData: CreateAIMealRequestDTO | CreateManualMealRequestDTO =
-      state.mode === 'ai'
+      state.mode === "ai"
         ? {
             description: state.description,
             calories: state.calories!,
@@ -970,7 +1035,7 @@ async function submitMeal(): Promise<CreateMealResponseDTO> {
             carbs: state.carbs,
             fats: state.fats,
             category: state.category,
-            input_method: 'ai',
+            input_method: "ai",
             ai_generation_id: state.aiGenerationId!,
             meal_timestamp: timestamp,
           }
@@ -981,14 +1046,14 @@ async function submitMeal(): Promise<CreateMealResponseDTO> {
             carbs: state.carbs,
             fats: state.fats,
             category: state.category,
-            input_method: 'manual',
+            input_method: "manual",
             meal_timestamp: timestamp,
           };
 
     // 3. API call
-    const response = await fetch('/api/v1/meals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/v1/meals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestData),
     });
 
@@ -999,14 +1064,14 @@ async function submitMeal(): Promise<CreateMealResponseDTO> {
 
     const result: CreateMealResponseDTO = await response.json();
 
-    setState(prev => ({ ...prev, submitLoading: false }));
+    setState((prev) => ({ ...prev, submitLoading: false }));
 
     return result;
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       submitLoading: false,
-      submitError: 'Nie udało się zapisać posiłku',
+      submitError: "Nie udało się zapisać posiłku",
     }));
     throw error;
   }
@@ -1016,21 +1081,20 @@ async function submitMeal(): Promise<CreateMealResponseDTO> {
 ### 6.4. Dodatkowe hooki pomocnicze
 
 #### useCharacterCounter
+
 ```typescript
 export function useCharacterCounter(text: string, max: number) {
   const count = text.length;
   const percent = (count / max) * 100;
 
-  const color =
-    percent >= 98 ? 'text-red-500' :
-    percent >= 90 ? 'text-yellow-500' :
-    'text-gray-500';
+  const color = percent >= 98 ? "text-red-500" : percent >= 90 ? "text-yellow-500" : "text-gray-500";
 
   return { count, max, percent, color };
 }
 ```
 
 #### useDateValidation
+
 ```typescript
 export function useDateValidation(date: string): DateValidationWarning | null {
   const today = new Date();
@@ -1042,8 +1106,8 @@ export function useDateValidation(date: string): DateValidationWarning | null {
   // Przyszłość - error
   if (selectedDate > today) {
     return {
-      type: 'future',
-      message: 'Data nie może być w przyszłości',
+      type: "future",
+      message: "Data nie może być w przyszłości",
     };
   }
 
@@ -1051,7 +1115,7 @@ export function useDateValidation(date: string): DateValidationWarning | null {
   const diffDays = Math.floor((today.getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24));
   if (diffDays > VALIDATION_LIMITS.DATE_WARNING_DAYS) {
     return {
-      type: 'old',
+      type: "old",
       message: `Data jest sprzed ${diffDays} dni`,
     };
   }
@@ -1069,6 +1133,7 @@ export function useDateValidation(date: string): DateValidationWarning | null {
 **Kiedy wywoływane**: Po kliknięciu przycisku "Oblicz kalorie" w trybie AI.
 
 **Request**:
+
 ```typescript
 // Typ: CreateAIGenerationRequestDTO
 {
@@ -1077,6 +1142,7 @@ export function useDateValidation(date: string): DateValidationWarning | null {
 ```
 
 **Przykład request**:
+
 ```json
 {
   "prompt": "dwa jajka sadzone na maśle i kromka chleba"
@@ -1084,6 +1150,7 @@ export function useDateValidation(date: string): DateValidationWarning | null {
 ```
 
 **Response (success - 201)**:
+
 ```typescript
 // Typ: AIGenerationResponseDTO
 {
@@ -1098,13 +1165,14 @@ export function useDateValidation(date: string): DateValidationWarning | null {
   assumptions: string | null;
   model_used: string | null;
   generation_duration: number | null;
-  status: 'completed' | 'failed';
+  status: "completed" | "failed";
   error_message: string | null;
   created_at: string;
 }
 ```
 
 **Response (unclear description - 201)**:
+
 ```json
 {
   "id": "uuid",
@@ -1118,25 +1186,27 @@ export function useDateValidation(date: string): DateValidationWarning | null {
 ```
 
 **Error responses**:
+
 - **400 Validation Error**: Invalid prompt
 - **429 Rate Limit Exceeded**: Too many requests (retry_after w sekundach)
 - **500 Internal Server Error**: AI service failure
 
 **Frontend handling**:
+
 ```typescript
 // W funkcji generateAI() hooka useAddMealForm
 
 try {
-  const response = await fetch('/api/v1/ai-generations', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch("/api/v1/ai-generations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt: state.aiPrompt }),
   });
 
   if (response.status === 429) {
     const errorData = await response.json();
     const retryAfter = errorData.retry_after || 60;
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       aiLoading: false,
       aiError: `Zbyt wiele żądań. Spróbuj ponownie za ${retryAfter}s`,
@@ -1145,20 +1215,20 @@ try {
   }
 
   if (!response.ok) {
-    throw new Error('API error');
+    throw new Error("API error");
   }
 
   const result: AIGenerationResponseDTO = await response.json();
 
-  if (result.status === 'failed') {
-    setState(prev => ({
+  if (result.status === "failed") {
+    setState((prev) => ({
       ...prev,
       aiLoading: false,
       aiError: result.error_message,
       aiResult: result, // Zapisz dla możliwości regeneracji
     }));
   } else {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       aiLoading: false,
       aiResult: result,
@@ -1179,6 +1249,7 @@ try {
 **Kiedy wywoływane**: Po kliknięciu przycisku "Dodaj posiłek" i pomyślnej walidacji.
 
 **Request (AI meal)**:
+
 ```typescript
 // Typ: CreateAIMealRequestDTO
 {
@@ -1195,6 +1266,7 @@ try {
 ```
 
 **Request (Manual meal)**:
+
 ```typescript
 // Typ: CreateManualMealRequestDTO
 {
@@ -1210,6 +1282,7 @@ try {
 ```
 
 **Przykład request (AI)**:
+
 ```json
 {
   "description": "Jajka sadzone z chlebem",
@@ -1225,6 +1298,7 @@ try {
 ```
 
 **Response (success - 201)**:
+
 ```typescript
 // Typ: CreateMealResponseDTO
 {
@@ -1245,6 +1319,7 @@ try {
 ```
 
 **Response with warnings**:
+
 ```json
 {
   "id": "uuid",
@@ -1262,43 +1337,46 @@ try {
 ```
 
 **Error responses**:
+
 - **400 Validation Error**: Invalid data (details w body)
 - **404 Not Found**: AI generation not found
 - **500 Internal Server Error**: Database failure
 
 **Frontend handling**:
+
 ```typescript
 // W funkcji submitMeal() hooka useAddMealForm
 
 try {
   const timestamp = `${state.date}T${state.time}:00Z`;
 
-  const requestData = state.mode === 'ai'
-    ? {
-        description: state.description,
-        calories: state.calories!,
-        protein: state.protein,
-        carbs: state.carbs,
-        fats: state.fats,
-        category: state.category,
-        input_method: 'ai' as const,
-        ai_generation_id: state.aiGenerationId!,
-        meal_timestamp: timestamp,
-      }
-    : {
-        description: state.description,
-        calories: state.calories!,
-        protein: state.protein,
-        carbs: state.carbs,
-        fats: state.fats,
-        category: state.category,
-        input_method: 'manual' as const,
-        meal_timestamp: timestamp,
-      };
+  const requestData =
+    state.mode === "ai"
+      ? {
+          description: state.description,
+          calories: state.calories!,
+          protein: state.protein,
+          carbs: state.carbs,
+          fats: state.fats,
+          category: state.category,
+          input_method: "ai" as const,
+          ai_generation_id: state.aiGenerationId!,
+          meal_timestamp: timestamp,
+        }
+      : {
+          description: state.description,
+          calories: state.calories!,
+          protein: state.protein,
+          carbs: state.carbs,
+          fats: state.fats,
+          category: state.category,
+          input_method: "manual" as const,
+          meal_timestamp: timestamp,
+        };
 
-  const response = await fetch('/api/v1/meals', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch("/api/v1/meals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestData),
   });
 
@@ -1309,7 +1387,7 @@ try {
       field,
       message: message as string,
     }));
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       submitLoading: false,
       validationErrors: errors,
@@ -1318,16 +1396,16 @@ try {
   }
 
   if (response.status === 404) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       submitLoading: false,
-      submitError: 'Nie znaleziono generacji AI. Spróbuj wygenerować ponownie.',
+      submitError: "Nie znaleziono generacji AI. Spróbuj wygenerować ponownie.",
     }));
     return;
   }
 
   if (!response.ok) {
-    throw new Error('API error');
+    throw new Error("API error");
   }
 
   const result: CreateMealResponseDTO = await response.json();
@@ -1335,15 +1413,15 @@ try {
   // Jeśli są warningi, wyświetl je użytkownikowi (ale posiłek został utworzony)
   if (result.warnings && result.warnings.length > 0) {
     // Możesz wyświetlić toast z warningami
-    console.warn('Meal created with warnings:', result.warnings);
+    console.warn("Meal created with warnings:", result.warnings);
   }
 
   return result;
 } catch (error) {
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     submitLoading: false,
-    submitError: 'Nie udało się zapisać posiłku. Spróbuj ponownie.',
+    submitError: "Nie udało się zapisać posiłku. Spróbuj ponownie.",
   }));
   throw error;
 }
@@ -1354,8 +1432,10 @@ try {
 ## 8. Interakcje użytkownika
 
 ### 8.1. Otwarcie modala
+
 **Trigger**: Kliknięcie przycisku "Dodaj posiłek" w Dashboard lub DayView
 **Akcja**:
+
 - Modal pojawia się z animacją fade-in
 - Focus automatycznie na textarea w trybie AI
 - Tryb AI jest aktywny domyślnie
@@ -1367,6 +1447,7 @@ try {
 
 **Trigger**: Użytkownik wpisuje tekst w textarea
 **Akcja**:
+
 - Character counter aktualizuje się w czasie rzeczywistym (np. "125/500")
 - Kolor licznika zmienia się w zależności od wykorzystania:
   - `< 450 znaków`: szary
@@ -1381,6 +1462,7 @@ try {
 
 **Trigger**: Użytkownik klika na jeden z chipów z przykładami
 **Akcja**:
+
 - Textarea wypełnia się wybranym przykładem
 - Character counter aktualizuje się
 - Focus pozostaje na textarea
@@ -1392,6 +1474,7 @@ try {
 
 **Trigger**: Kliknięcie przycisku "Oblicz kalorie"
 **Akcja**:
+
 1. **Walidacja**: Sprawdzenie czy prompt nie jest pusty i ≤500 znaków
 2. **Loading state**:
    - Przycisk zmienia się na disabled z spinnerem
@@ -1414,6 +1497,7 @@ try {
 
 **Trigger**: API zwraca status: 'failed'
 **Akcja**:
+
 - Loading state znika
 - Pojawia się Alert (variant: warning) z error_message z API
 - 2 przyciski:
@@ -1426,6 +1510,7 @@ try {
 
 **Trigger**: API zwraca 429 Too Many Requests
 **Akcja**:
+
 - Loading state znika
 - Pojawia się Alert (variant: destructive) z komunikatem:
   "Zbyt wiele żądań. Spróbuj ponownie za {countdown}s"
@@ -1439,6 +1524,7 @@ try {
 
 **Trigger**: Kliknięcie przycisku "Dodaj" w AIResult
 **Akcja**:
+
 - Dane z AI result są kopiowane do formularza:
   - description = aiPrompt
   - calories = generated_calories
@@ -1454,6 +1540,7 @@ try {
 
 **Trigger**: Kliknięcie przycisku "Generuj ponownie"
 **Akcja**:
+
 - Reset aiResult i aiError
 - Ponowne wywołanie API z tym samym promptem
 - Ten sam flow jak w pkt 8.4
@@ -1464,6 +1551,7 @@ try {
 
 **Trigger**: Kliknięcie przycisku "Edytuj ręcznie" w AIResult
 **Akcja**:
+
 - Zmiana mode na 'manual'
 - AIMode znika, ManualMode pojawia się
 - Prepopulacja pól:
@@ -1481,10 +1569,12 @@ try {
 
 **Trigger**: Kliknięcie na przeciwny segment w SegmentedControl
 **Akcja AI → Manual**:
+
 - Jeśli istnieje aiResult: prepopulacja (jak w 8.9)
 - Jeśli nie: zachowanie tylko opisu (description = aiPrompt), reszta null
 
 **Akcja Manual → AI**:
+
 - Zachowanie opisu (aiPrompt = description)
 - Reset wartości numerycznych (calories, protein, carbs, fats = null)
 - Reset aiResult, aiError
@@ -1495,6 +1585,7 @@ try {
 
 **Trigger**: Użytkownik wpisuje wartości w polach
 **Akcja**:
+
 - **Opis**: Character counter aktualizuje się (jak w trybie AI)
 - **Kalorie**:
   - Walidacja real-time: 1-10000
@@ -1510,6 +1601,7 @@ try {
 
 **Trigger**: Różnica między calculated i provided calories >5%
 **Akcja**:
+
 - Pojawia się MacroWarning component (żółty Alert)
 - Komunikat: "Suma kalorii z makroskładników ({calculated} kcal) różni się o więcej niż 5% od podanych kalorii ({provided} kcal). Sprawdź wprowadzone wartości."
 - Przycisk "Przelicz automatycznie"
@@ -1521,6 +1613,7 @@ try {
 
 **Trigger**: Kliknięcie na button w CategorySelector
 **Akcja**:
+
 - Toggle selection:
   - Jeśli kategoria była null lub inna: wybierz klikniętą
   - Jeśli kliknięta jest już wybrana: deselect (null)
@@ -1532,6 +1625,7 @@ try {
 
 **Trigger**: Wybór daty w DatePicker
 **Akcja**:
+
 - Aktualizacja state.date
 - Wywołanie validateDateField(date)
 - Jeśli data w przyszłości:
@@ -1549,6 +1643,7 @@ try {
 
 **Trigger**: Zmiana czasu w TimePicker
 **Akcja**:
+
 - Aktualizacja state.time
 - Wywołanie autoDetectCategory(time)
 - Auto-detect kategorii:
@@ -1564,6 +1659,7 @@ try {
 
 **Trigger**: Kliknięcie przycisku "Anuluj" lub ESC lub kliknięcie backdrop
 **Akcja**:
+
 - Modal zamyka się z animacją fade-out
 - Focus wraca do elementu, który otworzył modal
 - Stan formularza jest resetowany (nie zachowuje zmian)
@@ -1575,6 +1671,7 @@ try {
 
 **Trigger**: Kliknięcie przycisku "Dodaj posiłek"
 **Akcja**:
+
 1. **Walidacja**:
    - Sprawdzenie wszystkich pól według reguł
    - Jeśli błędy: wyświetlenie przy polach, scroll do pierwszego błędu, STOP
@@ -1594,6 +1691,7 @@ try {
 
 **Trigger**: API zwraca 400 Validation Error
 **Akcja**:
+
 - Przycisk przestaje być loading
 - Mapowanie details z response na validationErrors
 - Wyświetlenie błędów przy odpowiednich polach (czerwone obramowanie + komunikat)
@@ -1606,6 +1704,7 @@ try {
 
 **Trigger**: API zwraca 404 (tylko dla trybu AI)
 **Akcja**:
+
 - Przycisk przestaje być loading
 - Alert (variant: destructive): "Nie znaleziono generacji AI. Wygeneruj posiłek ponownie."
 - Przycisk "Wróć do generacji"
@@ -1617,6 +1716,7 @@ try {
 
 **Trigger**: API zwraca 500 Internal Server Error
 **Akcja**:
+
 - Przycisk przestaje być loading
 - Alert (variant: destructive): "Nie udało się zapisać posiłku. Spróbuj ponownie."
 - Modal pozostaje otwarty
@@ -1631,14 +1731,17 @@ try {
 
 **Komponenty**: AIMode > Textarea
 **Warunki**:
+
 - **required**: Wartość nie może być pusta (trim)
 - **maxLength**: Maksymalnie 500 znaków
 
 **Błędy**:
+
 - Pusty: "Opis posiłku jest wymagany"
-- >500: "Maksymalnie 500 znaków" (blokada input + czerwony licznik)
+- > 500: "Maksymalnie 500 znaków" (blokada input + czerwony licznik)
 
 **Wpływ na UI**:
+
 - Przycisk "Oblicz kalorie" disabled gdy warunek nie spełniony
 - Czerwone obramowanie textarea przy błędzie
 
@@ -1648,14 +1751,17 @@ try {
 
 **Komponenty**: ManualMode > Textarea
 **Warunki**:
+
 - **required**: Wartość nie może być pusta (trim)
 - **maxLength**: Maksymalnie 500 znaków
 
 **Błędy**:
+
 - Pusty: "Opis posiłku jest wymagany"
-- >500: "Maksymalnie 500 znaków"
+- > 500: "Maksymalnie 500 znaków"
 
 **Wpływ na UI**:
+
 - Przycisk submit disabled gdy błąd
 - Czerwone obramowanie + komunikat pod polem
 
@@ -1665,18 +1771,21 @@ try {
 
 **Komponenty**: ManualMode > Input
 **Warunki**:
+
 - **required**: Wartość nie może być null/pusta
 - **type**: integer (liczba całkowita)
 - **min**: 1
 - **max**: 10000
 
 **Błędy**:
+
 - Puste: "Kalorie są wymagane"
 - <1: "Minimalna wartość to 1 kcal"
-- >10000: "Maksymalna wartość to 10000 kcal"
+- > 10000: "Maksymalna wartość to 10000 kcal"
 - Nie integer: "Wartość musi być liczbą całkowitą"
 
 **Wpływ na UI**:
+
 - Submit disabled
 - Czerwone obramowanie + komunikat
 
@@ -1686,17 +1795,20 @@ try {
 
 **Komponenty**: ManualMode > MacroInputs
 **Warunki** (dla każdego: protein, carbs, fats, fiber):
+
 - **required**: false (opcjonalne)
 - **type**: decimal (2 miejsca po przecinku)
 - **min**: 0
 - **max**: 1000
 
 **Błędy**:
+
 - <0: "Wartość nie może być ujemna"
-- >1000: "Maksymalna wartość to 1000g"
+- > 1000: "Maksymalna wartość to 1000g"
 - Nieprawidłowy format: "Wartość musi być liczbą (max 2 miejsca po przecinku)"
 
 **Wpływ na UI**:
+
 - Submit disabled jeśli błąd
 - Czerwone obramowanie + komunikat przy błędnym polu
 
@@ -1706,12 +1818,14 @@ try {
 
 **Komponenty**: ManualMode > MacroWarning
 **Warunki**:
+
 - Obliczenie: `calculatedCalories = (protein × 4) + (carbs × 4) + (fats × 9)`
 - Warning gdy: `|calculatedCalories - providedCalories| / providedCalories > 0.05` (5%)
 
 **Uwaga**: To jest **warning**, nie error - nie blokuje submitu
 
 **Wpływ na UI**:
+
 - Pojawienie się żółtego Alert box z komunikatem
 - Przycisk "Przelicz automatycznie" - ustawia calories na calculatedCalories
 - Użytkownik może zignorować i zapisać z różnicą
@@ -1722,14 +1836,17 @@ try {
 
 **Komponenty**: CommonFields > DatePicker
 **Warunki**:
+
 - **Error**: Data nie może być w przyszłości (`selectedDate > today`)
 - **Warning**: Data >7 dni wstecz (`today - selectedDate > 7 days`)
 
 **Błędy**:
+
 - Przyszłość (error): "Data nie może być w przyszłości"
-- >7 dni (warning): "Data jest sprzed {days} dni"
+- > 7 dni (warning): "Data jest sprzed {days} dni"
 
 **Wpływ na UI**:
+
 - **Error (przyszłość)**: Submit disabled, czerwony Alert
 - **Warning (stara data)**: Submit NIE disabled, żółty Alert
 
@@ -1739,13 +1856,16 @@ try {
 
 **Komponenty**: CommonFields > TimePicker
 **Warunki**:
+
 - Format: HH:MM (24h)
 - Zakres: 00:00 - 23:59
 
 **Błędy**:
+
 - Nieprawidłowy format: "Nieprawidłowy format czasu (wymagany: HH:MM)"
 
 **Wpływ na UI**:
+
 - TimePicker (shadcn) powinien wymuszać poprawny format
 - W razie błędu: komunikat + submit disabled
 
@@ -1755,14 +1875,17 @@ try {
 
 **Komponenty**: MealForm (wewnętrzna)
 **Warunki**:
+
 - **required**: true (tylko dla input_method: 'ai')
 - **type**: string (UUID)
 - Istnienie w state.aiGenerationId
 
 **Błędy**:
+
 - Brak ID: "Brak ID generacji AI. Wygeneruj posiłek ponownie."
 
 **Wpływ na UI**:
+
 - Submit disabled jeśli brak aiGenerationId w trybie AI
 - Alert z komunikatem
 
@@ -1772,6 +1895,7 @@ try {
 
 **Komponenty**: MealForm
 **Proces**:
+
 1. Reset validationErrors
 2. Sprawdzenie wszystkich pól według powyższych reguł
 3. Agregacja błędów do tablicy validationErrors
@@ -1779,6 +1903,7 @@ try {
 5. Jeśli errors.length === 0: return true, allow submit
 
 **Specjalne przypadki**:
+
 - **Tryb AI**: Wymagane aiGenerationId
 - **Tryb Manual**: Nie wymagane aiGenerationId
 - **Data w przyszłości**: Blokuje submit (error)
@@ -1794,6 +1919,7 @@ try {
 **Scenariusz**: Brak połączenia z internetem, timeout, itp.
 
 **Obsługa**:
+
 - Catch w bloku try-catch API calls
 - Alert (variant: destructive): "Brak połączenia z internetem. Sprawdź połączenie i spróbuj ponownie."
 - Przycisk "Spróbuj ponownie"
@@ -1807,6 +1933,7 @@ try {
 **Scenariusz**: Użytkownik przekroczył limit 10 req/min
 
 **Obsługa**:
+
 - Parsowanie retry_after z response (w sekundach)
 - Alert (variant: destructive): "Zbyt wiele żądań. Spróbuj ponownie za {countdown}s"
 - Licznik odliczający (setInterval)
@@ -1822,6 +1949,7 @@ try {
 **Scenariusz**: AI nie rozumie opisu, zwraca status: 'failed'
 
 **Obsługa**:
+
 - Wyświetlenie error_message z API
 - Alert (variant: warning): "{error_message}"
 - 2 przyciski:
@@ -1837,6 +1965,7 @@ try {
 **Scenariusz**: Błąd serwera AI, model niedostępny, itp.
 
 **Obsługa**:
+
 - Alert (variant: destructive): "Nie udało się wygenerować oszacowania. Spróbuj ponownie lub wprowadź dane ręcznie."
 - 2 przyciski:
   - "Spróbuj ponownie"
@@ -1851,6 +1980,7 @@ try {
 **Scenariusz**: Dane wysłane do API są nieprawidłowe (nie powinno się zdarzyć przy poprawnej walidacji frontu)
 
 **Obsługa**:
+
 - Parsowanie details z response
 - Mapowanie na validationErrors
 - Wyświetlenie błędów przy odpowiednich polach (czerwone obramowanie + komunikat)
@@ -1866,6 +1996,7 @@ try {
 **Scenariusz**: Podane ai_generation_id nie istnieje (rzadkie - może wystąpić przy problemach z state)
 
 **Obsługa**:
+
 - Alert (variant: destructive): "Nie znaleziono generacji AI. Wygeneruj posiłek ponownie."
 - Przycisk "Wróć do generacji" - przełącza do trybu AI, resetuje aiResult
 - Użytkownik musi wygenerować ponownie
@@ -1879,6 +2010,7 @@ try {
 **Scenariusz**: Błąd serwera, bazy danych, itp.
 
 **Obsługa**:
+
 - Alert (variant: destructive): "Nie udało się zapisać posiłku. Spróbuj ponownie."
 - Przycisk "Spróbuj ponownie"
 - Modal pozostaje otwarty, dane zachowane
@@ -1892,6 +2024,7 @@ try {
 **Scenariusz**: Suma kalorii z makro różni się >5% od podanych kalorii
 
 **Obsługa**:
+
 - Alert (variant: warning): "Suma kalorii z makroskładników ({calculated} kcal) różni się o więcej niż 5% od podanych kalorii ({provided} kcal). Sprawdź wprowadzone wartości."
 - Przycisk "Przelicz automatycznie" - ustawia calories na calculated
 - NIE blokuje submitu - użytkownik może zignorować
@@ -1905,6 +2038,7 @@ try {
 **Scenariusz**: Data >7 dni wstecz
 
 **Obsługa**:
+
 - Alert (variant: warning): "Data jest sprzed {days} dni"
 - NIE blokuje submitu
 - Użytkownik może kontynuować
@@ -1918,6 +2052,7 @@ try {
 **Scenariusz**: Nieoczekiwany błąd w kodzie frontendu
 
 **Obsługa**:
+
 - Error boundary na poziomie AddMealModal
 - Fallback UI: Alert + komunikat "Wystąpił nieoczekiwany błąd"
 - Przycisk "Zamknij" - zamyka modal
@@ -1932,6 +2067,7 @@ try {
 ### Krok 1: Przygotowanie struktury projektu
 
 1.1. Utworzenie katalogu dla komponentów widoku:
+
 ```
 src/
   components/
@@ -1956,6 +2092,7 @@ src/
 ```
 
 1.2. Utworzenie plików dla typów i hooków:
+
 ```
 src/
   types/
@@ -1976,6 +2113,7 @@ src/
 ### Krok 2: Implementacja typów i stałych
 
 2.1. Utworzyć plik `src/types/add-meal.types.ts` z:
+
 - MealFormMode
 - AILoadingStage
 - MacroWarningInfo
@@ -1984,7 +2122,8 @@ src/
 - MealFormState
 - AIGenerationResult
 
-2.2. Utworzyć plik `src/lib/constants/meal-form.constants.ts` z:
+  2.2. Utworzyć plik `src/lib/constants/meal-form.constants.ts` z:
+
 - CATEGORY_ICONS
 - AI_LOADING_STAGES
 - MEAL_EXAMPLES
@@ -1995,12 +2134,14 @@ src/
 ### Krok 3: Implementacja pomocniczych utilities i walidacji
 
 3.1. Utworzyć `src/lib/utils/meal-form.utils.ts`:
+
 - `formatDateTime(date: string, time: string): string` - łączenie daty i czasu w ISO 8601
 - `calculateMacroCalories(protein, carbs, fats): number` - obliczanie kalorii z makro
 - `detectCategoryFromTime(time: string): MealCategory | null` - auto-detect kategorii
 - `calculateMacroDifference(calculated, provided): number` - obliczanie różnicy %
 
-3.2. Utworzyć `src/lib/validation/meal-form.validation.ts`:
+  3.2. Utworzyć `src/lib/validation/meal-form.validation.ts`:
+
 - `validatePrompt(prompt: string): FormValidationError | null`
 - `validateDescription(description: string): FormValidationError | null`
 - `validateCalories(calories: number | null): FormValidationError | null`
@@ -2012,21 +2153,25 @@ src/
 ### Krok 4: Implementacja prostych komponentów UI
 
 4.1. **CharacterCounter.tsx**:
+
 - Props: current, max
 - Logika koloru (szary/żółty/czerwony)
 - Renderowanie: "{current}/{max}"
 
-4.2. **ExampleChips.tsx**:
+  4.2. **ExampleChips.tsx**:
+
 - Props: examples, onSelect, disabled
 - Mapowanie examples na Button chips
 - onClick: onSelect(example)
 
-4.3. **LoadingState.tsx**:
+  4.3. **LoadingState.tsx**:
+
 - Props: stage
 - Renderowanie Spinner + ProgressDots + StageText
 - Animacje CSS
 
-4.4. **SegmentedControl.tsx**:
+  4.4. **SegmentedControl.tsx**:
+
 - Props: value, onChange, disabled
 - 2 buttony (AI, Manual)
 - Sliding indicator (animowany)
@@ -2037,6 +2182,7 @@ src/
 ### Krok 5: Implementacja CategorySelector
 
 5.1. **CategorySelector.tsx**:
+
 - Props: value, onChange
 - 4 buttony z ikonami (CATEGORY_ICONS)
 - Toggle logic: kliknięcie na wybrany → null, na inny → wybierz
@@ -2047,12 +2193,14 @@ src/
 ### Krok 6: Implementacja MacroInputs i MacroWarning
 
 6.1. **MacroInputs.tsx**:
+
 - Props: protein, carbs, fats, fiber, onChange, errors
 - 4x (Label + Input type="number")
 - onChange: parsowanie value i wywołanie onChange(field, value)
 - Wyświetlanie błędów z errors
 
-6.2. **MacroWarning.tsx**:
+  6.2. **MacroWarning.tsx**:
+
 - Props: calculatedCalories, providedCalories, differencePercent, onAutoCalculate
 - Alert (variant: warning)
 - Komunikat z wartościami
@@ -2063,6 +2211,7 @@ src/
 ### Krok 7: Implementacja AIResult
 
 7.1. **AIResult.tsx**:
+
 - Props: result, onAccept, onRegenerate, onEditManually, regenerateLoading
 - Layout:
   - Duża liczba kalorii (result.generated_calories)
@@ -2078,6 +2227,7 @@ src/
 ### Krok 8: Implementacja AIMode
 
 8.1. **AIMode.tsx**:
+
 - Props: według interfejsu z sekcji 4.4
 - Layout:
   - Label + Textarea (prompt)
@@ -2095,6 +2245,7 @@ src/
 ### Krok 9: Implementacja ManualMode
 
 9.1. **ManualMode.tsx**:
+
 - Props: według interfejsu z sekcji 4.8
 - Layout:
   - Label + Textarea (description) + CharacterCounter
@@ -2109,6 +2260,7 @@ src/
 ### Krok 10: Implementacja CommonFields
 
 10.1. **CommonFields.tsx**:
+
 - Props: według interfejsu z sekcji 4.11
 - Layout:
   - Label + CategorySelector
@@ -2122,6 +2274,7 @@ src/
 ### Krok 11: Implementacja FormActions
 
 11.1. **FormActions.tsx**:
+
 - Props: onCancel, onSubmit, submitDisabled, submitLoading
 - Layout (flex row, justify-between):
   - Button "Anuluj" (variant: ghost)
@@ -2132,10 +2285,12 @@ src/
 ### Krok 12: Implementacja hooków pomocniczych
 
 12.1. **useCharacterCounter.ts**:
+
 - Input: text, max
 - Output: count, max, percent, color
 
-12.2. **useDateValidation.ts**:
+  12.2. **useDateValidation.ts**:
+
 - Input: date
 - Output: DateValidationWarning | null
 - Logika: sprawdzenie przyszłości i >7 dni wstecz
@@ -2145,6 +2300,7 @@ src/
 ### Krok 13: Implementacja głównego hooka useAddMealForm
 
 13.1. **useAddMealForm.ts**:
+
 - Implementacja stanu (useState<MealFormState>)
 - Implementacja wszystkich funkcji według sekcji 6.1 i 6.3
 - Kluczowe funkcje:
@@ -2154,13 +2310,14 @@ src/
   - validateForm() - walidacja przed submitem
   - switchToManual(), switchToAI() - przełączanie trybów
 
-13.2. Testowanie hooka w izolacji (opcjonalnie: unit testy)
+  13.2. Testowanie hooka w izolacji (opcjonalnie: unit testy)
 
 ---
 
 ### Krok 14: Implementacja MealForm
 
 14.1. **MealForm.tsx**:
+
 - Props: onClose, onSuccess
 - Użycie hooka: `const form = useAddMealForm()`
 - Layout:
@@ -2177,7 +2334,7 @@ src/
       const result = await form.submitMeal();
       onSuccess(result);
       onClose();
-      toast.success('Posiłek dodany');
+      toast.success("Posiłek dodany");
     } catch (error) {
       // Błędy są obsługiwane wewnątrz hooka
     }
@@ -2189,6 +2346,7 @@ src/
 ### Krok 15: Implementacja AddMealModal
 
 15.1. **AddMealModal.tsx**:
+
 - Props: isOpen, onClose, onSuccess
 - Użycie shadcn/ui Dialog:
   ```tsx
@@ -2210,12 +2368,14 @@ src/
 ### Krok 16: Stylowanie z Tailwind CSS
 
 16.1. Stylowanie wszystkich komponentów zgodnie z designem:
+
 - Mobile-first approach
 - Responsive breakpoints (sm, md, lg)
 - Użycie zmiennych CSS theme (primary, destructive, warning)
 - Animacje (fade-in, slide, transitions)
 
-16.2. Szczególne uwagi:
+  16.2. Szczególne uwagi:
+
 - Modal fullscreen na mobile: `h-screen w-screen md:h-auto md:max-w-2xl`
 - Kolory alertów: warning (żółty), destructive (czerwony)
 - Loading spinners: użycie shadcn Spinner
@@ -2226,16 +2386,18 @@ src/
 ### Krok 17: Integracja z API
 
 17.1. Testowanie wywołań API:
+
 - POST /api/v1/ai-generations (różne scenariusze: success, failed, 429, 500)
 - POST /api/v1/meals (success, 400, 404, 500, with warnings)
 
-17.2. Obsługa wszystkich przypadków błędów zgodnie z sekcją 10
+  17.2. Obsługa wszystkich przypadków błędów zgodnie z sekcją 10
 
 ---
 
 ### Krok 18: Accessibility
 
 18.1. Sprawdzenie:
+
 - Focus trap w modalu działa poprawnie
 - Focus wraca po zamknięciu
 - Wszystkie inputy mają labels (htmlFor)
@@ -2243,7 +2405,8 @@ src/
 - Keyboard navigation działa (Tab, Enter, Escape)
 - Screen reader friendly
 
-18.2. Testy z:
+  18.2. Testy z:
+
 - Keyboard only
 - Screen reader (NVDA, VoiceOver)
 
@@ -2252,17 +2415,19 @@ src/
 ### Krok 19: Testowanie responsywności
 
 19.1. Testowanie na różnych rozdzielczościach:
+
 - Mobile (320px - 480px): fullscreen modal
 - Tablet (481px - 768px): fullscreen modal
 - Desktop (>768px): dialog modal
 
-19.2. Sprawdzenie wszystkich interakcji na touch devices
+  19.2. Sprawdzenie wszystkich interakcji na touch devices
 
 ---
 
 ### Krok 20: Testowanie integracyjne
 
 20.1. Scenariusze end-to-end:
+
 - US-005: Dodanie posiłku AI (sukces)
 - US-006: Dodanie posiłku manual
 - US-007: AI unclear description → regeneracja lub manual
@@ -2277,6 +2442,7 @@ src/
 ### Krok 21: Performance optimization
 
 21.1. Optymalizacje:
+
 - Memoizacja komponentów (React.memo gdzie potrzeba)
 - useCallback dla funkcji przekazywanych jako props
 - useMemo dla obliczeń (np. calculateMacroWarning)
@@ -2288,6 +2454,7 @@ src/
 ### Krok 22: Dokumentacja
 
 22.1. Dodanie dokumentacji do kodu:
+
 - JSDoc dla wszystkich funkcji i komponentów
 - Przykłady użycia w README
 - Komentarze dla skomplikowanych fragmentów logiki
@@ -2297,6 +2464,7 @@ src/
 ### Krok 23: Code review i refactoring
 
 23.1. Przegląd kodu:
+
 - Sprawdzenie zgodności z konwencjami projektu
 - Usunięcie duplikacji
 - Refactoring zbyt długich funkcji

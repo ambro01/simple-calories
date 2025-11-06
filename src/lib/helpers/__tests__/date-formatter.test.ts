@@ -216,9 +216,7 @@ describe("DateFormatter", () => {
       const dateStr = "2025-01-27T12:00:00Z";
       const dateObj = new Date(dateStr);
 
-      expect(formatter.format(dateStr, "YYYY-MM-DD")).toBe(
-        formatter.format(dateObj, "YYYY-MM-DD")
-      );
+      expect(formatter.format(dateStr, "YYYY-MM-DD")).toBe(formatter.format(dateObj, "YYYY-MM-DD"));
     });
 
     it("handles ISO string with milliseconds", () => {
@@ -247,9 +245,7 @@ describe("DateFormatter", () => {
       const formatter2 = createDateFormatter();
       const date = "2025-01-27T12:00:00Z";
 
-      expect(formatter1.format(date, "YYYY-MM-DD")).toBe(
-        formatter2.format(date, "YYYY-MM-DD")
-      );
+      expect(formatter1.format(date, "YYYY-MM-DD")).toBe(formatter2.format(date, "YYYY-MM-DD"));
     });
   });
 });

@@ -10,7 +10,7 @@
 /**
  * Request payload for OpenRouter API
  */
-export interface OpenRouterRequest {
+export type OpenRouterRequest = {
   /** Model identifier (e.g., "gpt-4", "claude-2") */
   model: string;
 
@@ -25,12 +25,12 @@ export interface OpenRouterRequest {
 
   /** Maximum tokens to generate in response */
   max_tokens?: number;
-}
+};
 
 /**
  * Response from OpenRouter API
  */
-export interface OpenRouterResponse {
+export type OpenRouterResponse = {
   /** Unique identifier for this completion */
   id: string;
 
@@ -52,13 +52,13 @@ export interface OpenRouterResponse {
     completion_tokens: number;
     total_tokens: number;
   };
-}
+};
 
 /**
  * Nutritional estimate result from AI processing
  * Contains either successful estimates or error information
  */
-export interface NutritionalEstimate {
+export type NutritionalEstimate = {
   /** Estimated calories (null if estimation failed) */
   calories: number | null;
 
@@ -76,15 +76,15 @@ export interface NutritionalEstimate {
 
   /** Error message if AI couldn't estimate (undefined if successful) */
   error?: string;
-}
+};
 
 /**
  * OpenRouter API error response
  */
-export interface OpenRouterError {
+export type OpenRouterError = {
   error: {
     message: string;
     type: string;
     code: string;
   };
-}
+};

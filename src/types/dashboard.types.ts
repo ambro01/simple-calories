@@ -10,7 +10,7 @@ import type { DailyProgressResponseDTO } from "../types";
 /**
  * Stan głównego dashboardu
  */
-export interface DashboardState {
+export type DashboardState = {
   days: DailyProgressResponseDTO[];
   loading: boolean;
   error: string | null;
@@ -20,25 +20,25 @@ export interface DashboardState {
   selectedDate: string | null; // dla desktop two-pane
   refreshing: boolean; // pull-to-refresh state
   isRefetchingAfterChange: boolean; // silent refetch after meal add/edit/delete
-}
+};
 
 /**
  * Parametry infinite scroll
  */
-export interface InfiniteScrollParams {
+export type InfiniteScrollParams = {
   limit: number;
   offset: number;
   hasMore: boolean;
-}
+};
 
 /**
  * Mapowanie statusów na kolory Tailwind
  */
-export interface StatusColorConfig {
+export type StatusColorConfig = {
   bg: string;
   text: string;
   border: string;
-}
+};
 
 export const STATUS_COLOR_MAP: Record<"under" | "on_track" | "over", StatusColorConfig> = {
   under: {

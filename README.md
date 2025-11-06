@@ -33,6 +33,7 @@ This application is designed for health-conscious individuals who value their ti
 ## Tech Stack
 
 ### Frontend
+
 - **[Astro 5](https://astro.build/)** - Fast, modern web framework
 - **[React 19](https://react.dev/)** - Interactive UI components
 - **[TypeScript 5](https://www.typescriptlang.org/)** - Type-safe development
@@ -40,6 +41,7 @@ This application is designed for health-conscious individuals who value their ti
 - **[Shadcn/ui](https://ui.shadcn.com/)** - Accessible component library
 
 ### Backend
+
 - **[Supabase](https://supabase.com/)** - Complete backend solution
   - PostgreSQL database
   - Backend-as-a-Service (BaaS)
@@ -47,12 +49,14 @@ This application is designed for health-conscious individuals who value their ti
   - Open-source and self-hostable
 
 ### AI Integration
+
 - **[Openrouter.ai](https://openrouter.ai/)** - Access to multiple AI models
   - Support for OpenAI, Anthropic, Google, and more
   - Cost optimization through model selection
   - API key budget limits
 
 ### Testing
+
 - **[Vitest](https://vitest.dev/)** - Unit and integration testing
   - Fast test runner built for Vite
   - Compatible with Jest API
@@ -66,6 +70,7 @@ This application is designed for health-conscious individuals who value their ti
   - Built-in accessibility testing with axe-core
 
 ### CI/CD & Hosting
+
 - **GitHub Actions** - Continuous integration and deployment
 - **DigitalOcean** - Application hosting via Docker containers
 
@@ -81,17 +86,20 @@ This application is designed for health-conscious individuals who value their ti
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/simple-calories.git
    cd simple-calories
    ```
 
 2. **Install Node.js version**
+
    ```bash
    nvm use
    ```
 
 3. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -99,6 +107,7 @@ This application is designed for health-conscious individuals who value their ti
 4. **Set up environment variables**
 
    Create a `.env` file in the root directory:
+
    ```env
    # Supabase Configuration
    SUPABASE_URL=your_supabase_project_url
@@ -114,6 +123,7 @@ This application is designed for health-conscious individuals who value their ti
    - Copy your project URL and anon key to `.env`
 
 6. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -124,19 +134,20 @@ This application is designed for health-conscious individuals who value their ti
 
 ## Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start the development server with hot reload |
-| `npm run build` | Build the application for production |
-| `npm run preview` | Preview the production build locally |
-| `npm run astro` | Run Astro CLI commands |
-| `npm run lint` | Check code for linting errors |
-| `npm run lint:fix` | Automatically fix linting errors |
-| `npm run format` | Format code with Prettier |
+| Script             | Description                                  |
+| ------------------ | -------------------------------------------- |
+| `npm run dev`      | Start the development server with hot reload |
+| `npm run build`    | Build the application for production         |
+| `npm run preview`  | Preview the production build locally         |
+| `npm run astro`    | Run Astro CLI commands                       |
+| `npm run lint`     | Check code for linting errors                |
+| `npm run lint:fix` | Automatically fix linting errors             |
+| `npm run format`   | Format code with Prettier                    |
 
 ### Code Quality & Testing
 
 This project uses:
+
 - **ESLint** for code linting with TypeScript, React, and Astro support
 - **Prettier** for code formatting
 - **Husky** for Git hooks
@@ -183,6 +194,7 @@ This project is currently in active development as an MVP (Minimum Viable Produc
 ### Success Metrics
 
 The MVP will be evaluated based on:
+
 - **AI Trust Metric**: Target 75% - Percentage of AI estimations accepted without manual edits
 - **AI Usefulness Metric**: Target 75% - Percentage of entries initiated through AI vs. manual entry
 

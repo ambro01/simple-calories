@@ -19,7 +19,7 @@ Day details view showing calorie summary and list of meals for a specific day.
 All components are already installed. Just import and use:
 
 ```tsx
-import { DayDetails } from '@/components/day-details/DayDetails';
+import { DayDetails } from "@/components/day-details/DayDetails";
 ```
 
 ## Usage
@@ -27,15 +27,10 @@ import { DayDetails } from '@/components/day-details/DayDetails';
 ### Basic Example with React
 
 ```tsx
-import { DayDetails } from '@/components/day-details/DayDetails';
+import { DayDetails } from "@/components/day-details/DayDetails";
 
 function MyComponent() {
-  return (
-    <DayDetails
-      date="2025-01-27"
-      onBack={() => window.location.href = '/'}
-    />
-  );
+  return <DayDetails date="2025-01-27" onBack={() => (window.location.href = "/")} />;
 }
 ```
 
@@ -44,15 +39,15 @@ function MyComponent() {
 ```astro
 ---
 // src/pages/day/[date].astro
-import Layout from '@/layouts/Layout.astro';
-import { DayDetails } from '@/components/day-details/DayDetails';
+import Layout from "@/layouts/Layout.astro";
+import { DayDetails } from "@/components/day-details/DayDetails";
 
 const { date } = Astro.params;
 
 // Validate date format
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 if (!date || !dateRegex.test(date)) {
-  return Astro.redirect('/');
+  return Astro.redirect("/");
 }
 ---
 
@@ -60,8 +55,8 @@ if (!date || !dateRegex.test(date)) {
   <DayDetails
     date={date}
     onBack={() => {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/';
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
       }
     }}
     client:load
@@ -75,12 +70,13 @@ if (!date || !dateRegex.test(date)) {
 
 ```typescript
 interface DayDetailsProps {
-  date: string;         // YYYY-MM-DD format, required
-  onBack?: () => void;  // Callback for back button (mobile)
+  date: string; // YYYY-MM-DD format, required
+  onBack?: () => void; // Callback for back button (mobile)
 }
 ```
 
 **Props:**
+
 - `date`: Date in YYYY-MM-DD format (e.g., "2025-01-27")
 - `onBack`: Optional callback for back button navigation (shown only on mobile)
 
@@ -95,6 +91,7 @@ Fetches daily progress for a specific date.
 **Example:** `GET /api/v1/daily-progress/2025-01-27`
 
 **Response:**
+
 ```json
 {
   "date": "2025-01-27",
@@ -110,6 +107,7 @@ Fetches daily progress for a specific date.
 ```
 
 **Error Responses:**
+
 - `404`: No data found for this date
 - `401`: Unauthorized
 - `500`: Server error
@@ -119,6 +117,7 @@ Fetches daily progress for a specific date.
 Fetches list of meals for a specific date.
 
 **Query Parameters:**
+
 - `date`: Date in YYYY-MM-DD format
 - `limit`: Number of meals to fetch (default: 100)
 - `offset`: Number of meals to skip (default: 0)
@@ -126,6 +125,7 @@ Fetches list of meals for a specific date.
 **Example:** `GET /api/v1/meals?date=2025-01-27&limit=100&offset=0`
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -162,6 +162,7 @@ Deletes a meal by ID.
 **Response:** `204 No Content`
 
 **Error Responses:**
+
 - `404`: Meal not found
 - `401`: Unauthorized
 - `500`: Server error
@@ -183,11 +184,11 @@ The component uses the `useDayDetails` hook for state management:
 
 ```typescript
 const {
-  state,                    // Current state object
-  loadDayData,             // Load progress + meals
-  deleteMeal,              // Delete meal by ID
-  refreshAfterMealChange,  // Silent refetch after CRUD
-  setEditingMeal          // Set meal for editing
+  state, // Current state object
+  loadDayData, // Load progress + meals
+  deleteMeal, // Delete meal by ID
+  refreshAfterMealChange, // Silent refetch after CRUD
+  setEditingMeal, // Set meal for editing
 } = useDayDetails({ date });
 
 // State structure
@@ -197,29 +198,33 @@ interface DayDetailsState {
   meals: MealResponseDTO[];
   loading: boolean;
   error: string | null;
-  deletingMealId: string | null;  // ID of meal being deleted
-  editingMeal: MealResponseDTO | null;  // Meal being edited
+  deletingMealId: string | null; // ID of meal being deleted
+  editingMeal: MealResponseDTO | null; // Meal being edited
 }
 ```
 
 ## User Interactions
 
 ### Click Back Button (Mobile)
+
 - Triggers `onBack()` callback
 - Typically navigates to dashboard
 
 ### Click Edit Button
+
 - Opens AddMealModal in edit mode
 - Pre-fills form with meal data
 - After success, refreshes day data
 
 ### Click Delete Button
+
 - Shows delete confirmation box
 - Auto-collapses after 5 seconds
 - Cancels on "Anuluj" click
 - Deletes on "Usuń" click
 
 ### Delete Confirmation Flow
+
 1. User clicks "Usuń" on meal card
 2. Confirmation box appears (red background)
 3. Timer starts (5 seconds)
@@ -228,16 +233,19 @@ interface DayDetailsState {
 6. On confirm: deletes meal and refreshes data
 
 ### Click FAB Button
+
 - Opens AddMealModal to add a new meal
 - After success, refreshes day data
 
 ### Scroll Behavior
+
 - Header is sticky (stays at top)
 - Smooth scrolling on iOS/Android
 
 ## Styling
 
 Components use Tailwind CSS:
+
 - **Sticky header**: `sticky top-0 z-10`
 - **Cards**: `rounded-lg shadow-sm border`
 - **Category badges**: Color-coded with emojis
@@ -250,29 +258,29 @@ CATEGORY_CONFIG = {
   breakfast: {
     label: "Śniadanie",
     icon: "🍳",
-    color: "bg-yellow-100 text-yellow-800"
+    color: "bg-yellow-100 text-yellow-800",
   },
   lunch: {
     label: "Obiad",
     icon: "🍽️",
-    color: "bg-blue-100 text-blue-800"
+    color: "bg-blue-100 text-blue-800",
   },
   dinner: {
     label: "Kolacja",
     icon: "🍲",
-    color: "bg-purple-100 text-purple-800"
+    color: "bg-purple-100 text-purple-800",
   },
   snack: {
     label: "Przekąska",
     icon: "🍪",
-    color: "bg-pink-100 text-pink-800"
+    color: "bg-pink-100 text-pink-800",
   },
   other: {
     label: "Inne",
     icon: "🍴",
-    color: "bg-gray-100 text-gray-800"
-  }
-}
+    color: "bg-gray-100 text-gray-800",
+  },
+};
 ```
 
 ## Error Handling
@@ -280,22 +288,27 @@ CATEGORY_CONFIG = {
 The component handles various error scenarios:
 
 ### Network Errors
+
 - Shows error message with refresh button
 - Maintains existing data if available
 
 ### 404 Not Found
+
 - Message: "Nie znaleziono danych dla tego dnia"
 - Shows error state
 
 ### 401 Unauthorized
+
 - Message: "Unauthorized - please log in"
 - User should be redirected to login
 
 ### 500 Server Error
+
 - Message: "Server error - please try again later"
 - Shows refresh button
 
 ### No Meals
+
 - Shows empty state with emoji and message
 - Provides "Add meal" button
 
@@ -304,6 +317,7 @@ The component handles various error scenarios:
 ### Manual Testing Checklist
 
 #### Initial Load
+
 - [ ] Page loads with day summary header
 - [ ] Shows skeleton loaders while loading
 - [ ] Progress bar has correct color based on status
@@ -311,6 +325,7 @@ The component handles various error scenarios:
 - [ ] Meals are sorted by timestamp
 
 #### Header
+
 - [ ] Date is formatted correctly (full Polish format)
 - [ ] Calories show "X / Y kcal" format
 - [ ] Percentage is calculated correctly
@@ -319,6 +334,7 @@ The component handles various error scenarios:
 - [ ] Back button visible on mobile, hidden on desktop
 
 #### Meal Cards
+
 - [ ] Category badge shows correct emoji and label
 - [ ] Time is formatted correctly (HH:MM)
 - [ ] Description is displayed
@@ -329,6 +345,7 @@ The component handles various error scenarios:
 - [ ] Delete button is clickable
 
 #### Delete Confirmation
+
 - [ ] Clicking "Usuń" shows confirmation box
 - [ ] Confirmation has red background
 - [ ] Shows "Czy na pewno chcesz usunąć?" message
@@ -339,12 +356,14 @@ The component handles various error scenarios:
 - [ ] During deletion, card shows opacity-50
 
 #### Empty State
+
 - [ ] Shows empty state when no meals exist
 - [ ] Displays emoji and helpful message
 - [ ] "Dodaj posiłek" button is visible and clickable
 - [ ] FAB button is also visible
 
 #### Error States
+
 - [ ] Network error shows error message
 - [ ] 404 error shows appropriate message
 - [ ] 401 error shows appropriate message
@@ -352,18 +371,21 @@ The component handles various error scenarios:
 - [ ] Refresh button reloads the page
 
 #### FAB Functionality
+
 - [ ] FAB is visible on mobile (hidden on desktop lg+)
 - [ ] Positioned in bottom-right corner
 - [ ] Opens AddMealModal on click
 - [ ] After adding meal, day data refreshes automatically
 
 #### Edit Functionality
+
 - [ ] Clicking "Edytuj" opens modal
 - [ ] Modal is pre-filled with meal data (when implemented)
 - [ ] After editing, data refreshes
 - [ ] editingMeal state is cleared after modal closes
 
 #### Responsive Design
+
 - [ ] Mobile: Full-width layout
 - [ ] Desktop: Centered with max-width
 - [ ] Back button hidden on desktop
@@ -407,6 +429,7 @@ Test with these scenarios:
 ### Browser Testing
 
 Test on:
+
 - [ ] Chrome (latest)
 - [ ] Firefox (latest)
 - [ ] Safari (iOS)
@@ -424,12 +447,14 @@ Test on:
 ## Performance Considerations
 
 ### Optimization Techniques Used
+
 - **Parallel Fetching**: Progress and meals fetched in parallel
 - **Skeleton Loading**: Perceived performance improvement
 - **Silent Refetch**: No loading spinner for background updates
 - **Auto-cleanup**: Timers and listeners cleaned up properly
 
 ### Future Optimizations
+
 - [ ] React.memo for MealCard
 - [ ] Virtualization for very long lists
 - [ ] Lazy loading of images (if added)
@@ -456,32 +481,38 @@ Test on:
 ## Troubleshooting
 
 ### Day details don't load
+
 - Check network tab for API errors
 - Verify date format is YYYY-MM-DD
 - Check authentication cookies
 - Check console for JavaScript errors
 
 ### Delete doesn't work
+
 - Verify user has permission to delete
 - Check network tab for 404/401/500 errors
 - Ensure meal ID is valid
 
 ### Auto-collapse not working
+
 - Check if timer is being cleared prematurely
 - Verify useEffect cleanup is working
 - Check browser console for errors
 
 ### Meals show wrong data
+
 - Verify API response format matches types
 - Check date/time formatting
 - Verify category mapping
 
 ### Edit button doesn't work
+
 - Implement edit mode in AddMealModal first
 - Check if editingMeal state is set correctly
 - Verify modal opens with correct props
 
 ### Header not sticky
+
 - Check if `sticky top-0` classes are applied
 - Verify z-index (should be z-10)
 - Check parent container overflow settings
@@ -495,6 +526,7 @@ Test on:
 ## Contributing
 
 When modifying these components:
+
 1. Follow existing patterns
 2. Add TypeScript types for all props
 3. Update this README

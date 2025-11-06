@@ -115,14 +115,16 @@ MealModal.tsx
 
 ## Zależności zewnętrzne
 
-### UI Components (@/components/ui/*)
+### UI Components (@/components/ui/\*)
+
 ```
 @radix-ui/react-dialog ─→ dialog.tsx
 @radix-ui/react-separator ─→ separator.tsx
 lucide-react ─→ icons: Sparkles, AlertCircle, AlertTriangle, Loader2, XIcon
 ```
 
-### Typy (src/types/*)
+### Typy (src/types/\*)
+
 ```
 add-meal.types.ts
 │
@@ -158,7 +160,8 @@ types/index.ts
 └─── CreateMealResponseDTO
 ```
 
-### Hook (src/hooks/*)
+### Hook (src/hooks/\*)
+
 ```
 useAddMealForm.ts
 │
@@ -192,7 +195,8 @@ useAddMealForm.ts
      └─── meal-form.constants.ts
 ```
 
-### Helpers (src/lib/helpers/*)
+### Helpers (src/lib/helpers/\*)
+
 ```
 meal-form.utils.ts
 │
@@ -204,7 +208,8 @@ meal-form.utils.ts
 └─── formatPercentDifference(percent) → string
 ```
 
-### Validation (src/lib/validation/*)
+### Validation (src/lib/validation/\*)
+
 ```
 meal-form.validation.ts
 │
@@ -216,7 +221,8 @@ meal-form.validation.ts
 └─── validateAIGenerationId(id) → FormValidationError | null
 ```
 
-### Constants (src/lib/constants/*)
+### Constants (src/lib/constants/\*)
+
 ```
 meal-form.constants.ts
 │
@@ -273,6 +279,7 @@ PATCH  /api/v1/meals/:id
 ## Data Flow
 
 ### 1. Tworzenie nowego posiłku (Tryb AI)
+
 ```
 User Input (prompt)
     ↓
@@ -296,6 +303,7 @@ onSuccess(meal) → Parent Component
 ```
 
 ### 2. Tworzenie nowego posiłku (Tryb Manual)
+
 ```
 User Input (description, calories, macros)
     ↓
@@ -313,6 +321,7 @@ onSuccess(meal) → Parent Component
 ```
 
 ### 3. Edycja posiłku
+
 ```
 MealModal (with mealId)
     ↓
@@ -338,6 +347,7 @@ onSuccess(meal) → Parent Component
 ## Walidacja
 
 ### Frontend Validation
+
 ```
 Prompt (AI Mode):
   ├─── Min length: 3
@@ -366,6 +376,7 @@ Macro Warning:
 ```
 
 ### Backend Validation
+
 ```
 API returns 400 with validation errors:
   {
@@ -378,6 +389,7 @@ API returns 400 with validation errors:
 ## State Management
 
 ### MealFormState (w useAddMealForm)
+
 ```
 {
   // Mode
@@ -422,6 +434,7 @@ API returns 400 with validation errors:
 ## Funkcjonalności specjalne
 
 ### 1. Auto-calculate Calories
+
 ```
 ManualMode → MacroWarning → "Przelicz automatycznie"
     ↓
@@ -431,6 +444,7 @@ calories = (protein * 4) + (carbs * 4) + (fats * 9)
 ```
 
 ### 2. Auto-detect Category
+
 ```
 CommonFields → Time Input onChange
     ↓
@@ -443,6 +457,7 @@ other → null
 ```
 
 ### 3. Multi-stage AI Loading
+
 ```
 Stage 0 (0ms): "Analizuję opis..."
     ↓
@@ -454,6 +469,7 @@ Result
 ```
 
 ### 4. Switch to Manual with Prepopulation
+
 ```
 AIResult → "Edytuj ręcznie"
     ↓

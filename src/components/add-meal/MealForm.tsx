@@ -17,7 +17,7 @@
 
 import { useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import type { MealFormProps } from "../../types/add-meal.types";
+import type { AIGenerationDTO, MealFormProps } from "../../types/add-meal.types";
 import { useAddMealForm } from "../../hooks/useAddMealForm";
 import { SegmentedControl } from "./SegmentedControl";
 import { AIMode } from "./ai-mode/AIMode";
@@ -38,6 +38,7 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
         // and error message will be displayed
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mealId]);
 
   const handleSubmit = async () => {
@@ -59,7 +60,7 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
   };
 
   const handleFieldChange = (field: string, value: unknown) => {
-    form.updateField(field as keyof typeof form.state, value as any);
+    form.updateField(field as keyof typeof form.state, value as string | number | null | AIGenerationDTO);
   };
 
   return (

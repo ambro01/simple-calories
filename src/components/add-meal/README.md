@@ -16,7 +16,7 @@ Modal form component for adding meals with AI-powered or manual calorie tracking
 All components are already installed. Just import and use:
 
 ```tsx
-import { AddMealModal } from '@/components/add-meal';
+import { AddMealModal } from "@/components/add-meal";
 ```
 
 ## Usage
@@ -24,23 +24,21 @@ import { AddMealModal } from '@/components/add-meal';
 ### Basic Example
 
 ```tsx
-import { useState } from 'react';
-import { AddMealModal } from '@/components/add-meal';
+import { useState } from "react";
+import { AddMealModal } from "@/components/add-meal";
 
 function MyComponent() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>
-        Dodaj posiłek
-      </button>
+      <button onClick={() => setIsOpen(true)}>Dodaj posiłek</button>
 
       <AddMealModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onSuccess={(meal) => {
-          console.log('Meal added:', meal);
+          console.log("Meal added:", meal);
           setIsOpen(false);
         }}
       />
@@ -61,12 +59,12 @@ function MyComponent() {
 <div id="add-meal-modal"></div>
 
 <script>
-  import { AddMealModal } from '@/components/add-meal';
-  import { createRoot } from 'react-dom/client';
-  import { createElement } from 'react';
+  import { AddMealModal } from "@/components/add-meal";
+  import { createRoot } from "react-dom/client";
+  import { createElement } from "react";
 
-  const button = document.getElementById('open-add-meal');
-  const container = document.getElementById('add-meal-modal');
+  const button = document.getElementById("open-add-meal");
+  const container = document.getElementById("add-meal-modal");
 
   let isOpen = false;
 
@@ -80,7 +78,7 @@ function MyComponent() {
           render();
         },
         onSuccess: (meal) => {
-          console.log('Meal added:', meal);
+          console.log("Meal added:", meal);
           isOpen = false;
           render();
           // Refresh your meals list here
@@ -89,7 +87,7 @@ function MyComponent() {
     );
   }
 
-  button?.addEventListener('click', () => {
+  button?.addEventListener("click", () => {
     isOpen = true;
     render();
   });
@@ -119,9 +117,11 @@ interface AddMealModalProps {
 The component interacts with these API endpoints:
 
 ### POST /api/v1/ai-generations
+
 Generates AI calorie estimation from meal description.
 
 **Request:**
+
 ```json
 {
   "prompt": "Jajecznica z trzech jajek i kromka chleba"
@@ -129,6 +129,7 @@ Generates AI calorie estimation from meal description.
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -142,9 +143,11 @@ Generates AI calorie estimation from meal description.
 ```
 
 ### POST /api/v1/meals
+
 Creates a new meal entry.
 
 **Request (AI mode):**
+
 ```json
 {
   "description": "Jajecznica z chlebem",
@@ -160,6 +163,7 @@ Creates a new meal entry.
 ```
 
 **Request (Manual mode):**
+
 ```json
 {
   "description": "Kurczak z ryżem",
@@ -199,11 +203,13 @@ add-meal/
 ## Validation Rules
 
 ### AI Mode
+
 - Prompt: required, max 500 characters
 - Date: cannot be in future (blocks submit)
 - Date: >7 days old shows warning (doesn't block)
 
 ### Manual Mode
+
 - Description: required, max 500 characters
 - Calories: required, 1-10000 kcal, integer
 - Macros: optional, 0-1000g each, decimal(6,2)
@@ -218,20 +224,21 @@ The component uses the `useAddMealForm` hook for centralized state management:
 const form = useAddMealForm();
 
 // Access state
-form.state.mode              // 'ai' | 'manual'
-form.state.calories          // number | null
-form.state.aiLoading         // boolean
+form.state.mode; // 'ai' | 'manual'
+form.state.calories; // number | null
+form.state.aiLoading; // boolean
 
 // Actions
-form.generateAI()            // Trigger AI generation
-form.submitMeal()            // Submit form
-form.switchToManual(true)    // Switch modes
-form.updateField('calories', 500)  // Update field
+form.generateAI(); // Trigger AI generation
+form.submitMeal(); // Submit form
+form.switchToManual(true); // Switch modes
+form.updateField("calories", 500); // Update field
 ```
 
 ## Styling
 
 Components use Tailwind CSS with shadcn/ui components:
+
 - Fully responsive (mobile-first)
 - Dark mode support
 - Accessible (ARIA, keyboard navigation)
@@ -240,6 +247,7 @@ Components use Tailwind CSS with shadcn/ui components:
 ## Error Handling
 
 The component handles various error scenarios:
+
 - Network errors
 - API rate limiting (429)
 - Unclear AI descriptions

@@ -3,9 +3,11 @@
 ## 1. Wprowadzenie i cele testowania
 
 ### 1.1. Cel dokumentu
+
 Niniejszy plan testów definiuje strategię, zakres oraz procedury testowania aplikacji Simple Calories - systemu do śledzenia kalorii i makroskładników z wykorzystaniem sztucznej inteligencji.
 
 ### 1.2. Cele testowania
+
 - Zapewnienie poprawnego działania funkcji krytycznych (dodawanie posiłków, generowanie AI, autentykacja)
 - Weryfikacja integralności danych w bazie PostgreSQL
 - Walidacja integracji z zewnętrznym API (OpenRouter.ai)
@@ -15,6 +17,7 @@ Niniejszy plan testów definiuje strategię, zakres oraz procedury testowania ap
 - Zapewnienie jakości przed wdrożeniem na produkcję
 
 ### 1.3. Zakres dokumentu
+
 Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScript 5, Supabase (PostgreSQL + Auth), OpenRouter.ai, z deploymentem na DigitalOcean.
 
 ---
@@ -24,6 +27,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 2.1. Funkcjonalności w zakresie testów
 
 **Moduł zarządzania posiłkami:**
+
 - Dodawanie posiłków (tryb manualny i AI)
 - Edycja istniejących posiłków
 - Usuwanie posiłków
@@ -32,6 +36,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Automatyczna zmiana input_method przy edycji posiłków AI
 
 **Moduł generowania AI:**
+
 - Generowanie posiłków na podstawie promptu użytkownika
 - Walidacja promptu (długość, format)
 - Parsowanie odpowiedzi JSON z modelu AI
@@ -40,6 +45,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Retry logic z exponential backoff
 
 **Moduł celów kalorycznych:**
+
 - Tworzenie celu kalorycznego
 - Edycja istniejącego celu
 - Pobieranie aktualnego celu (effective_from logic)
@@ -47,12 +53,14 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Walidacja wartości (zakres 500-10000 kcal)
 
 **Moduł postępu dziennego:**
+
 - Agregacja dziennych statystyk (suma kalorii, makroskładników)
 - Obliczanie postępu względem celu
 - Filtrowanie po zakresie dat
 - Paginacja wyników
 
 **Moduł autentykacji:**
+
 - Rejestracja nowego użytkownika (z potwierdzeniem email lub bez - SKIP_EMAIL_CONFIRMATION)
 - Logowanie użytkownika
 - Wylogowanie
@@ -61,10 +69,12 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Automatyczne tworzenie profilu przy rejestracji (trigger)
 
 **Moduł profilu:**
+
 - Wyświetlanie danych profilu
 - Edycja danych profilu
 
 **Dashboard i widoki:**
+
 - Dashboard z listą dni
 - Infinite scroll loading
 - Szczegóły dnia z listą posiłków
@@ -72,6 +82,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Dark/light mode
 
 ### 2.2. Funkcjonalności poza zakresem testów
+
 - Migracja danych z innych systemów
 - Integracja z urządzeniami wearable
 - Eksport danych do formatów zewnętrznych (CSV, PDF)
@@ -79,6 +90,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Real-time collaboration features
 
 ### 2.3. Typy danych testowych
+
 - Użytkownicy testowi (various profiles)
 - Posiłki z różnymi kategoriami (breakfast, lunch, dinner, snack, other)
 - Posiłki z kompletami i brakami makroskładników
@@ -95,6 +107,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Testowanie pojedynczych funkcji, komponentów i modułów w izolacji
 
 **Narzędzia:**
+
 - Vitest (test runner dla Vite/Astro)
 - React Testing Library (komponenty React)
 - Jest (jeśli potrzeba)
@@ -102,6 +115,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Zakres:**
 
 **Serwisy:**
+
 - `MealsService`: wszystkie metody (getMeals, createMeal, updateMeal, deleteMeal, validateAIGeneration)
 - `AIGenerationService`: generowanie, walidacja, parsowanie JSON
 - `CalorieGoalService`: CRUD operations, effective_from logic
@@ -110,22 +124,26 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - `RateLimitService`: counting, throttling
 
 **Validators & Helpers:**
+
 - `macronutrient-validator`: validateMacronutrients, shouldChangeToAIEdited - edge cases
 - `calorie-goal.validators`: walidacja zakresów
 - `date-formatter`: formatowanie dat
 - `meal-form.utils`: utility functions
 
 **Zod Schemas:**
+
 - Każdy schema (meal.schemas, ai-generation.schemas, etc.) - valid/invalid inputs
 - Edge cases: min/max values, required/optional fields, type coercion
 
 **React Hooks:**
+
 - `useAddMealForm`: state transitions, loading states, error handling
 - `useCalorieGoalForm`: form validation, submission
 - `useDayDetails`: data fetching, filtering
 - `useInfiniteScroll`: pagination logic, loading more
 
 **Komponenty React (z mockami):**
+
 - Każdy komponent UI z shadcn/ui (Button, Dialog, Input, etc.)
 - Custom komponenty (AddMealModal, MealCard, DayCard, etc.)
 - Props validation, rendering states, event handlers
@@ -137,12 +155,14 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Testowanie interakcji między modułami, serwisami i bazą danych
 
 **Narzędzia:**
+
 - Vitest + Supabase Local (Docker)
 - Supertest (HTTP testing)
 
 **Zakres:**
 
 **API Endpoints:**
+
 - `GET /api/v1/meals` - filtrowanie, paginacja, sorting
 - `POST /api/v1/meals` - tworzenie manual i AI meals
 - `PATCH /api/v1/meals/[id]` - edycja z automatic input_method change
@@ -155,6 +175,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Wszystkie endpointy: walidacja Zod, error responses, status codes
 
 **Database Layer:**
+
 - Migracje Supabase: wykonanie wszystkich migracji na czystej bazie
 - Triggers: create_profile_for_user, updated_at triggers
 - Functions: jeśli istnieją custom functions
@@ -163,11 +184,13 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Transakcje: rollback scenarios
 
 **Service Integration:**
+
 - MealsService + Supabase: real database queries
 - AIGenerationService + OpenRouterService: mockowana integracja
 - CalorieGoalService + DailyProgressService: obliczenia cross-table
 
 **Authentication & Authorization:**
+
 - Middleware: requireAuth - authorized/unauthorized scenarios
 - Session management: token expiry, refresh
 - RLS policies (gdy włączone): select/insert/update/delete na własnych danych
@@ -177,6 +200,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Testowanie pełnych przepływów użytkownika w przeglądarce
 
 **Narzędzia:**
+
 - Playwright (zalecane dla Astro)
 - Alternatywa: Cypress
 
@@ -252,6 +276,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
     - Odświeża stronę - ustawienie persisted
 
 **Scenariusze błędów:**
+
 - Próba dodania posiłku z przyszłą datą (validation error)
 - Próba wygenerowania AI z pustym promptem
 - Timeout podczas generowania AI (mock slow response)
@@ -263,12 +288,14 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Weryfikacja wydajności i skalowalności
 
 **Narzędzia:**
+
 - k6 (load testing)
 - Lighthouse (frontend performance)
 
 **Zakres:**
 
 **Load Testing:**
+
 - 100 concurrent users dodających posiłki
 - 500 concurrent users przeglądających dashboard
 - 50 concurrent AI generations (rate limiting behavior)
@@ -276,6 +303,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Soak testing: 100 users przez 30 minut
 
 **Metryki:**
+
 - Response time < 200ms dla GET endpoints
 - Response time < 500ms dla POST endpoints
 - Response time < 3s dla AI generation
@@ -284,6 +312,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Database connection pool utilization < 80%
 
 **Frontend Performance:**
+
 - Lighthouse score > 90 dla wszystkich kluczowych stron
 - First Contentful Paint < 1.5s
 - Time to Interactive < 3s
@@ -294,6 +323,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Wykrycie podatności i luk bezpieczeństwa
 
 **Narzędzia:**
+
 - OWASP ZAP (automated scanning)
 - Burp Suite (manual testing)
 - npm audit (dependency vulnerabilities)
@@ -301,6 +331,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Zakres:**
 
 **Authentication & Authorization:**
+
 - Próba dostępu do protected endpoints bez tokenu
 - Próba dostępu do cudzych danych (meal_id innego usera)
 - Token manipulation (zmiana user_id w JWT)
@@ -308,6 +339,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Brute force login attempts (rate limiting)
 
 **Input Validation:**
+
 - SQL injection w query parameters
 - XSS w meal description, prompt
 - NoSQL injection (jeśli applicable)
@@ -315,6 +347,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Command injection
 
 **API Security:**
+
 - CORS configuration
 - CSRF protection
 - Rate limiting dla wszystkich endpoints
@@ -322,12 +355,14 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - Proper HTTP headers (Content-Security-Policy, X-Frame-Options, etc.)
 
 **Data Protection:**
+
 - Sensitive data exposure w response
 - Password hashing (bcrypt)
 - API key exposure (OpenRouter)
 - Environment variables security
 
 **Dependencies:**
+
 - npm audit dla known vulnerabilities
 - Outdated packages with security issues
 
@@ -336,6 +371,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Zapewnienie dostępności dla użytkowników z niepełnosprawnościami
 
 **Narzędzia:**
+
 - axe-core (automated a11y testing)
 - WAVE (browser extension)
 - Screen reader testing (NVDA, JAWS)
@@ -344,24 +380,28 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Zakres:**
 
 **WCAG 2.1 Level AA Compliance:**
+
 - Perceivable: alt texts, contrast ratios (min 4.5:1), captions
 - Operable: keyboard navigation, focus management, no keyboard traps
 - Understandable: clear labels, error messages, consistent navigation
 - Robust: valid HTML, ARIA attributes, semantic markup
 
 **Komponenty krytyczne:**
+
 - Formularze (Add Meal, Settings)
 - Dialogi (modals, alerts)
 - Nawigacja (dashboard, day details)
 - Interactive components (buttons, inputs, segmented control)
 
 **Keyboard navigation:**
+
 - Tab order logiczny
 - Escape zamyka dialogi
 - Enter submituje formularze
 - Arrow keys w segmented control
 
 **Screen reader:**
+
 - Announce meal added/deleted
 - Announce AI generation progress
 - Announce validation errors
@@ -372,10 +412,12 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Cel:** Wykrycie niezamierzonych zmian wizualnych
 
 **Narzędzia:**
+
 - Percy (visual testing platform)
 - Alternatywa: Chromatic, BackstopJS
 
 **Zakres:**
+
 - Wszystkie główne widoki (Dashboard, Day Details, Settings, Auth)
 - Wszystkie komponenty UI w Storybook (jeśli zaimplementowane)
 - Różne stany (empty state, loading, error, success)
@@ -389,6 +431,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 4.1. Zarządzanie posiłkami
 
 #### TC-MEAL-001: Dodanie posiłku ręcznie (happy path)
+
 - **Kroki:**
   1. Użytkownik zalogowany klika FAB "Dodaj posiłek"
   2. Wybiera tryb "Manual"
@@ -401,15 +444,17 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - daily_progress zaktualizowany
 
 #### TC-MEAL-002: Dodanie posiłku z niespójnymi makroskładnikami
+
 - **Kroki:**
   1. Wypełnia: calories=650, protein=45, carbs=70, fats=15
-  2. Kalkulacja: (45*4 + 70*4 + 15*9) = 595 kcal
+  2. Kalkulacja: (45*4 + 70*4 + 15\*9) = 595 kcal
   3. Różnica: (650-595)/650 = 8.46% > 5%
 - **Oczekiwany rezultat:**
   - Status 201 Created (posiłek utworzony)
   - Response zawiera warnings array z komunikatem o niespójności
 
 #### TC-MEAL-003: Dodanie posiłku z przyszłą datą
+
 - **Kroki:**
   1. Wypełnia meal_timestamp = jutrzejsza data
   2. Klika "Zapisz"
@@ -418,6 +463,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: "Meal timestamp cannot be in the future"
 
 #### TC-MEAL-004: Edycja posiłku AI (automatic input_method change)
+
 - **Kroki:**
   1. Posiłek z input_method="ai" istnieje
   2. Użytkownik edytuje calories z 420 na 450
@@ -428,6 +474,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Pozostałe pola bez zmian
 
 #### TC-MEAL-005: Usunięcie posiłku (cascade behavior)
+
 - **Kroki:**
   1. Posiłek z powiązanym ai_generation istnieje
   2. Użytkownik usuwa posiłek
@@ -437,6 +484,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - ai_generations.meal_id = NULL (nie usunięty record AI)
 
 #### TC-MEAL-006: Listowanie posiłków z filtrowaniem po dacie
+
 - **Kroki:**
   1. GET /api/v1/meals?date=2025-02-04
 - **Oczekiwany rezultat:**
@@ -444,6 +492,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Pagination metadata (total, limit, offset)
 
 #### TC-MEAL-007: Próba edycji cudzego posiłku
+
 - **Kroki:**
   1. User A tworzy posiłek (meal_id=X)
   2. User B próbuje: PATCH /api/v1/meals/X
@@ -453,6 +502,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 4.2. Generowanie AI
 
 #### TC-AI-001: Generowanie posiłku przez AI (happy path)
+
 - **Kroki:**
   1. POST /api/v1/ai-generations
   2. Body: { "prompt": "Jajecznica z 3 jajek i 2 kromki chleba" }
@@ -463,6 +513,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Odpowiedź JSON sparsowana poprawnie
 
 #### TC-AI-002: Generowanie z pustym promptem
+
 - **Kroki:**
   1. POST /api/v1/ai-generations
   2. Body: { "prompt": "" }
@@ -471,6 +522,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: Validation error (Zod)
 
 #### TC-AI-003: Generowanie z promptem za długim (>500 znaków)
+
 - **Kroki:**
   1. prompt = 501 znaków
 - **Oczekiwany rezultat:**
@@ -478,6 +530,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: "Prompt too long"
 
 #### TC-AI-004: OpenRouter API timeout
+
 - **Kroki:**
   1. Mock OpenRouter slow response (>30s)
   2. POST /api/v1/ai-generations
@@ -487,6 +540,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - ai_generation record: status="failed", error_message zapisany
 
 #### TC-AI-005: OpenRouter API rate limit (429)
+
 - **Kroki:**
   1. Mock OpenRouter response: 429 Too Many Requests
 - **Oczekiwany rezultat:**
@@ -495,6 +549,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error message: "Rate limit exceeded, try again later"
 
 #### TC-AI-006: OpenRouter API quota exceeded
+
 - **Kroki:**
   1. Mock OpenRouter response: 402 Payment Required
 - **Oczekiwany rezultat:**
@@ -503,6 +558,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error message: "AI quota exceeded"
 
 #### TC-AI-007: OpenRouter zwraca invalid JSON
+
 - **Kroki:**
   1. Mock odpowiedź z malformed JSON
 - **Oczekiwany rezultat:**
@@ -511,6 +567,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - ai_generation: status="failed"
 
 #### TC-AI-008: Rate limiting po stronie aplikacji
+
 - **Kroki:**
   1. Użytkownik wysyła 10 requestów AI w ciągu 1 minuty
 - **Oczekiwany rezultat:**
@@ -518,6 +575,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - 6-10: Status 429 Too Many Requests
 
 #### TC-AI-009: Tworzenie meal z nieistniejącym ai_generation_id
+
 - **Kroki:**
   1. POST /api/v1/meals
   2. Body: { ..., "input_method": "ai", "ai_generation_id": "non-existent-uuid" }
@@ -526,6 +584,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: "AI generation not found"
 
 #### TC-AI-010: Tworzenie meal z AI generation status="pending"
+
 - **Kroki:**
   1. ai_generation.status = "pending" (nie "completed")
   2. Próba utworzenia meal z tym ai_generation_id
@@ -536,6 +595,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 4.3. Cele kaloryczne
 
 #### TC-GOAL-001: Tworzenie pierwszego celu
+
 - **Kroki:**
   1. POST /api/v1/calorie-goals
   2. Body: { "daily_goal": 2000, "effective_from": "2025-02-01" }
@@ -544,18 +604,20 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Record w tabeli calorie_goals
 
 #### TC-GOAL-002: Tworzenie drugiego celu (overlapping dates)
+
 - **Kroki:**
   1. Cel 1: daily_goal=2000, effective_from="2025-02-01"
   2. Cel 2: daily_goal=2500, effective_from="2025-02-10"
   3. GET /api/v1/calorie-goals/current na 2025-02-05
 - **Oczekiwany rezultat:**
   - Zwraca Cel 1 (2000 kcal)
-
   4. GET /api/v1/calorie-goals/current na 2025-02-15
+
 - **Oczekiwany rezultat:**
   - Zwraca Cel 2 (2500 kcal)
 
 #### TC-GOAL-003: Edycja celu (PATCH)
+
 - **Kroki:**
   1. PATCH /api/v1/calorie-goals/[id]
   2. Body: { "daily_goal": 2200 }
@@ -564,6 +626,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - daily_goal zaktualizowany
 
 #### TC-GOAL-004: Walidacja wartości poza zakresem
+
 - **Kroki:**
   1. POST /api/v1/calorie-goals
   2. Body: { "daily_goal": 300 } (min: 500)
@@ -572,6 +635,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: "Daily goal must be between 500 and 10000"
 
 #### TC-GOAL-005: Pobieranie celu by-date
+
 - **Kroki:**
   1. GET /api/v1/calorie-goals/by-date?date=2025-02-20
 - **Oczekiwany rezultat:**
@@ -580,6 +644,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 4.4. Postęp dzienny
 
 #### TC-PROGRESS-001: Obliczanie dziennego postępu
+
 - **Kroki:**
   1. Użytkownik ma cel: 2000 kcal
   2. Dodaje 3 posiłki: 400 + 600 + 500 = 1500 kcal
@@ -592,6 +657,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - total_protein/carbs/fats: suma z meals
 
 #### TC-PROGRESS-002: Przekroczenie celu
+
 - **Kroki:**
   1. Cel: 2000 kcal
   2. Posiłki: 2500 kcal total
@@ -602,6 +668,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Status może być "over" (jeśli zaimplementowane)
 
 #### TC-PROGRESS-003: Brak celu kalorycznego
+
 - **Kroki:**
   1. Użytkownik nie ustawił celu
   2. Ma posiłki: 1500 kcal
@@ -613,6 +680,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - progress_percentage: null
 
 #### TC-PROGRESS-004: Filtrowanie po zakresie dat
+
 - **Kroki:**
   1. GET /api/v1/daily-progress?date_from=2025-02-01&date_to=2025-02-07
 - **Oczekiwany rezultat:**
@@ -622,6 +690,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 4.5. Autentykacja
 
 #### TC-AUTH-001: Rejestracja (z email confirmation)
+
 - **Kroki:**
   1. POST /api/v1/auth/signup
   2. Body: { "email": "test@example.com", "password": "SecurePass123!" }
@@ -633,6 +702,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Trigger tworzy rekord w profiles
 
 #### TC-AUTH-002: Rejestracja (bez email confirmation)
+
 - **Kroki:**
   1. SKIP_EMAIL_CONFIRMATION=true
   2. POST /api/v1/auth/signup
@@ -642,6 +712,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Profile utworzony
 
 #### TC-AUTH-003: Logowanie (happy path)
+
 - **Kroki:**
   1. POST /api/v1/auth/login
   2. Body: { "email": "test@example.com", "password": "SecurePass123!" }
@@ -651,6 +722,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Session cookie ustawiony
 
 #### TC-AUTH-004: Logowanie (złe hasło)
+
 - **Kroki:**
   1. POST /api/v1/auth/login
   2. Body: { "email": "test@example.com", "password": "wrongpassword" }
@@ -659,6 +731,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: "Invalid credentials"
 
 #### TC-AUTH-005: Wylogowanie
+
 - **Kroki:**
   1. POST /api/v1/auth/logout (z valid token)
 - **Oczekiwany rezultat:**
@@ -667,6 +740,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Kolejne requesty z tym tokenem: 401
 
 #### TC-AUTH-006: Reset hasła (forgot password flow)
+
 - **Kroki:**
   1. POST /auth/forgot-password
   2. Body: { "email": "test@example.com" }
@@ -680,6 +754,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Użytkownik może się zalogować nowym hasłem
 
 #### TC-AUTH-007: Zmiana hasła (authenticated user)
+
 - **Kroki:**
   1. PATCH /api/v1/profile/password
   2. Body: { "current_password": "OldPass123!", "new_password": "NewPass456!" }
@@ -690,6 +765,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Użytkownik pozostaje zalogowany
 
 #### TC-AUTH-008: Dostęp do protected endpoint bez tokenu
+
 - **Kroki:**
   1. GET /api/v1/meals (bez Authorization header)
 - **Oczekiwany rezultat:**
@@ -697,6 +773,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Error: "Authentication required"
 
 #### TC-AUTH-009: Token expired
+
 - **Kroki:**
   1. Token wygasł (po 1h default)
   2. GET /api/v1/meals
@@ -705,6 +782,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
   - Frontend powinien odświeżyć token (refresh_token)
 
 #### TC-AUTH-010: Profile creation trigger
+
 - **Kroki:**
   1. Nowy user rejestruje się
   2. Sprawdź tabelę profiles
@@ -720,12 +798,14 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 5.1. Środowiska
 
 **Development (Local):**
+
 - Astro dev server (localhost:3000)
 - Supabase Local (Docker) - baza PostgreSQL + Auth
 - OpenRouter mock service (src/lib/services/openrouter/openrouter-mock.service.ts)
 - Environment: development
 
 **Staging:**
+
 - Astro production build na DigitalOcean
 - Supabase Staging Project (cloud)
 - OpenRouter test API key (limited quota)
@@ -733,6 +813,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 - URL: https://staging.simple-calories.com (example)
 
 **Production:**
+
 - Astro production build na DigitalOcean
 - Supabase Production Project (cloud)
 - OpenRouter production API key
@@ -742,6 +823,7 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 ### 5.2. Konfiguracja środowiska testowego
 
 **Zmienne środowiskowe (.env):**
+
 ```
 # Supabase
 SUPABASE_URL=
@@ -759,12 +841,14 @@ NODE_ENV=test
 ```
 
 **Baza danych testowa:**
+
 - Supabase Local uruchamiany przed testami: `supabase start`
 - Migracje wykonywane automatycznie: `supabase db push`
 - Reset bazy przed każdym testem suite: `supabase db reset`
 - Seed data: fixtures w `tests/fixtures/`
 
 **Docker Compose (dla CI/CD):**
+
 ```yaml
 services:
   postgres:
@@ -777,21 +861,25 @@ services:
 ### 5.3. Dane testowe
 
 **Test users:**
+
 - user1@test.com / TestPass123!
 - user2@test.com / TestPass123!
 - admin@test.com / AdminPass123! (jeśli role admin)
 
 **Seed meals:**
+
 - 100 meals dla user1 (różne daty, kategorie)
 - 50 meals dla user2
 - Mix input_method: manual (60%), ai (30%), ai-edited (10%)
 
 **Seed AI generations:**
+
 - 50 completed
 - 10 failed
 - 5 pending
 
 **Seed calorie goals:**
+
 - user1: 2000 kcal effective_from 2025-01-01
 - user1: 2500 kcal effective_from 2025-02-01 (test overlapping)
 - user2: 1800 kcal
@@ -802,63 +890,63 @@ services:
 
 ### 6.1. Test Frameworks & Libraries
 
-| Narzędzie | Wersja | Zastosowanie |
-|-----------|--------|--------------|
-| Vitest | ^2.0.0 | Unit tests, Integration tests |
-| React Testing Library | ^16.0.0 | React components testing |
-| Playwright | ^1.48.0 | E2E tests |
-| Supertest | ^7.0.0 | HTTP API testing |
-| @testing-library/user-event | ^14.5.0 | User interactions simulation |
+| Narzędzie                   | Wersja  | Zastosowanie                  |
+| --------------------------- | ------- | ----------------------------- |
+| Vitest                      | ^2.0.0  | Unit tests, Integration tests |
+| React Testing Library       | ^16.0.0 | React components testing      |
+| Playwright                  | ^1.48.0 | E2E tests                     |
+| Supertest                   | ^7.0.0  | HTTP API testing              |
+| @testing-library/user-event | ^14.5.0 | User interactions simulation  |
 
 ### 6.2. Mocking & Fixtures
 
-| Narzędzie | Zastosowanie |
-|-----------|--------------|
-| vitest mock functions | Mockowanie serwisów, API calls |
-| MSW (Mock Service Worker) | Mockowanie HTTP requests |
-| openrouter-mock.service.ts | Mock OpenRouter API |
-| Supabase Local | Real database dla integration tests |
+| Narzędzie                  | Zastosowanie                        |
+| -------------------------- | ----------------------------------- |
+| vitest mock functions      | Mockowanie serwisów, API calls      |
+| MSW (Mock Service Worker)  | Mockowanie HTTP requests            |
+| openrouter-mock.service.ts | Mock OpenRouter API                 |
+| Supabase Local             | Real database dla integration tests |
 
 ### 6.3. Code Quality & Coverage
 
-| Narzędzie | Zastosowanie |
-|-----------|--------------|
-| ESLint | Linting (już w projekcie) |
-| Prettier | Formatowanie (już w projekcie) |
-| Vitest Coverage (c8) | Code coverage |
-| TypeScript Compiler | Type checking |
+| Narzędzie            | Zastosowanie                   |
+| -------------------- | ------------------------------ |
+| ESLint               | Linting (już w projekcie)      |
+| Prettier             | Formatowanie (już w projekcie) |
+| Vitest Coverage (c8) | Code coverage                  |
+| TypeScript Compiler  | Type checking                  |
 
 ### 6.4. CI/CD & Automation
 
-| Narzędzie | Zastosowanie |
-|-----------|--------------|
-| GitHub Actions | Pipeline CI/CD (już w projekcie) |
-| Husky | Pre-commit hooks (już w projekcie) |
-| lint-staged | Linting staged files (już w projekcie) |
+| Narzędzie      | Zastosowanie                           |
+| -------------- | -------------------------------------- |
+| GitHub Actions | Pipeline CI/CD (już w projekcie)       |
+| Husky          | Pre-commit hooks (już w projekcie)     |
+| lint-staged    | Linting staged files (już w projekcie) |
 
 ### 6.5. Performance & Security
 
-| Narzędzie | Zastosowanie |
-|-----------|--------------|
-| k6 | Load testing |
-| Lighthouse CI | Frontend performance |
-| OWASP ZAP | Security scanning |
-| npm audit | Dependency vulnerabilities |
+| Narzędzie     | Zastosowanie               |
+| ------------- | -------------------------- |
+| k6            | Load testing               |
+| Lighthouse CI | Frontend performance       |
+| OWASP ZAP     | Security scanning          |
+| npm audit     | Dependency vulnerabilities |
 
 ### 6.6. Accessibility
 
-| Narzędzie | Zastosowanie |
-|-----------|--------------|
-| axe-core | Automated a11y testing |
-| @axe-core/playwright | Integration z Playwright |
-| pa11y | Command-line a11y testing |
+| Narzędzie            | Zastosowanie              |
+| -------------------- | ------------------------- |
+| axe-core             | Automated a11y testing    |
+| @axe-core/playwright | Integration z Playwright  |
+| pa11y                | Command-line a11y testing |
 
 ### 6.7. Visual Regression
 
-| Narzędzie | Zastosowanie |
-|-----------|--------------|
-| Percy | Visual testing (zalecane) |
-| Playwright Screenshots | Baseline screenshots |
+| Narzędzie              | Zastosowanie              |
+| ---------------------- | ------------------------- |
+| Percy                  | Visual testing (zalecane) |
+| Playwright Screenshots | Baseline screenshots      |
 
 ---
 
@@ -867,6 +955,7 @@ services:
 ### 7.1. Fazy testowania
 
 **Faza 1: Setup & Unit Tests (Tydzień 1-2)**
+
 - Konfiguracja środowiska testowego
 - Setup Vitest, RTL, Playwright
 - Pisanie unit tests dla serwisów
@@ -876,6 +965,7 @@ services:
 - Target: 80% code coverage
 
 **Faza 2: Integration Tests (Tydzień 3)**
+
 - Setup Supabase Local
 - Testy API endpoints (wszystkie routes)
 - Testy database layer (migracje, triggers, views)
@@ -883,6 +973,7 @@ services:
 - Testy authentication & authorization
 
 **Faza 3: E2E Tests (Tydzień 4)**
+
 - Setup Playwright
 - Pisanie E2E scenarios (10 głównych flow)
 - Testy responsive design
@@ -890,6 +981,7 @@ services:
 - Smoke tests dla staging/production
 
 **Faza 4: Non-Functional Tests (Tydzień 5)**
+
 - Performance tests (k6)
 - Security tests (OWASP ZAP, npm audit)
 - Accessibility tests (axe-core)
@@ -897,6 +989,7 @@ services:
 - Load testing
 
 **Faza 5: Regression & Bug Fixing (Tydzień 6)**
+
 - Regression testing po bug fixes
 - Re-testing failed tests
 - Final smoke test
@@ -905,22 +998,26 @@ services:
 ### 7.2. Harmonogram w kontekście CI/CD
 
 **Pre-commit (Husky):**
+
 - ESLint
 - Prettier
 - Type checking
 
 **Pull Request (GitHub Actions):**
+
 - Unit tests (all)
 - Integration tests (all)
 - Code coverage check (min 80%)
 - Build verification
 
 **Merge to develop branch:**
+
 - Full test suite (unit + integration + E2E)
 - Deploy to staging
 - Smoke tests on staging
 
 **Merge to main branch:**
+
 - Full test suite
 - Performance tests
 - Security tests
@@ -928,6 +1025,7 @@ services:
 - Smoke tests on production
 
 **Nightly builds:**
+
 - Full regression suite
 - Visual regression tests
 - Load tests
@@ -975,23 +1073,27 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 ### 8.2. Definicje priorytetów błędów
 
 **P0 - Critical:**
+
 - Aplikacja nie startuje
 - Nie można się zalogować/zarejestrować
 - Utrata danych użytkownika
 - Security breach
 
 **P1 - High:**
+
 - Kluczowa funkcja nie działa (np. dodawanie posiłków)
 - AI generation zawsze failuje
 - Błędne obliczenia dziennego postępu
 - Authorization bypass
 
 **P2 - Medium:**
+
 - Funkcja działa ale z błędami (np. validation nie zawsze poprawna)
 - UI issues (layout broken, poor UX)
 - Performance degradation
 
 **P3 - Low:**
+
 - Kosmetyczne issues
 - Minor UX improvements
 - Nice-to-have features
@@ -999,12 +1101,14 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 ### 8.3. Metryki sukcesu
 
 **Quantitative:**
+
 - Defect Detection Rate (DDR): minimum 90% defects wykrytych w testach (nie przez users)
 - Test Execution Efficiency: < 30 minut dla full test suite
 - Mean Time To Detect (MTTD): < 24h od wprowadzenia defectu
 - Test Automation Coverage: minimum 70% testów zautomatyzowanych
 
 **Qualitative:**
+
 - User acceptance testing (UAT) pass
 - Stakeholder approval
 - No blockers for production release
@@ -1016,6 +1120,7 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 ### 9.1. Role
 
 **QA Engineer (Lead):**
+
 - Projektowanie strategii testów
 - Tworzenie planu testów
 - Nadzór nad wykonaniem testów
@@ -1023,6 +1128,7 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 - Raportowanie do stakeholders
 
 **QA Engineers (2-3 osoby):**
+
 - Pisanie test cases
 - Wykonywanie testów manualnych
 - Pisanie testów automatycznych
@@ -1030,18 +1136,21 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 - Regression testing
 
 **Developers:**
+
 - Pisanie unit tests dla własnego kodu
 - Fixing defects
 - Code reviews z perspektywą testability
 - Wsparcie QA w zrozumieniu funkcjonalności
 
 **DevOps Engineer:**
+
 - Setup środowisk testowych
 - Konfiguracja CI/CD pipeline
 - Monitoring performance w testach
 - Infrastructure dla load testing
 
 **Product Owner:**
+
 - Definiowanie acceptance criteria
 - Priorytetyzacja bugów
 - User acceptance testing (UAT)
@@ -1049,18 +1158,18 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 
 ### 9.2. RACI Matrix
 
-| Aktywność | QA Lead | QA Eng | Dev | DevOps | PO |
-|-----------|---------|--------|-----|--------|-----|
-| Plan testów | R/A | C | C | I | A |
-| Unit tests | I | I | R/A | I | I |
-| Integration tests | A | R | C | C | I |
-| E2E tests | A | R | C | I | I |
-| Performance tests | A | R | I | C | I |
-| Security tests | A | R | C | C | I |
-| Defect management | R/A | C | R | I | A |
-| CI/CD setup | C | I | C | R/A | I |
-| UAT | C | C | I | I | R/A |
-| Release decision | C | C | C | C | R/A |
+| Aktywność         | QA Lead | QA Eng | Dev | DevOps | PO  |
+| ----------------- | ------- | ------ | --- | ------ | --- |
+| Plan testów       | R/A     | C      | C   | I      | A   |
+| Unit tests        | I       | I      | R/A | I      | I   |
+| Integration tests | A       | R      | C   | C      | I   |
+| E2E tests         | A       | R      | C   | I      | I   |
+| Performance tests | A       | R      | I   | C      | I   |
+| Security tests    | A       | R      | C   | C      | I   |
+| Defect management | R/A     | C      | R   | I      | A   |
+| CI/CD setup       | C       | I      | C   | R/A    | I   |
+| UAT               | C       | C      | I   | I      | R/A |
+| Release decision  | C       | C      | C   | C      | R/A |
 
 **Legenda:** R - Responsible, A - Accountable, C - Consulted, I - Informed
 
@@ -1082,19 +1191,23 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 
 ```markdown
 ## Opis defektu
+
 [Krótki opis problemu]
 
 ## Priorytet & Severity
+
 - Priorytet: P1 (Critical/High/Medium/Low)
 - Severity: High (Blocker/High/Medium/Low)
 
 ## Środowisko
+
 - Environment: Development/Staging/Production
 - Browser: Chrome 120 (jeśli applicable)
 - OS: Windows 11 / macOS 14 / etc.
 - Device: Desktop / Mobile (iPhone 15) / etc.
 
 ## Kroki reprodukcji
+
 1. Zaloguj się jako user@test.com
 2. Kliknij "Dodaj posiłek"
 3. Wybierz tryb AI
@@ -1102,22 +1215,28 @@ Testy uznajemy za zakończone pomyślnie, gdy:
 5. Kliknij "Generuj"
 
 ## Oczekiwany rezultat
+
 AI generation powinno się wykonać i zwrócić wynik
 
 ## Aktualny rezultat
+
 Aplikacja wyświetla błąd "Network Error"
 
 ## Logi / Screenshots
+
 [Załącz screenshot, console logs, network trace]
 
 ## Dodatkowe informacje
+
 - Błąd występuje tylko dla promptów krótszych niż 10 znaków
 - W console: "OpenRouterError: Invalid prompt length"
 
 ## Related Test Case
+
 TC-AI-003
 
 ## Assigned to
+
 @developer-username
 ```
 
@@ -1130,6 +1249,7 @@ Duplicate  Won't Fix    Reopened
 ```
 
 **Statusy:**
+
 - **New:** Defekt zgłoszony, oczekuje na przypisanie
 - **In Progress:** Developer pracuje nad fixem
 - **Ready for Test:** Fix zdeployowany, oczekuje weryfikacji QA
@@ -1140,21 +1260,23 @@ Duplicate  Won't Fix    Reopened
 
 ### 10.4. SLA dla defektów
 
-| Priorytet | Time to Acknowledge | Time to Fix | Time to Verify |
-|-----------|---------------------|-------------|----------------|
-| P0 - Critical | 1h | 4h | 2h |
-| P1 - High | 4h | 24h | 8h |
-| P2 - Medium | 24h | 5 dni | 2 dni |
-| P3 - Low | 48h | Backlog | Backlog |
+| Priorytet     | Time to Acknowledge | Time to Fix | Time to Verify |
+| ------------- | ------------------- | ----------- | -------------- |
+| P0 - Critical | 1h                  | 4h          | 2h             |
+| P1 - High     | 4h                  | 24h         | 8h             |
+| P2 - Medium   | 24h                 | 5 dni       | 2 dni          |
+| P3 - Low      | 48h                 | Backlog     | Backlog        |
 
 ### 10.5. Raportowanie do stakeholders
 
 **Daily Standup (dla QA):**
+
 - Liczba testów wykonanych wczoraj
 - Liczba nowych defektów
 - Blockers
 
 **Tygodniowy raport testów:**
+
 - Test execution status (% completed)
 - Pass/Fail/Blocked rate
 - Defect metrics (new, fixed, open by priority)
@@ -1162,12 +1284,14 @@ Duplicate  Won't Fix    Reopened
 - Risks & issues
 
 **End-of-Phase raport:**
+
 - Podsumowanie fazy testów
 - Wszystkie metryki (coverage, pass rate, defects)
 - Exit criteria status
 - Rekomendacja (Go/No-Go dla release)
 
 **Format raportów:**
+
 - Confluence/Notion document
 - Dashboard (Grafana/Kibana dla metryk CI/CD)
 - Slack notifications dla critical issues
@@ -1178,44 +1302,49 @@ Duplicate  Won't Fix    Reopened
 
 ### 11.1. Ryzyka testowe
 
-| Ryzyko | Prawdopodobieństwo | Wpływ | Mitigation |
-|--------|-------------------|-------|------------|
-| OpenRouter API unavailable podczas testów | Medium | High | Używać mock service w unit/integration tests; E2E tests na staging z fallback |
-| Flaky E2E tests (timing issues) | High | Medium | Implementować smart waits w Playwright; retry logic dla flaky tests |
-| Insufficient test data | Medium | Medium | Automated seed scripts; fixtures dla każdego test case |
-| CI/CD pipeline too slow | Medium | Medium | Równoległe wykonywanie testów; selective test runs dla PRs |
-| Database state pollution | High | High | Reset bazy przed każdym test suite; izolacja transakcji |
-| Missing test coverage w critical paths | Low | High | Mandatory coverage checks w CI; code review z perspektywą testability |
-| Resource constraints (QA team size) | Medium | Medium | Priorytetyzacja testów (risk-based); automation dla repetitive tests |
-| Late requirement changes | Medium | High | Agile approach; continuous testing; regression automation |
+| Ryzyko                                    | Prawdopodobieństwo | Wpływ  | Mitigation                                                                    |
+| ----------------------------------------- | ------------------ | ------ | ----------------------------------------------------------------------------- |
+| OpenRouter API unavailable podczas testów | Medium             | High   | Używać mock service w unit/integration tests; E2E tests na staging z fallback |
+| Flaky E2E tests (timing issues)           | High               | Medium | Implementować smart waits w Playwright; retry logic dla flaky tests           |
+| Insufficient test data                    | Medium             | Medium | Automated seed scripts; fixtures dla każdego test case                        |
+| CI/CD pipeline too slow                   | Medium             | Medium | Równoległe wykonywanie testów; selective test runs dla PRs                    |
+| Database state pollution                  | High               | High   | Reset bazy przed każdym test suite; izolacja transakcji                       |
+| Missing test coverage w critical paths    | Low                | High   | Mandatory coverage checks w CI; code review z perspektywą testability         |
+| Resource constraints (QA team size)       | Medium             | Medium | Priorytetyzacja testów (risk-based); automation dla repetitive tests          |
+| Late requirement changes                  | Medium             | High   | Agile approach; continuous testing; regression automation                     |
 
 ### 11.2. Strategie mitigation
 
 **OpenRouter API unavailability:**
+
 - Mock OpenRouterService w 90% testów
 - Dedykowany test API key dla staging (z niskim quota)
 - Contract testing - sprawdzanie tylko schema responses
 - Fallback do cache w przypadku API failure (jeśli zaimplementowane)
 
 **Flaky E2E tests:**
+
 - Playwright auto-wait mechanisms
 - Explicit waits dla API responses (`page.waitForResponse`)
 - Retry failed tests (max 2 razy)
 - Segregacja tests: stable suite (run always) vs flaky suite (run nightly)
 
 **Insufficient test data:**
+
 - `tests/fixtures/seed.ts` - automated seeding
 - Factory functions dla generowania test data
 - Realistic data (faker.js dla names, emails, descriptions)
 - Separate fixtures dla każdego test scenario
 
 **CI/CD pipeline performance:**
+
 - Parallel execution: vitest workers, playwright sharding
 - Selective runs: unit tests dla każdego PR, full suite dla merge
 - Caching: dependencies, build artifacts
 - Cloud CI runners (GitHub Actions premium dla private repo)
 
 **Database state pollution:**
+
 - `beforeEach(() => resetDatabase())` w integration tests
 - Transactional tests: rollback po każdym test case
 - Isolated Supabase projects dla każdego branch (staging-feature-X)
@@ -1254,19 +1383,19 @@ Duplicate  Won't Fix    Reopened
 
 ### 12.4. Glosariusz
 
-| Termin | Definicja |
-|--------|-----------|
-| Meal | Posiłek użytkownika z informacjami nutricyjnymi |
-| AI Generation | Proces generowania posiłku przez model AI |
-| Input Method | Sposób wprowadzenia posiłku: manual, ai, ai-edited |
-| Macronutrients | Makroskładniki: protein, carbs, fats |
-| Calorie Goal | Cel kaloryczny użytkownika na dzień |
-| Daily Progress | Dzienny postęp vs cel kaloryczny |
-| RLS | Row Level Security w PostgreSQL |
-| Supabase | Backend-as-a-Service (PostgreSQL + Auth + Storage) |
-| OpenRouter | API gateway dla modeli AI (OpenAI, Anthropic, etc.) |
-| SSR | Server-Side Rendering |
-| Astro Islands | Architektura partial hydration w Astro |
+| Termin         | Definicja                                           |
+| -------------- | --------------------------------------------------- |
+| Meal           | Posiłek użytkownika z informacjami nutricyjnymi     |
+| AI Generation  | Proces generowania posiłku przez model AI           |
+| Input Method   | Sposób wprowadzenia posiłku: manual, ai, ai-edited  |
+| Macronutrients | Makroskładniki: protein, carbs, fats                |
+| Calorie Goal   | Cel kaloryczny użytkownika na dzień                 |
+| Daily Progress | Dzienny postęp vs cel kaloryczny                    |
+| RLS            | Row Level Security w PostgreSQL                     |
+| Supabase       | Backend-as-a-Service (PostgreSQL + Auth + Storage)  |
+| OpenRouter     | API gateway dla modeli AI (OpenAI, Anthropic, etc.) |
+| SSR            | Server-Side Rendering                               |
+| Astro Islands  | Architektura partial hydration w Astro              |
 
 ---
 

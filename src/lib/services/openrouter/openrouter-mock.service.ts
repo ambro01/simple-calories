@@ -38,10 +38,10 @@ Examples:
 /**
  * Configuration for OpenRouter service
  */
-interface OpenRouterConfig {
+type OpenRouterConfig = {
   model: string;
   timeout: number;
-}
+};
 
 /**
  * Mock responses for different types of prompts
@@ -169,7 +169,8 @@ export class OpenRouterService {
    * @throws Error if API communication fails or response is invalid
    */
   async generateNutritionEstimate(prompt: string): Promise<NutritionalEstimate> {
-    // Construct request payload
+    // Construct request payload (for logging/debugging)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [

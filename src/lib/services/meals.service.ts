@@ -14,7 +14,6 @@ import type {
   MealResponseDTO,
   CreateMealRequestDTO,
   UpdateMealRequestDTO,
-  MealWarningDTO,
   CreateMealResponseDTO,
   UpdateMealResponseDTO,
 } from "../../types";
@@ -23,7 +22,7 @@ import { validateMacronutrients, shouldChangeToAIEdited } from "../helpers/macro
 /**
  * Filter options for getMeals query
  */
-export interface GetMealsFilters {
+export type GetMealsFilters = {
   date?: string; // YYYY-MM-DD - single date filter
   date_from?: string; // YYYY-MM-DD - range start
   date_to?: string; // YYYY-MM-DD - range end
@@ -31,27 +30,27 @@ export interface GetMealsFilters {
   limit: number;
   offset: number;
   sort: "asc" | "desc";
-}
+};
 
 /**
  * Result of creating a meal
  */
-export interface CreateMealResult {
+export type CreateMealResult = {
   success: boolean;
   data?: CreateMealResponseDTO;
   error?: string;
   statusCode?: number;
-}
+};
 
 /**
  * Result of updating a meal
  */
-export interface UpdateMealResult {
+export type UpdateMealResult = {
   success: boolean;
   data?: UpdateMealResponseDTO;
   error?: string;
   statusCode?: number;
-}
+};
 
 /**
  * Meals Service Class
@@ -497,6 +496,7 @@ export class MealsService {
         : undefined;
 
     // Remove the raw ai_generation array and add formatted version
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { ai_generation: _, ...mealData } = meal;
 
     return {

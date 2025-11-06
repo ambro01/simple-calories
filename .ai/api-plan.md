@@ -3,6 +3,7 @@
 ## 1. Resources
 
 ### Core Resources
+
 - **profiles** - User profiles bridging Supabase Auth with application logic
 - **calorie-goals** - User's calorie goal history with effective dates
 - **meals** - User's meal entries with nutritional information
@@ -10,6 +11,7 @@
 - **daily-progress** - Aggregated daily progress (read-only view)
 
 ### Administrative Resources
+
 - **error-logs** - Application error logs (admin access only)
 
 ## 2. Endpoints
@@ -19,11 +21,13 @@
 Authentication is handled directly by Supabase Auth SDK on the client side. The API expects a valid JWT token in the Authorization header for all authenticated endpoints.
 
 **Authorization Header Format:**
+
 ```
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 **Client-side operations:**
+
 - `supabase.auth.signUp({ email, password })` - User registration
 - `supabase.auth.signInWithPassword({ email, password })` - User login
 - `supabase.auth.resetPasswordForEmail(email)` - Password reset
@@ -32,11 +36,13 @@ Authorization: Bearer <JWT_TOKEN>
 ### 2.2. Profiles
 
 #### GET /api/v1/profile
+
 Get the authenticated user's profile.
 
 **Authentication:** Required
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -46,6 +52,7 @@ Get the authenticated user's profile.
 ```
 
 **Error 401:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -54,11 +61,13 @@ Get the authenticated user's profile.
 ```
 
 #### PATCH /api/v1/profile
+
 Update the authenticated user's profile.
 
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   // Currently no updatable fields, reserved for future extensions
@@ -66,6 +75,7 @@ Update the authenticated user's profile.
 ```
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -77,15 +87,18 @@ Update the authenticated user's profile.
 ### 2.3. Calorie Goals
 
 #### GET /api/v1/calorie-goals
+
 Get all calorie goals for the authenticated user (history).
 
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `limit` (optional, default: 50) - Number of records to return
 - `offset` (optional, default: 0) - Number of records to skip
 
 **Response 200:**
+
 ```json
 {
   "data": [
@@ -107,14 +120,17 @@ Get all calorie goals for the authenticated user (history).
 ```
 
 #### GET /api/v1/calorie-goals/current
+
 Get the current calorie goal for the authenticated user.
 
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `date` (optional, default: today) - Date in YYYY-MM-DD format
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -127,6 +143,7 @@ Get the current calorie goal for the authenticated user.
 ```
 
 **Response 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -135,11 +152,13 @@ Get the current calorie goal for the authenticated user.
 ```
 
 #### POST /api/v1/calorie-goals
+
 Create a new calorie goal. The goal will be effective from tomorrow (CURRENT_DATE + 1).
 
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "daily_goal": 2500
@@ -147,9 +166,11 @@ Create a new calorie goal. The goal will be effective from tomorrow (CURRENT_DAT
 ```
 
 **Validation:**
+
 - `daily_goal`: required, integer, 1-10000
 
 **Response 201:**
+
 ```json
 {
   "id": "uuid",
@@ -162,6 +183,7 @@ Create a new calorie goal. The goal will be effective from tomorrow (CURRENT_DAT
 ```
 
 **Error 400:**
+
 ```json
 {
   "error": "Validation Error",
@@ -173,6 +195,7 @@ Create a new calorie goal. The goal will be effective from tomorrow (CURRENT_DAT
 ```
 
 **Error 409:**
+
 ```json
 {
   "error": "Conflict",
@@ -181,14 +204,17 @@ Create a new calorie goal. The goal will be effective from tomorrow (CURRENT_DAT
 ```
 
 #### PATCH /api/v1/calorie-goals/:id
+
 Update an existing calorie goal.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `id` - Calorie goal UUID
 
 **Request Body:**
+
 ```json
 {
   "daily_goal": 2600
@@ -196,6 +222,7 @@ Update an existing calorie goal.
 ```
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -208,6 +235,7 @@ Update an existing calorie goal.
 ```
 
 **Error 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -216,16 +244,19 @@ Update an existing calorie goal.
 ```
 
 #### DELETE /api/v1/calorie-goals/:id
+
 Delete a calorie goal.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `id` - Calorie goal UUID
 
 **Response 204:** No Content
 
 **Error 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -236,6 +267,7 @@ Delete a calorie goal.
 ### 2.4. AI Generations
 
 #### POST /api/v1/ai-generations
+
 Generate nutritional estimates from a text description using AI.
 
 **Authentication:** Required
@@ -243,6 +275,7 @@ Generate nutritional estimates from a text description using AI.
 **Rate Limit:** 10 requests per minute per user
 
 **Request Body:**
+
 ```json
 {
   "prompt": "dwa jajka sadzone na maśle i kromka chleba"
@@ -250,9 +283,11 @@ Generate nutritional estimates from a text description using AI.
 ```
 
 **Validation:**
+
 - `prompt`: required, string, max 1000 characters
 
 **Response 201:**
+
 ```json
 {
   "id": "uuid",
@@ -273,6 +308,7 @@ Generate nutritional estimates from a text description using AI.
 ```
 
 **Response 201 (unclear description):**
+
 ```json
 {
   "id": "uuid",
@@ -293,6 +329,7 @@ Generate nutritional estimates from a text description using AI.
 ```
 
 **Error 400:**
+
 ```json
 {
   "error": "Validation Error",
@@ -304,6 +341,7 @@ Generate nutritional estimates from a text description using AI.
 ```
 
 **Error 429:**
+
 ```json
 {
   "error": "Rate Limit Exceeded",
@@ -313,6 +351,7 @@ Generate nutritional estimates from a text description using AI.
 ```
 
 **Error 500:**
+
 ```json
 {
   "error": "AI Service Error",
@@ -321,14 +360,17 @@ Generate nutritional estimates from a text description using AI.
 ```
 
 #### GET /api/v1/ai-generations/:id
+
 Get a specific AI generation by ID.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `id` - AI generation UUID
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -349,6 +391,7 @@ Get a specific AI generation by ID.
 ```
 
 **Error 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -357,16 +400,19 @@ Get a specific AI generation by ID.
 ```
 
 #### GET /api/v1/ai-generations
+
 Get AI generations for the authenticated user.
 
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `meal_id` (optional) - Filter by meal UUID (returns generation history for that meal)
 - `limit` (optional, default: 20) - Number of records to return
 - `offset` (optional, default: 0) - Number of records to skip
 
 **Response 200:**
+
 ```json
 {
   "data": [
@@ -398,11 +444,13 @@ Get AI generations for the authenticated user.
 ### 2.5. Meals
 
 #### GET /api/v1/meals
+
 Get meals for the authenticated user.
 
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `date` (optional) - Filter by specific date (YYYY-MM-DD)
 - `date_from` (optional) - Start date for range filter (YYYY-MM-DD)
 - `date_to` (optional) - End date for range filter (YYYY-MM-DD)
@@ -412,6 +460,7 @@ Get meals for the authenticated user.
 - `sort` (optional, default: desc) - Sort order: asc, desc
 
 **Response 200:**
+
 ```json
 {
   "data": [
@@ -446,14 +495,17 @@ Get meals for the authenticated user.
 ```
 
 #### GET /api/v1/meals/:id
+
 Get a specific meal by ID.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `id` - Meal UUID
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -479,6 +531,7 @@ Get a specific meal by ID.
 ```
 
 **Error 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -487,11 +540,13 @@ Get a specific meal by ID.
 ```
 
 #### POST /api/v1/meals
+
 Create a new meal entry.
 
 **Authentication:** Required
 
 **Request Body (AI-generated):**
+
 ```json
 {
   "description": "Jajka sadzone z chlebem",
@@ -507,6 +562,7 @@ Create a new meal entry.
 ```
 
 **Request Body (Manual):**
+
 ```json
 {
   "description": "Kurczak z ryżem",
@@ -521,6 +577,7 @@ Create a new meal entry.
 ```
 
 **Validation:**
+
 - `description`: required, string, max 500 characters
 - `calories`: required, integer, 1-10000
 - `protein`: optional, decimal(6,2), 0-1000
@@ -532,6 +589,7 @@ Create a new meal entry.
 - `meal_timestamp`: required, ISO 8601 timestamp, cannot be in the future
 
 **Response 201:**
+
 ```json
 {
   "id": "uuid",
@@ -551,6 +609,7 @@ Create a new meal entry.
 ```
 
 **Response 201 (with warning):**
+
 ```json
 {
   "id": "uuid",
@@ -575,6 +634,7 @@ Create a new meal entry.
 ```
 
 **Error 400:**
+
 ```json
 {
   "error": "Validation Error",
@@ -587,14 +647,17 @@ Create a new meal entry.
 ```
 
 #### PATCH /api/v1/meals/:id
+
 Update an existing meal entry.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `id` - Meal UUID
 
 **Request Body:**
+
 ```json
 {
   "description": "Jajka sadzone z chlebem (updated)",
@@ -607,6 +670,7 @@ Update an existing meal entry.
 **Note:** When a user edits values from an AI-generated meal, the `input_method` should be changed to 'ai-edited'.
 
 **Response 200:**
+
 ```json
 {
   "id": "uuid",
@@ -626,6 +690,7 @@ Update an existing meal entry.
 ```
 
 **Error 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -634,16 +699,19 @@ Update an existing meal entry.
 ```
 
 #### DELETE /api/v1/meals/:id
+
 Delete a meal entry.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `id` - Meal UUID
 
 **Response 204:** No Content
 
 **Error 404:**
+
 ```json
 {
   "error": "Not Found",
@@ -654,17 +722,20 @@ Delete a meal entry.
 ### 2.6. Daily Progress
 
 #### GET /api/v1/daily-progress
+
 Get daily progress summary for the authenticated user.
 
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `date_from` (optional) - Start date (YYYY-MM-DD)
 - `date_to` (optional) - End date (YYYY-MM-DD)
 - `limit` (optional, default: 30) - Number of records to return
 - `offset` (optional, default: 0) - Number of records to skip
 
 **Response 200:**
+
 ```json
 {
   "data": [
@@ -700,19 +771,23 @@ Get daily progress summary for the authenticated user.
 ```
 
 **Status Calculation:**
+
 - `under`: total_calories < calorie_goal - 100
 - `on_track`: calorie_goal - 100 <= total_calories <= calorie_goal + 100
 - `over`: total_calories > calorie_goal + 100
 
 #### GET /api/v1/daily-progress/:date
+
 Get daily progress for a specific date.
 
 **Authentication:** Required
 
 **URL Parameters:**
+
 - `date` - Date in YYYY-MM-DD format
 
 **Response 200:**
+
 ```json
 {
   "date": "2025-01-27",
@@ -728,6 +803,7 @@ Get daily progress for a specific date.
 ```
 
 **Response 200 (no meals for date):**
+
 ```json
 {
   "date": "2025-01-27",
@@ -745,6 +821,7 @@ Get daily progress for a specific date.
 ## 3. Authentication and Authorization
 
 ### Authentication Mechanism
+
 The application uses **Supabase Auth** with JWT (JSON Web Tokens) for authentication:
 
 - **Registration/Login**: Handled by Supabase Auth SDK on the client side
@@ -753,15 +830,18 @@ The application uses **Supabase Auth** with JWT (JSON Web Tokens) for authentica
 - **Password Security**: Passwords are hashed using bcrypt by Supabase Auth
 
 ### Authorization Strategy
+
 Authorization is enforced at two levels:
 
 #### 1. API Level
+
 - All endpoints (except health checks) require a valid JWT token
 - Token is passed in the `Authorization` header: `Bearer <token>`
 - Invalid or expired tokens return 401 Unauthorized
 - The API extracts `user_id` from the JWT token for all operations
 
 #### 2. Database Level (Row Level Security - RLS)
+
 Supabase RLS policies ensure complete data isolation:
 
 ```sql
@@ -772,6 +852,7 @@ USING (user_id = auth.uid());
 ```
 
 **RLS Policies Applied:**
+
 - **profiles**: Users can view/update only their own profile
 - **meals**: Users have full CRUD access only to their own meals
 - **calorie_goals**: Users have full CRUD access only to their own goals
@@ -779,6 +860,7 @@ USING (user_id = auth.uid());
 - **error_logs**: No user access (admin only via Supabase Dashboard)
 
 ### Security Features
+
 1. **Password Requirements**: Enforced by Supabase Auth (min 6 characters)
 2. **Email Verification**: Optional, configurable in Supabase
 3. **Rate Limiting**: Applied to AI generation endpoints (10 requests/minute per user)
@@ -790,9 +872,11 @@ USING (user_id = auth.uid());
 ### 4.1. Calorie Goals Validation
 
 **Field Validation:**
+
 - `daily_goal`: Required, integer, range 1-10000
 
 **Business Rules:**
+
 1. **First Goal**: Created automatically by database trigger when user registers
    - Default value: 2000 kcal
    - Effective from: CURRENT_DATE (exception for first goal only)
@@ -808,6 +892,7 @@ USING (user_id = auth.uid());
 ### 4.2. Meals Validation
 
 **Field Validation:**
+
 - `description`: Required, string, max 500 characters
 - `calories`: Required, integer, range 1-10000
 - `protein`: Optional, decimal(6,2), range 0-1000
@@ -818,11 +903,14 @@ USING (user_id = auth.uid());
 - `meal_timestamp`: Required, ISO 8601 timestamp, cannot be in the future
 
 **Business Rules:**
+
 1. **Macronutrient Warning**: If macronutrients are provided, calculate:
+
    ```
    calculated_calories = (protein * 4) + (carbs * 4) + (fats * 9)
    difference_percentage = abs(calculated_calories - calories) / calories * 100
    ```
+
    If `difference_percentage > 5%`, add warning to response (but still save)
 
 2. **Input Method Tracking**:
@@ -832,7 +920,7 @@ USING (user_id = auth.uid());
 
    This enables tracking of AI metrics:
    - Trust Metric: COUNT(input_method='ai') / COUNT(input_method IN ('ai', 'ai-edited'))
-   - Usefulness Metric: COUNT(input_method IN ('ai', 'ai-edited')) / COUNT(*)
+   - Usefulness Metric: COUNT(input_method IN ('ai', 'ai-edited')) / COUNT(\*)
 
 3. **Timestamp Validation**: `meal_timestamp` cannot be in the future (validated against server time)
 
@@ -843,6 +931,7 @@ USING (user_id = auth.uid());
 ### 4.3. AI Generations Validation
 
 **Field Validation:**
+
 - `prompt`: Required, string, max 1000 characters
 - `generated_calories`: Optional (set by AI), integer, range 1-10000
 - `generated_protein`: Optional, decimal(6,2), range 0-1000
@@ -850,7 +939,9 @@ USING (user_id = auth.uid());
 - `generated_fats`: Optional, decimal(6,2), range 0-1000
 
 **Business Rules:**
+
 1. **Generation Flow**:
+
    ```
    POST /ai-generations (status: pending)
      → Call AI service
@@ -878,7 +969,9 @@ USING (user_id = auth.uid());
 ### 4.4. Daily Progress Business Logic
 
 **Calculation Rules:**
+
 1. **Aggregation**: Sum all meals for a specific date:
+
    ```sql
    SELECT
      DATE(meal_timestamp) as date,
@@ -896,6 +989,7 @@ USING (user_id = auth.uid());
    - Falls back to 2000 kcal if no goal exists
 
 3. **Percentage Calculation**:
+
    ```
    percentage = ROUND(total_calories * 100.0 / calorie_goal, 1)
    ```
@@ -910,6 +1004,7 @@ USING (user_id = auth.uid());
 ### 4.5. Error Handling
 
 **Client Errors (4xx):**
+
 - `400 Bad Request`: Validation errors, malformed JSON
 - `401 Unauthorized`: Missing or invalid JWT token
 - `404 Not Found`: Resource doesn't exist or user doesn't have access
@@ -918,10 +1013,12 @@ USING (user_id = auth.uid());
 - `429 Too Many Requests`: Rate limit exceeded
 
 **Server Errors (5xx):**
+
 - `500 Internal Server Error`: Unexpected server error
 - `503 Service Unavailable`: AI service or database unavailable
 
 **Error Response Format:**
+
 ```json
 {
   "error": "Error Type",
@@ -936,33 +1033,39 @@ USING (user_id = auth.uid());
 ### 4.6. Data Integrity
 
 **Automatic Operations:**
+
 1. **Timestamps**: `created_at` and `updated_at` managed by database triggers
 2. **User ID**: Extracted from JWT, never accepted from request body
 3. **Cascade Deletes**: Deleting a profile cascades to all related data (meals, goals, ai_generations)
 4. **Referential Integrity**: Foreign key constraints prevent orphaned records
 
 **Transaction Requirements:**
+
 - Creating meal + updating ai_generation.meal_id must be atomic
 - Use database transactions for multi-step operations
 
 ### 4.7. Performance Considerations
 
 **Pagination:**
+
 - Default limit: Varies by endpoint (20-50 records)
 - Maximum limit: 100 records per request
 - Use offset-based pagination for simplicity in MVP
 
 **Indexes:**
+
 - Compound indexes on (user_id, timestamp/date DESC) for fast queries
 - Foreign key indexes for joins
 - Specialized indexes for common filters
 
 **Caching:**
+
 - Current calorie goal can be cached (changes infrequently)
 - Daily progress can be cached with short TTL (1-5 minutes)
 - Implement cache invalidation on meal creation/update/delete
 
 **N+1 Query Prevention:**
+
 - Use JOINs or database views (e.g., `meals_with_latest_ai`)
 - Batch load related data when returning lists
 
@@ -975,12 +1078,14 @@ This allows for future breaking changes to be introduced in `/api/v2/` while mai
 ## 6. Notes for Implementation
 
 ### Technology Stack Alignment
+
 - **Astro + React**: API returns JSON, frontend handles rendering
 - **Supabase**: Use Supabase client SDK for auth, direct PostgreSQL for data operations
 - **OpenRouter.ai**: Call from backend/serverless function, not directly from frontend
 - **TypeScript**: Generate TypeScript types from database schema using Supabase CLI
 
 ### Recommended Architecture
+
 ```
 Frontend (Astro + React)
   ↓ HTTP + JWT
@@ -992,6 +1097,7 @@ OpenRouter.ai (AI models)
 ```
 
 ### Security Checklist
+
 - [ ] All endpoints validate JWT tokens
 - [ ] RLS policies enabled on all tables
 - [ ] Rate limiting configured for AI endpoints
@@ -1002,6 +1108,7 @@ OpenRouter.ai (AI models)
 - [ ] XSS prevention (proper JSON encoding)
 
 ### Monitoring and Metrics
+
 - Track AI metrics (trust, usefulness) from database queries
 - Log errors to `error_logs` table
 - Monitor AI generation success rate and duration

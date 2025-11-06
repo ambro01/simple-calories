@@ -252,11 +252,16 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     }
     const userId = userIdOrResponse;
 
-    // Step 6: Fetch current meal
+    // Step 6: Fetch current meal (raw data from database)
     const mealsService = new MealsService(locals.supabase);
-    const currentMeal = await mealsService.getMealById(mealId, userId);
+    const { data: currentMeal, error: fetchError } = await locals.supabase
+      .from("meals")
+      .select("*")
+      .eq("id", mealId)
+      .eq("user_id", userId)
+      .single();
 
-    if (!currentMeal) {
+    if (fetchError || !currentMeal) {
       const errorResponse: ErrorResponseDTO = {
         error: "NOT_FOUND",
         message: "Meal not found",
@@ -270,7 +275,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
     // Step 7: Update meal via service
     // Service will handle input_method change and macronutrient warnings
-    const result = await mealsService.updateMeal(mealId, userId, validatedData, currentMeal as any);
+    const result = await mealsService.updateMeal(mealId, userId, validatedData, currentMeal);
 
     if (!result.success || !result.data) {
       const errorResponse: ErrorResponseDTO = {

@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from '@playwright/test';
+import { type Page, type Locator, expect } from "@playwright/test";
 
 /**
  * Page Object Model for Meal Card Component
@@ -15,7 +15,7 @@ export class MealCardPage {
    * Get all meal cards on the page
    */
   getAllMealCards(): Locator {
-    return this.page.getByTestId('meal-card');
+    return this.page.getByTestId("meal-card");
   }
 
   /**
@@ -30,8 +30,8 @@ export class MealCardPage {
    */
   getMealCardByDescription(description: string): Locator {
     return this.page
-      .getByTestId('meal-card')
-      .filter({ has: this.page.getByTestId('meal-card-description').filter({ hasText: description }) });
+      .getByTestId("meal-card")
+      .filter({ has: this.page.getByTestId("meal-card-description").filter({ hasText: description }) });
   }
 
   /**
@@ -39,12 +39,12 @@ export class MealCardPage {
    */
   getMealCardByDescriptionAndTime(description: string, time: string): Locator {
     return this.page
-      .getByTestId('meal-card')
+      .getByTestId("meal-card")
       .filter({
-        has: this.page.getByTestId('meal-card-description').filter({ hasText: description })
+        has: this.page.getByTestId("meal-card-description").filter({ hasText: description }),
       })
       .filter({
-        has: this.page.getByTestId('meal-card-time').filter({ hasText: time })
+        has: this.page.getByTestId("meal-card-time").filter({ hasText: time }),
       });
   }
 
@@ -52,14 +52,14 @@ export class MealCardPage {
    * Get description from meal card
    */
   async getDescription(mealCard: Locator): Promise<string> {
-    return await mealCard.getByTestId('meal-card-description').textContent() || '';
+    return (await mealCard.getByTestId("meal-card-description").textContent()) || "";
   }
 
   /**
    * Get calories from meal card
    */
   async getCalories(mealCard: Locator): Promise<number> {
-    const text = await mealCard.getByTestId('meal-card-calories').textContent() || '';
+    const text = (await mealCard.getByTestId("meal-card-calories").textContent()) || "";
     const match = text.match(/(\d+)/);
     return match ? parseInt(match[1], 10) : 0;
   }
@@ -68,39 +68,39 @@ export class MealCardPage {
    * Get time from meal card
    */
   async getTime(mealCard: Locator): Promise<string> {
-    return await mealCard.getByTestId('meal-card-time').textContent() || '';
+    return (await mealCard.getByTestId("meal-card-time").textContent()) || "";
   }
 
   /**
    * Click edit button on meal card
    */
   async clickEdit(mealCard: Locator) {
-    await mealCard.getByTestId('meal-card-edit-button').click();
+    await mealCard.getByTestId("meal-card-edit-button").click();
   }
 
   /**
    * Click delete button on meal card
    */
   async clickDelete(mealCard: Locator) {
-    await mealCard.getByTestId('meal-card-delete-button').click();
+    await mealCard.getByTestId("meal-card-delete-button").click();
   }
 
   /**
    * Confirm delete action
    */
   async confirmDelete(mealCard: Locator) {
-    const deleteDialog = mealCard.getByTestId('delete-confirm-dialog');
+    const deleteDialog = mealCard.getByTestId("delete-confirm-dialog");
     await expect(deleteDialog).toBeVisible();
-    await deleteDialog.getByTestId('confirm-delete-button').click();
+    await deleteDialog.getByTestId("confirm-delete-button").click();
   }
 
   /**
    * Cancel delete action
    */
   async cancelDelete(mealCard: Locator) {
-    const deleteDialog = mealCard.getByTestId('delete-confirm-dialog');
+    const deleteDialog = mealCard.getByTestId("delete-confirm-dialog");
     await expect(deleteDialog).toBeVisible();
-    await deleteDialog.getByTestId('cancel-delete-button').click();
+    await deleteDialog.getByTestId("cancel-delete-button").click();
   }
 
   /**
@@ -116,7 +116,7 @@ export class MealCardPage {
    */
   async mealExistsByDescription(description: string): Promise<boolean> {
     const card = this.getMealCardByDescription(description);
-    return await card.count() > 0;
+    return (await card.count()) > 0;
   }
 
   /**

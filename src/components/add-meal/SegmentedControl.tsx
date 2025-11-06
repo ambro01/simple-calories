@@ -22,7 +22,10 @@ export function SegmentedControl({ value, onChange, disabled }: SegmentedControl
   ];
 
   return (
-    <div className="inline-flex h-10 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground" data-testid="mode-selector">
+    <div
+      className="inline-flex h-10 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground"
+      data-testid="mode-selector"
+    >
       {options.map((option) => {
         const isSelected = value === option.value;
 

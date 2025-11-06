@@ -16,13 +16,13 @@
 /**
  * Rate limit configuration
  */
-interface RateLimitConfig {
+type RateLimitConfig = {
   /** Maximum number of requests allowed in the time window */
   maxRequests: number;
 
   /** Time window in milliseconds */
   windowMs: number;
-}
+};
 
 /**
  * Timestamp record for a single request
@@ -32,7 +32,7 @@ type RequestTimestamp = number;
 /**
  * Rate limit check result
  */
-export interface RateLimitResult {
+export type RateLimitResult = {
   /** Whether the request is allowed */
   allowed: boolean;
 
@@ -44,7 +44,7 @@ export interface RateLimitResult {
 
   /** Milliseconds until the oldest request expires (if rate limited) */
   retryAfter?: number;
-}
+};
 
 /**
  * Rate Limiting Service

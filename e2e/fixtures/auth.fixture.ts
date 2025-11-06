@@ -1,5 +1,5 @@
-import { test as base } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+import { test as base } from "@playwright/test";
+import { LoginPage } from "../pages/LoginPage";
 
 /**
  * Fixture for authenticated test context
@@ -13,6 +13,8 @@ export const test = base.extend<{
   loginPage: LoginPage;
   authenticatedPage: typeof base.prototype.page;
 }>({
+  // These are Playwright test fixtures, not React hooks
+
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
     await use(loginPage);
@@ -21,13 +23,13 @@ export const test = base.extend<{
   authenticatedPage: async ({ page }, use) => {
     // No login needed here - authentication state is loaded from global setup
     // Just navigate to the dashboard to start the test
-    await page.goto('/');
+    await page.goto("/");
 
     // Verify we're authenticated by checking if we're on the dashboard
-    await page.waitForURL('/', { timeout: 5000 });
+    await page.waitForURL("/", { timeout: 5000 });
 
     await use(page);
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect } from "@playwright/test";

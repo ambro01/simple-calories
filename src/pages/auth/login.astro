@@ -27,10 +27,6 @@ const {
 if (user) {
   return Astro.redirect("/");
 }
-
-// Handle URL params for error/success messages
-const errorParam = Astro.url.searchParams.get("error");
-const successParam = Astro.url.searchParams.get("success");
 ---
 
 <AuthLayout title="Logowanie - Szybkie Kalorie">

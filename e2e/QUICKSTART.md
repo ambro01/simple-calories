@@ -56,6 +56,7 @@ npm run test:e2e:ui
 ```
 
 **Zalety:**
+
 - Wizualna lista testów
 - Krok po kroku (step-by-step)
 - Time travel debugging
@@ -68,6 +69,7 @@ npm run test:e2e:debug
 ```
 
 **Zalety:**
+
 - Breakpointy w kodzie
 - Pause/Resume
 - Inspect selectors
@@ -81,6 +83,7 @@ npm run test:e2e:codegen
 **Note:** Generuje testy dla `http://localhost:3000
 
 **Zalety:**
+
 - Nagrywaj interakcje jako kod
 - Szybkie tworzenie nowych testów
 
@@ -141,6 +144,7 @@ npx playwright test e2e/meals/add-meal.spec.ts -g "should add meal manually" --h
 ```
 
 Powinieneś zobaczyć:
+
 1. Przeglądarka się otwiera
 2. Auto-login do konta e2e@test.pl
 3. Otwarcie modala "Dodaj posiłek"
@@ -154,6 +158,7 @@ Powinieneś zobaczyć:
 ### Problem: "Timeout waiting for element"
 
 **Rozwiązanie:**
+
 1. Upewnij się, że dev server działa (`npm run dev`)
 2. Sprawdź czy port 4321 jest dostępny
 3. Uruchom test z `--headed` żeby zobaczyć co się dzieje
@@ -161,6 +166,7 @@ Powinieneś zobaczyć:
 ### Problem: "Supabase connection failed"
 
 **Rozwiązanie:**
+
 1. Sprawdź `.env.test` (poprawne credentials)
 2. Sprawdź połączenie internetowe
 3. Zweryfikuj czy test user istnieje w bazie
@@ -168,6 +174,7 @@ Powinieneś zobaczyć:
 ### Problem: "Login failed"
 
 **Rozwiązanie:**
+
 1. Sprawdź hasło w `.env.test` (E2E_PASSWORD)
 2. Sprawdź czy user `e2e@test.pl` istnieje w Supabase Auth
 3. Sprawdź czy user ma potwierdzony email
@@ -175,6 +182,7 @@ Powinieneś zobaczyć:
 ### Problem: "Test fails: meal not found in DB"
 
 **Rozwiązanie:**
+
 1. Sprawdź RLS policies (czy test user ma dostęp)
 2. Sprawdź czy cleanup działa poprawnie
 3. Uruchom test pojedynczo (bez parallel)
@@ -182,6 +190,7 @@ Powinieneś zobaczyć:
 ### Problem: "Cannot find module"
 
 **Rozwiązanie:**
+
 ```bash
 npm install
 npx playwright install
@@ -207,6 +216,7 @@ Running 18 tests using 1 worker
 ### ⚠️ Niektóre testy failują
 
 Sprawdź:
+
 1. Czy dev server działa
 2. Czy baza testowa jest dostępna
 3. Czy test user ma poprawne uprawnienia

@@ -39,10 +39,10 @@ Przykłady:
 /**
  * Configuration for OpenRouter adapter
  */
-interface OpenRouterAdapterConfig {
+type OpenRouterAdapterConfig = {
   model?: string;
   timeout?: number;
-}
+};
 
 /**
  * OpenRouter Adapter Class

@@ -9,17 +9,17 @@ import { useCallback, useEffect, useState } from "react";
 import type { DailyProgressResponseDTO, MealResponseDTO } from "@/types";
 import type { DayDetailsState } from "@/types/day-details.types";
 
-interface UseDayDetailsParams {
+type UseDayDetailsParams = {
   date: string; // YYYY-MM-DD
-}
+};
 
-interface UseDayDetailsReturn {
+type UseDayDetailsReturn = {
   state: DayDetailsState;
   loadDayData: () => Promise<void>;
   deleteMeal: (mealId: string) => Promise<void>;
   refreshAfterMealChange: () => Promise<void>;
   setEditingMeal: (meal: MealResponseDTO | null) => void;
-}
+};
 
 /**
  * Pobiera daily progress dla konkretnego dnia

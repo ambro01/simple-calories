@@ -1,14 +1,10 @@
-import { test as base } from '@playwright/test';
+import { test as base } from "@playwright/test";
 
 /**
  * Extend Playwright's test fixture with custom fixtures
  * Example: Add authenticated user context, database setup, etc.
  */
-type CustomFixtures = {
-  // Add custom fixtures here
-  // Example:
-  // authenticatedPage: Page;
-};
+type CustomFixtures = Record<string, never>;
 
 export const test = base.extend<CustomFixtures>({
   // Add fixture implementations here
@@ -22,4 +18,4 @@ export const test = base.extend<CustomFixtures>({
   // },
 });
 
-export { expect } from '@playwright/test';
+export { expect } from "@playwright/test";

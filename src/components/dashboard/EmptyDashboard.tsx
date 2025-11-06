@@ -5,11 +5,11 @@
  * Przycisk do dodawania posiłków jest przekazywany jako props.
  */
 
-import { DashboardHeader } from './DashboardHeader';
+import { DashboardHeader } from "./DashboardHeader";
 
-interface EmptyDashboardProps {
+type EmptyDashboardProps = {
   onAddMeal: () => void;
-}
+};
 
 export function EmptyDashboard({ onAddMeal }: EmptyDashboardProps) {
   return (

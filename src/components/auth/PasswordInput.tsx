@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-interface PasswordInputProps {
+type PasswordInputProps = {
   id: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -20,7 +20,7 @@ interface PasswordInputProps {
   autoComplete?: string;
   className?: string;
   "data-testid"?: string;
-}
+};
 
 export function PasswordInput({
   id,
@@ -59,11 +59,7 @@ export function PasswordInput({
         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
         aria-label={showPassword ? "Ukryj hasło" : "Pokaż hasło"}
       >
-        {showPassword ? (
-          <EyeOff className="h-4 w-4" />
-        ) : (
-          <Eye className="h-4 w-4" />
-        )}
+        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>
     </div>
   );

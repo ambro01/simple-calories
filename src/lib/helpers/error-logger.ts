@@ -16,7 +16,7 @@ import type { Database } from "../../db/database.types";
 /**
  * Parameters for logging an error to the database
  */
-export interface ErrorLogParams {
+export type ErrorLogParams = {
   /**
    * User ID associated with the error (optional)
    * Should be omitted for unauthenticated errors
@@ -47,7 +47,7 @@ export interface ErrorLogParams {
    * @example { endpoint: 'GET /api/v1/profile', timestamp: Date.now() }
    */
   context?: Record<string, unknown>;
-}
+};
 
 /**
  * Logs an error to the error_logs database table

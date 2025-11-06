@@ -84,10 +84,10 @@ describe('MyComponent', () => {
 ### Testing Helper Functions
 
 ```typescript
-import { myHelper } from '../my-helper';
+import { myHelper } from "../my-helper";
 
-describe('myHelper', () => {
-  it('performs correct calculation', () => {
+describe("myHelper", () => {
+  it("performs correct calculation", () => {
     const result = myHelper(5, 10);
     expect(result).toBe(15);
   });
@@ -101,12 +101,12 @@ describe('myHelper', () => {
 const mockFn = vi.fn();
 
 // Mock a module
-vi.mock('../module', () => ({
-  someFunction: vi.fn(() => 'mocked value'),
+vi.mock("../module", () => ({
+  someFunction: vi.fn(() => "mocked value"),
 }));
 
 // Spy on existing function
-vi.spyOn(object, 'method');
+vi.spyOn(object, "method");
 ```
 
 ## Writing E2E Tests
@@ -114,13 +114,13 @@ vi.spyOn(object, 'method');
 ### Basic Structure
 
 ```typescript
-import { test, expect } from './fixtures';
+import { test, expect } from "./fixtures";
 
-test.describe('Feature Name', () => {
-  test('should perform action', async ({ page }) => {
-    await page.goto('/');
+test.describe("Feature Name", () => {
+  test("should perform action", async ({ page }) => {
+    await page.goto("/");
     await page.click('button[aria-label="Submit"]');
-    await expect(page).toHaveURL('/success');
+    await expect(page).toHaveURL("/success");
   });
 });
 ```
@@ -141,17 +141,17 @@ export class LoginPage {
 
 // Usage in test
 const loginPage = new LoginPage(page);
-await loginPage.login('test@example.com', 'password');
+await loginPage.login("test@example.com", "password");
 ```
 
 ### Visual Regression Testing
 
 ```typescript
-test('should match snapshot', async ({ page }) => {
-  await page.goto('/');
-  await expect(page).toHaveScreenshot('page-name.png', {
+test("should match snapshot", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveScreenshot("page-name.png", {
     fullPage: true,
-    animations: 'disabled',
+    animations: "disabled",
   });
 });
 ```
@@ -188,6 +188,7 @@ test('should match snapshot', async ({ page }) => {
 ## Best Practices
 
 ### Unit Tests
+
 - Use descriptive test names that explain what is being tested
 - Follow Arrange-Act-Assert pattern
 - Test one thing per test
@@ -196,6 +197,7 @@ test('should match snapshot', async ({ page }) => {
 - Leverage inline snapshots for readable assertions
 
 ### E2E Tests
+
 - Use Page Object Model for maintainable tests
 - Prefer user-facing selectors (roles, labels) over implementation details
 - Implement proper wait strategies (avoid arbitrary timeouts)
@@ -204,6 +206,7 @@ test('should match snapshot', async ({ page }) => {
 - Run tests in parallel when possible
 
 ### General Guidelines
+
 - Write tests alongside feature development
 - Keep tests independent and isolated
 - Mock external dependencies
@@ -223,6 +226,7 @@ Tests will run automatically in the CI/CD pipeline:
 ## Debugging Tests
 
 ### Vitest
+
 ```bash
 # Run specific test file
 npm test -- path/to/test.test.ts
@@ -235,6 +239,7 @@ npm run test:ui
 ```
 
 ### Playwright
+
 ```bash
 # Debug mode (opens inspector)
 npm run test:e2e:debug
@@ -249,17 +254,20 @@ npx playwright show-report
 ## Common Issues
 
 ### Tests Timing Out
+
 - Increase timeout in config
 - Check for missing awaits
 - Verify network requests complete
 
 ### Flaky Tests
+
 - Add proper wait conditions
 - Avoid arbitrary delays
 - Mock time-dependent code
 - Ensure test isolation
 
 ### Coverage Not Meeting Threshold
+
 - Check excluded files in config
 - Add tests for uncovered code paths
 - Focus on business-critical areas first

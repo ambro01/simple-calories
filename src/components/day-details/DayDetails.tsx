@@ -15,10 +15,10 @@ import { EmptyMealsList } from "./EmptyMealsList";
 import { FAB } from "@/components/dashboard/FAB";
 import { MealModal } from "@/components/add-meal";
 
-interface DayDetailsProps {
+type DayDetailsProps = {
   date: string; // YYYY-MM-DD
   onBack?: () => void;
-}
+};
 
 export function DayDetails({ date, onBack }: DayDetailsProps) {
   const { state, deleteMeal, refreshAfterMealChange, setEditingMeal } = useDayDetails({ date });

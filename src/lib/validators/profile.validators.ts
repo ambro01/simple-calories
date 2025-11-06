@@ -54,9 +54,7 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
  */
 export const changePasswordSchema = z
   .object({
-    currentPassword: z
-      .string()
-      .min(1, "Aktualne hasło jest wymagane"),
+    currentPassword: z.string().min(1, "Aktualne hasło jest wymagane"),
     newPassword: z
       .string()
       .min(8, "Nowe hasło musi mieć co najmniej 8 znaków")

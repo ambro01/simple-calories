@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ProfileResponseDTO, CalorieGoalResponseDTO } from "@/types";
 import type { SettingsViewModel } from "@/types/settings.types";
 
-interface UseSettingsReturn {
+type UseSettingsReturn = {
   state: SettingsViewModel;
   openEditGoalDialog: () => void;
   closeEditGoalDialog: () => void;
@@ -19,7 +19,7 @@ interface UseSettingsReturn {
   closeLogoutDialog: () => void;
   logout: () => Promise<void>;
   refreshData: () => Promise<void>;
-}
+};
 
 /**
  * Pobiera profil użytkownika z API

@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from '@playwright/test';
+import { type Page, type Locator, expect } from "@playwright/test";
 
 /**
  * Page Object Model for Add Meal Modal
@@ -39,32 +39,32 @@ export class AddMealPage {
     this.page = page;
 
     // Modal
-    this.addMealButton = page.getByTestId('add-meal-button');
-    this.mealModal = page.getByTestId('meal-modal');
-    this.modalTitle = page.getByTestId('meal-modal-title');
+    this.addMealButton = page.getByTestId("add-meal-button");
+    this.mealModal = page.getByTestId("meal-modal");
+    this.modalTitle = page.getByTestId("meal-modal-title");
 
     // Mode selector
-    this.modeSelector = page.getByTestId('mode-selector');
-    this.aiModeButton = page.getByTestId('mode-ai');
-    this.manualModeButton = page.getByTestId('mode-manual');
+    this.modeSelector = page.getByTestId("mode-selector");
+    this.aiModeButton = page.getByTestId("mode-ai");
+    this.manualModeButton = page.getByTestId("mode-manual");
 
     // Manual mode
-    this.manualModeForm = page.getByTestId('manual-mode-form');
-    this.descriptionInput = page.getByTestId('manual-description-input');
-    this.caloriesInput = page.getByTestId('manual-calories-input');
-    this.proteinInput = page.getByTestId('manual-protein-input');
-    this.carbsInput = page.getByTestId('manual-carbs-input');
-    this.fatsInput = page.getByTestId('manual-fats-input');
-    this.fiberInput = page.getByTestId('manual-fiber-input');
+    this.manualModeForm = page.getByTestId("manual-mode-form");
+    this.descriptionInput = page.getByTestId("manual-description-input");
+    this.caloriesInput = page.getByTestId("manual-calories-input");
+    this.proteinInput = page.getByTestId("manual-protein-input");
+    this.carbsInput = page.getByTestId("manual-carbs-input");
+    this.fatsInput = page.getByTestId("manual-fats-input");
+    this.fiberInput = page.getByTestId("manual-fiber-input");
 
     // Common fields
-    this.categorySelector = page.getByTestId('category-selector');
-    this.dateInput = page.getByTestId('meal-date-input');
-    this.timeInput = page.getByTestId('meal-time-input');
+    this.categorySelector = page.getByTestId("category-selector");
+    this.dateInput = page.getByTestId("meal-date-input");
+    this.timeInput = page.getByTestId("meal-time-input");
 
     // Actions
-    this.submitButton = page.getByTestId('submit-meal-button');
-    this.cancelButton = page.getByTestId('cancel-button');
+    this.submitButton = page.getByTestId("submit-meal-button");
+    this.cancelButton = page.getByTestId("cancel-button");
   }
 
   /**
@@ -241,14 +241,14 @@ export class AddMealPage {
    */
   async isSubmitLoading(): Promise<boolean> {
     const text = await this.submitButton.textContent();
-    return text?.includes('...') || false;
+    return text?.includes("...") || false;
   }
 
   /**
    * Get modal title
    */
   async getModalTitle(): Promise<string> {
-    return await this.modalTitle.textContent() || '';
+    return (await this.modalTitle.textContent()) || "";
   }
 
   /**
@@ -256,6 +256,6 @@ export class AddMealPage {
    */
   async isEditMode(): Promise<boolean> {
     const title = await this.getModalTitle();
-    return title.includes('Edytuj');
+    return title.includes("Edytuj");
   }
 }

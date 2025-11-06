@@ -227,10 +227,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
         status: 201,
         headers: { "Content-Type": "application/json" },
       });
-    } catch (createError: any) {
+    } catch (createError: unknown) {
       // Handle UNIQUE constraint violation (PostgreSQL error code 23505)
       // This happens when user tries to create multiple goals for tomorrow
-      if (createError.code === "23505") {
+      if (
+        typeof createError === "object" &&
+        createError !== null &&
+        "code" in createError &&
+        createError.code === "23505"
+      ) {
         return new Response(
           JSON.stringify({
             error: "Conflict",

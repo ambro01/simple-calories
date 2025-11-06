@@ -28,34 +28,34 @@ export type AILoadingStage = 0 | 1 | 2;
 /**
  * Informacje o ostrzeżeniu dotyczącym rozbieżności makroskładników
  */
-export interface MacroWarningInfo {
+export type MacroWarningInfo = {
   visible: boolean;
   calculatedCalories: number;
   providedCalories: number;
   differencePercent: number;
-}
+};
 
 /**
  * Błąd walidacji formularza
  */
-export interface FormValidationError {
+export type FormValidationError = {
   field: string;
   message: string;
-}
+};
 
 /**
  * Ostrzeżenie dotyczące daty
  */
-export interface DateValidationWarning {
+export type DateValidationWarning = {
   type: "future" | "old";
   message: string;
-}
+};
 
 /**
  * Stan formularza dodawania posiłku
  * Centralna struktura danych używana przez hook useAddMealForm
  */
-export interface MealFormState {
+export type MealFormState = {
   // Tryb formularza
   mode: MealFormMode;
   editMode: MealFormEditMode;
@@ -92,13 +92,13 @@ export interface MealFormState {
   validationErrors: FormValidationError[];
   macroWarning: MacroWarningInfo | null;
   dateWarning: DateValidationWarning | null;
-}
+};
 
 /**
  * Rezultat generacji AI do użycia w UI
  * Zawiera dane wymagane do prepopulacji formularza
  */
-export interface AIGenerationResult {
+export type AIGenerationResult = {
   id: string;
   prompt: string;
   calories: number | null;
@@ -108,7 +108,7 @@ export interface AIGenerationResult {
   assumptions: string | null;
   status: "completed" | "failed";
   errorMessage: string | null;
-}
+};
 
 // ============================================================================
 // Component Props Interfaces
@@ -117,37 +117,37 @@ export interface AIGenerationResult {
 /**
  * Props dla AddMealModal
  */
-export interface AddMealModalProps {
+export type AddMealModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (meal: CreateMealResponseDTO) => void;
   mealId?: string; // Jeśli podane, modal działa w trybie edycji
   initialDate?: string; // YYYY-MM-DD - jeśli podane, formularz zostanie zainicjalizowany tą datą
-}
+};
 
 /**
  * Props dla MealForm
  */
-export interface MealFormProps {
+export type MealFormProps = {
   onClose: () => void;
   onSuccess: (meal: CreateMealResponseDTO) => void;
   mealId?: string; // Jeśli podane, formularz działa w trybie edycji
   initialDate?: string; // YYYY-MM-DD - jeśli podane, formularz zostanie zainicjalizowany tą datą
-}
+};
 
 /**
  * Props dla SegmentedControl
  */
-export interface SegmentedControlProps {
+export type SegmentedControlProps = {
   value: MealFormMode;
   onChange: (value: MealFormMode) => void;
   disabled?: boolean;
-}
+};
 
 /**
  * Props dla AIMode
  */
-export interface AIModeProps {
+export type AIModeProps = {
   prompt: string;
   onPromptChange: (value: string) => void;
   aiResult: AIGenerationResponseDTO | null;
@@ -158,39 +158,39 @@ export interface AIModeProps {
   onAcceptResult: () => void;
   onRegenerate: () => Promise<void>;
   onSwitchToManual: () => void;
-}
+};
 
 /**
  * Props dla ExampleChips
  */
-export interface ExampleChipsProps {
+export type ExampleChipsProps = {
   examples: string[];
   onSelect: (example: string) => void;
   disabled?: boolean;
-}
+};
 
 /**
  * Props dla LoadingState
  */
-export interface LoadingStateProps {
+export type LoadingStateProps = {
   stage: AILoadingStage;
-}
+};
 
 /**
  * Props dla AIResult
  */
-export interface AIResultProps {
+export type AIResultProps = {
   result: AIGenerationResponseDTO;
   onAccept: () => void;
   onRegenerate: () => Promise<void>;
   onEditManually: () => void;
   regenerateLoading?: boolean;
-}
+};
 
 /**
  * Props dla ManualMode
  */
-export interface ManualModeProps {
+export type ManualModeProps = {
   description: string;
   calories: number | null;
   protein: number | null;
@@ -201,34 +201,34 @@ export interface ManualModeProps {
   onFieldChange: (field: string, value: unknown) => void;
   onAutoCalculate: () => void;
   validationErrors: FormValidationError[];
-}
+};
 
 /**
  * Props dla MacroInputs
  */
-export interface MacroInputsProps {
+export type MacroInputsProps = {
   protein: number | null;
   carbs: number | null;
   fats: number | null;
   fiber: number | null;
   onChange: (field: "protein" | "carbs" | "fats" | "fiber", value: number | null) => void;
   errors?: Record<string, string>;
-}
+};
 
 /**
  * Props dla MacroWarning
  */
-export interface MacroWarningProps {
+export type MacroWarningProps = {
   calculatedCalories: number;
   providedCalories: number;
   differencePercent: number;
   onAutoCalculate: () => void;
-}
+};
 
 /**
  * Props dla CommonFields
  */
-export interface CommonFieldsProps {
+export type CommonFieldsProps = {
   category: MealCategory | null;
   date: string;
   time: string;
@@ -236,31 +236,31 @@ export interface CommonFieldsProps {
   onCategoryChange: (category: MealCategory | null) => void;
   onDateChange: (date: string) => void;
   onTimeChange: (time: string) => void;
-}
+};
 
 /**
  * Props dla CategorySelector
  */
-export interface CategorySelectorProps {
+export type CategorySelectorProps = {
   value: MealCategory | null;
   onChange: (value: MealCategory | null) => void;
-}
+};
 
 /**
  * Props dla FormActions
  */
-export interface FormActionsProps {
+export type FormActionsProps = {
   onCancel: () => void;
   onSubmit: () => void;
   submitDisabled: boolean;
   submitLoading: boolean;
   editMode?: MealFormEditMode; // Określa tekst przycisku
-}
+};
 
 /**
  * Props dla CharacterCounter
  */
-export interface CharacterCounterProps {
+export type CharacterCounterProps = {
   current: number;
   max: number;
-}
+};

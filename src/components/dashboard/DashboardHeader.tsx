@@ -5,9 +5,9 @@
  * Wyświetla tytuł i przycisk do dodawania posiłków.
  */
 
-interface DashboardHeaderProps {
+type DashboardHeaderProps = {
   onAddMeal: () => void;
-}
+};
 
 export function DashboardHeader({ onAddMeal }: DashboardHeaderProps) {
   return (

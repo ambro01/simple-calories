@@ -13,7 +13,7 @@
 import { test, expect } from "../fixtures/auth.fixture";
 import { AddMealPage } from "../pages/AddMealPage";
 import { createAuthenticatedTestClient, getTestUserCredentials, cleanupAllTestData } from "../utils/supabase-client";
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 test.describe("TC-MEAL-001: Add Meal - Advanced Scenarios", () => {
   let supabase: SupabaseClient;
@@ -31,12 +31,12 @@ test.describe("TC-MEAL-001: Add Meal - Advanced Scenarios", () => {
     try {
       await cleanupAllTestData(supabase, testUserId);
     } catch (error) {
-      console.error('[CLEANUP ERROR] Failed to cleanup test data in beforeEach:', error);
+      console.error("[CLEANUP ERROR] Failed to cleanup test data in beforeEach:", error);
       // Continue anyway - test might still work
     }
 
     // Navigate to today's day details page where meal cards are displayed
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     await authenticatedPage.goto(`/day/${today}`);
   });
 
@@ -46,7 +46,7 @@ test.describe("TC-MEAL-001: Add Meal - Advanced Scenarios", () => {
     try {
       await cleanupAllTestData(supabase, testUserId);
     } catch (error) {
-      console.error('[CLEANUP ERROR] Failed to cleanup test data in afterEach:', error);
+      console.error("[CLEANUP ERROR] Failed to cleanup test data in afterEach:", error);
       // Don't throw - we want to ensure other cleanup hooks run
     }
   });
@@ -55,11 +55,11 @@ test.describe("TC-MEAL-001: Add Meal - Advanced Scenarios", () => {
     // Final cleanup after all tests complete
     // This ensures cleanup happens even if some afterEach hooks failed
     try {
-      console.log('[FINAL CLEANUP] Running final cleanup after all tests...');
+      console.log("[FINAL CLEANUP] Running final cleanup after all tests...");
       await cleanupAllTestData(supabase, testUserId);
-      console.log('[FINAL CLEANUP] Final cleanup completed successfully');
+      console.log("[FINAL CLEANUP] Final cleanup completed successfully");
     } catch (error) {
-      console.error('[CLEANUP ERROR] Failed to cleanup test data in afterAll:', error);
+      console.error("[CLEANUP ERROR] Failed to cleanup test data in afterAll:", error);
     }
   });
 

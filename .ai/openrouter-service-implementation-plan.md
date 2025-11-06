@@ -3,6 +3,7 @@
 ## 1. Opis usługi
 
 Usługa OpenRouter jest warstwą abstrakcji do komunikacji z API OpenRouter.ai, zapewniającą:
+
 - Bezpieczne zarządzanie kluczami API
 - Konstruowanie i wysyłanie zapytań do modeli LLM
 - Obsługę ustrukturyzowanych odpowiedzi przez JSON Schema
@@ -30,7 +31,7 @@ src/
 
 ```typescript
 // Rola w konwersacji
-export type MessageRole = 'system' | 'user' | 'assistant';
+export type MessageRole = "system" | "user" | "assistant";
 
 // Pojedyncza wiadomość
 export interface Message {
@@ -40,22 +41,22 @@ export interface Message {
 
 // Parametry modelu
 export interface ModelParameters {
-  temperature?: number;           // 0-2, default: 1
-  max_tokens?: number;           // Max tokens w odpowiedzi
-  top_p?: number;                // 0-1, default: 1
-  frequency_penalty?: number;    // -2 do 2, default: 0
-  presence_penalty?: number;     // -2 do 2, default: 0
-  stop?: string[];               // Stop sequences
+  temperature?: number; // 0-2, default: 1
+  max_tokens?: number; // Max tokens w odpowiedzi
+  top_p?: number; // 0-1, default: 1
+  frequency_penalty?: number; // -2 do 2, default: 0
+  presence_penalty?: number; // -2 do 2, default: 0
+  stop?: string[]; // Stop sequences
 }
 
 // JSON Schema format dla ustrukturyzowanych odpowiedzi
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
     name: string;
     strict: boolean;
     schema: {
-      type: 'object';
+      type: "object";
       properties: Record<string, any>;
       required: string[];
       additionalProperties?: boolean;
@@ -129,66 +130,72 @@ export class OpenRouterError extends Error {
     public originalError?: any
   ) {
     super(message);
-    this.name = 'OpenRouterError';
+    this.name = "OpenRouterError";
   }
 }
 
 // Błąd autoryzacji (401)
 export class UnauthorizedError extends OpenRouterError {
-  constructor(message = 'Invalid API key') {
+  constructor(message = "Invalid API key") {
     super(message, 401);
-    this.name = 'UnauthorizedError';
+    this.name = "UnauthorizedError";
   }
 }
 
 // Błąd rate limit (429)
 export class RateLimitError extends OpenRouterError {
   constructor(
-    message = 'Rate limit exceeded',
+    message = "Rate limit exceeded",
     public retryAfter?: number
   ) {
     super(message, 429);
-    this.name = 'RateLimitError';
+    this.name = "RateLimitError";
   }
 }
 
 // Błąd walidacji (400)
 export class ValidationError extends OpenRouterError {
-  constructor(message: string, public details?: any) {
+  constructor(
+    message: string,
+    public details?: any
+  ) {
     super(message, 400);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }
 
 // Błąd serwera (500+)
 export class ServerError extends OpenRouterError {
-  constructor(message = 'OpenRouter server error', statusCode = 500) {
+  constructor(message = "OpenRouter server error", statusCode = 500) {
     super(message, statusCode);
-    this.name = 'ServerError';
+    this.name = "ServerError";
   }
 }
 
 // Błąd timeout
 export class TimeoutError extends OpenRouterError {
-  constructor(message = 'Request timeout') {
+  constructor(message = "Request timeout") {
     super(message);
-    this.name = 'TimeoutError';
+    this.name = "TimeoutError";
   }
 }
 
 // Błąd parsowania odpowiedzi
 export class ParseError extends OpenRouterError {
-  constructor(message = 'Failed to parse response', public rawResponse?: string) {
+  constructor(
+    message = "Failed to parse response",
+    public rawResponse?: string
+  ) {
     super(message);
-    this.name = 'ParseError';
+    this.name = "ParseError";
   }
 }
 
 // Błąd przekroczenia quota
 export class QuotaExceededError extends OpenRouterError {
-  constructor(message = 'API quota exceeded') {
+  constructor(message = "API quota exceeded") {
     super(message, 429);
-    this.name = 'QuotaExceededError';
+    this.name = "QuotaExceededError";
   }
 }
 ```
@@ -198,8 +205,8 @@ export class QuotaExceededError extends OpenRouterError {
 ```typescript
 // Domyślne wartości konfiguracji
 export const DEFAULT_CONFIG = {
-  API_URL: 'https://openrouter.ai/api/v1/chat/completions',
-  DEFAULT_MODEL: 'openai/gpt-3.5-turbo',
+  API_URL: "https://openrouter.ai/api/v1/chat/completions",
+  DEFAULT_MODEL: "openai/gpt-3.5-turbo",
   DEFAULT_TEMPERATURE: 0.7,
   DEFAULT_MAX_TOKENS: 1000,
   DEFAULT_TIMEOUT: 30000, // 30 sekund
@@ -211,45 +218,45 @@ export const DEFAULT_CONFIG = {
 // Dostępne modele (przykłady)
 export const AVAILABLE_MODELS = {
   // OpenAI
-  GPT_4_TURBO: 'openai/gpt-4-turbo',
-  GPT_4: 'openai/gpt-4',
-  GPT_35_TURBO: 'openai/gpt-3.5-turbo',
+  GPT_4_TURBO: "openai/gpt-4-turbo",
+  GPT_4: "openai/gpt-4",
+  GPT_35_TURBO: "openai/gpt-3.5-turbo",
 
   // Anthropic
-  CLAUDE_3_OPUS: 'anthropic/claude-3-opus',
-  CLAUDE_3_SONNET: 'anthropic/claude-3-sonnet',
-  CLAUDE_3_HAIKU: 'anthropic/claude-3-haiku',
+  CLAUDE_3_OPUS: "anthropic/claude-3-opus",
+  CLAUDE_3_SONNET: "anthropic/claude-3-sonnet",
+  CLAUDE_3_HAIKU: "anthropic/claude-3-haiku",
 
   // Google
-  GEMINI_PRO: 'google/gemini-pro',
+  GEMINI_PRO: "google/gemini-pro",
 
   // Meta
-  LLAMA_3_70B: 'meta-llama/llama-3-70b-instruct',
+  LLAMA_3_70B: "meta-llama/llama-3-70b-instruct",
 } as const;
 
 // Walidacja parametrów modelu
 export function validateModelParameters(params: ModelParameters): void {
   if (params.temperature !== undefined) {
     if (params.temperature < 0 || params.temperature > 2) {
-      throw new Error('Temperature must be between 0 and 2');
+      throw new Error("Temperature must be between 0 and 2");
     }
   }
 
   if (params.top_p !== undefined) {
     if (params.top_p < 0 || params.top_p > 1) {
-      throw new Error('top_p must be between 0 and 1');
+      throw new Error("top_p must be between 0 and 1");
     }
   }
 
   if (params.frequency_penalty !== undefined) {
     if (params.frequency_penalty < -2 || params.frequency_penalty > 2) {
-      throw new Error('frequency_penalty must be between -2 and 2');
+      throw new Error("frequency_penalty must be between -2 and 2");
     }
   }
 
   if (params.presence_penalty !== undefined) {
     if (params.presence_penalty < -2 || params.presence_penalty > 2) {
-      throw new Error('presence_penalty must be between -2 and 2');
+      throw new Error("presence_penalty must be between -2 and 2");
     }
   }
 }
@@ -258,102 +265,99 @@ export function validateModelParameters(params: ModelParameters): void {
 ## 6. JSON Schemas (schemas.ts)
 
 ```typescript
-import type { ResponseFormat } from './types';
+import type { ResponseFormat } from "./types";
 
 // Schema dla analizy posiłku
 export const mealAnalysisSchema: ResponseFormat = {
-  type: 'json_schema',
+  type: "json_schema",
   json_schema: {
-    name: 'meal_analysis',
+    name: "meal_analysis",
     strict: true,
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         totalCalories: {
-          type: 'number',
-          description: 'Total calories in the meal'
+          type: "number",
+          description: "Total calories in the meal",
         },
         totalProtein: {
-          type: 'number',
-          description: 'Total protein in grams'
+          type: "number",
+          description: "Total protein in grams",
         },
         totalCarbs: {
-          type: 'number',
-          description: 'Total carbohydrates in grams'
+          type: "number",
+          description: "Total carbohydrates in grams",
         },
         totalFat: {
-          type: 'number',
-          description: 'Total fat in grams'
+          type: "number",
+          description: "Total fat in grams",
         },
         items: {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'object',
+            type: "object",
             properties: {
-              name: { type: 'string' },
-              quantity: { type: 'number' },
-              unit: { type: 'string' },
-              calories: { type: 'number' },
-              protein: { type: 'number' },
-              carbs: { type: 'number' },
-              fat: { type: 'number' }
+              name: { type: "string" },
+              quantity: { type: "number" },
+              unit: { type: "string" },
+              calories: { type: "number" },
+              protein: { type: "number" },
+              carbs: { type: "number" },
+              fat: { type: "number" },
             },
-            required: ['name', 'quantity', 'unit', 'calories', 'protein', 'carbs', 'fat'],
-            additionalProperties: false
-          }
-        }
+            required: ["name", "quantity", "unit", "calories", "protein", "carbs", "fat"],
+            additionalProperties: false,
+          },
+        },
       },
-      required: ['totalCalories', 'totalProtein', 'totalCarbs', 'totalFat', 'items'],
-      additionalProperties: false
-    }
-  }
+      required: ["totalCalories", "totalProtein", "totalCarbs", "totalFat", "items"],
+      additionalProperties: false,
+    },
+  },
 };
 
 // Schema dla sugestii żywieniowych
 export const nutritionSuggestionSchema: ResponseFormat = {
-  type: 'json_schema',
+  type: "json_schema",
   json_schema: {
-    name: 'nutrition_suggestion',
+    name: "nutrition_suggestion",
     strict: true,
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         suggestions: {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'object',
+            type: "object",
             properties: {
-              title: { type: 'string' },
-              description: { type: 'string' },
+              title: { type: "string" },
+              description: { type: "string" },
               priority: {
-                type: 'string',
-                enum: ['high', 'medium', 'low']
-              }
+                type: "string",
+                enum: ["high", "medium", "low"],
+              },
             },
-            required: ['title', 'description', 'priority'],
-            additionalProperties: false
-          }
+            required: ["title", "description", "priority"],
+            additionalProperties: false,
+          },
         },
-        overallAssessment: { type: 'string' }
+        overallAssessment: { type: "string" },
       },
-      required: ['suggestions', 'overallAssessment'],
-      additionalProperties: false
-    }
-  }
+      required: ["suggestions", "overallAssessment"],
+      additionalProperties: false,
+    },
+  },
 };
 
 // Helper do tworzenia custom schema
-export function createCustomSchema(
-  name: string,
-  schema: ResponseFormat['json_schema']['schema']
-): ResponseFormat {
+export function createCustomSchema(name: string, schema: ResponseFormat["json_schema"]["schema"]): ResponseFormat {
   return {
-    type: 'json_schema',
+    type: "json_schema",
     json_schema: {
       name,
       strict: true,
-      schema
-    }
+      schema,
+    },
   };
 }
 ```
@@ -370,8 +374,8 @@ import type {
   OpenRouterResponse,
   ChatCompletionOptions,
   ParsedResponse,
-  ResponseFormat
-} from './types';
+  ResponseFormat,
+} from "./types";
 import {
   OpenRouterError,
   UnauthorizedError,
@@ -380,9 +384,9 @@ import {
   ServerError,
   TimeoutError,
   ParseError,
-  QuotaExceededError
-} from './errors';
-import { DEFAULT_CONFIG, validateModelParameters } from './config';
+  QuotaExceededError,
+} from "./errors";
+import { DEFAULT_CONFIG, validateModelParameters } from "./config";
 
 export class OpenRouterService {
   private apiKey: string;
@@ -409,10 +413,10 @@ export class OpenRouterService {
     }
   ) {
     // Pobierz API key z parametru lub zmiennej środowiskowej
-    this.apiKey = apiKey || import.meta.env.OPENROUTER_API_KEY || '';
+    this.apiKey = apiKey || import.meta.env.OPENROUTER_API_KEY || "";
 
     if (!this.apiKey) {
-      throw new Error('OpenRouter API key is required');
+      throw new Error("OpenRouter API key is required");
     }
 
     // Ustaw konfigurację
@@ -800,6 +804,7 @@ export class OpenRouterService {
 ### 8.1. Hierarchia błędów
 
 Wszystkie błędy dziedziczą z `OpenRouterError`, co pozwala na:
+
 - Catch wszystkich błędów API: `catch (error: OpenRouterError)`
 - Catch specyficznych błędów: `catch (error: RateLimitError)`
 
@@ -812,31 +817,31 @@ try {
 } catch (error) {
   if (error instanceof UnauthorizedError) {
     // Nieprawidłowy klucz API - poinformuj admina
-    console.error('Invalid API key - check configuration');
+    console.error("Invalid API key - check configuration");
   } else if (error instanceof RateLimitError) {
     // Rate limit - czekaj i spróbuj ponownie lub poinformuj użytkownika
     console.error(`Rate limit exceeded, retry after: ${error.retryAfter}s`);
   } else if (error instanceof ValidationError) {
     // Błędne parametry - napraw i wyślij ponownie
-    console.error('Invalid parameters:', error.details);
+    console.error("Invalid parameters:", error.details);
   } else if (error instanceof QuotaExceededError) {
     // Wyczerpano quota - poinformuj admina
-    console.error('API quota exceeded - check billing');
+    console.error("API quota exceeded - check billing");
   } else if (error instanceof ServerError) {
     // Błąd serwera - retry jest już obsłużony automatycznie
-    console.error('OpenRouter server error');
+    console.error("OpenRouter server error");
   } else if (error instanceof TimeoutError) {
     // Timeout - rozważ zwiększenie timeout lub poinformuj użytkownika
-    console.error('Request timeout');
+    console.error("Request timeout");
   } else if (error instanceof ParseError) {
     // Błąd parsowania - może być problem z modelem lub schematem
-    console.error('Failed to parse response:', error.rawResponse);
+    console.error("Failed to parse response:", error.rawResponse);
   } else if (error instanceof OpenRouterError) {
     // Inny błąd API
-    console.error('OpenRouter error:', error.message);
+    console.error("OpenRouter error:", error.message);
   } else {
     // Nieoczekiwany błąd
-    console.error('Unexpected error:', error);
+    console.error("Unexpected error:", error);
   }
 }
 ```
@@ -844,6 +849,7 @@ try {
 ### 8.3. Retry Logic
 
 Usługa automatycznie ponawia próby dla:
+
 - `RateLimitError` - z exponential backoff
 - `ServerError` - błędy 5xx
 - `TimeoutError` - timeout połączenia
@@ -857,11 +863,13 @@ Maksymalna liczba prób: `maxRetries` (default: 3)
 **Nigdy nie commit'uj klucza API do repo!**
 
 Utwórz plik `.env` (dodaj do `.gitignore`):
+
 ```env
 OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxx
 ```
 
 W Astro, użyj `import.meta.env`:
+
 ```typescript
 const apiKey = import.meta.env.OPENROUTER_API_KEY;
 ```
@@ -871,6 +879,7 @@ const apiKey = import.meta.env.OPENROUTER_API_KEY;
 **Klucz API powinien być używany tylko server-side!**
 
 W Astro:
+
 - Używaj w API routes (`src/pages/api/*.ts`)
 - Używaj w server-side code (części plików `.astro` poza `---`)
 - **NIE używaj** w client-side JavaScript/React komponentach
@@ -892,7 +901,7 @@ class RateLimiter {
 
   async checkLimit(): Promise<void> {
     const now = Date.now();
-    this.requests = this.requests.filter(time => now - time < this.window);
+    this.requests = this.requests.filter((time) => now - time < this.window);
 
     if (this.requests.length >= this.limit) {
       const oldestRequest = this.requests[0];
@@ -929,16 +938,19 @@ function sanitizeUserInput(input: string): string {
 ### Krok 1: Przygotowanie środowiska
 
 1. Utwórz katalog dla usługi:
+
 ```bash
 mkdir -p src/lib/services/openrouter
 ```
 
 2. Dodaj klucz API do `.env`:
+
 ```bash
 echo "OPENROUTER_API_KEY=your-key-here" >> .env
 ```
 
 3. Upewnij się, że `.env` jest w `.gitignore`:
+
 ```bash
 echo ".env" >> .gitignore
 ```
@@ -977,19 +989,21 @@ echo ".env" >> .gitignore
 ### Krok 5: Export usługi
 
 Utwórz `src/lib/services/openrouter/index.ts`:
+
 ```typescript
-export { OpenRouterService } from './OpenRouterService';
-export * from './types';
-export * from './errors';
-export * from './schemas';
-export * from './config';
+export { OpenRouterService } from "./OpenRouterService";
+export * from "./types";
+export * from "./errors";
+export * from "./schemas";
+export * from "./config";
 ```
 
 ### Krok 6: Utworzenie singleton instance
 
 Utwórz `src/lib/services/openrouter/instance.ts`:
+
 ```typescript
-import { OpenRouterService } from './OpenRouterService';
+import { OpenRouterService } from "./OpenRouterService";
 
 let instance: OpenRouterService | null = null;
 
@@ -1004,9 +1018,10 @@ export function getOpenRouterService(): OpenRouterService {
 ### Krok 7: Testowanie podstawowe
 
 Utwórz API endpoint do testowania: `src/pages/api/test-openrouter.ts`:
+
 ```typescript
-import type { APIRoute } from 'astro';
-import { getOpenRouterService } from '@/lib/services/openrouter/instance';
+import type { APIRoute } from "astro";
+import { getOpenRouterService } from "@/lib/services/openrouter/instance";
 
 export const GET: APIRoute = async () => {
   try {
@@ -1014,29 +1029,36 @@ export const GET: APIRoute = async () => {
 
     const response = await service.simpleChat(
       'Say hello in JSON format with a "message" field',
-      'You are a helpful assistant'
+      "You are a helpful assistant"
     );
 
-    return new Response(JSON.stringify({
-      success: true,
-      response
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        response,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error: any) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };
 ```
 
 Test:
+
 ```bash
 curl http://localhost:4321/api/test-openrouter
 ```
@@ -1044,10 +1066,11 @@ curl http://localhost:4321/api/test-openrouter
 ### Krok 8: Implementacja funkcji dla aplikacji
 
 Utwórz wrapper dla analizy posiłków: `src/lib/services/openrouter/meals.ts`:
+
 ```typescript
-import { getOpenRouterService } from './instance';
-import { mealAnalysisSchema } from './schemas';
-import type { ParsedResponse } from './types';
+import { getOpenRouterService } from "./instance";
+import { mealAnalysisSchema } from "./schemas";
+import type { ParsedResponse } from "./types";
 
 interface MealAnalysis {
   totalCalories: number;
@@ -1065,87 +1088,95 @@ interface MealAnalysis {
   }>;
 }
 
-export async function analyzeMeal(
-  mealDescription: string
-): Promise<MealAnalysis> {
+export async function analyzeMeal(mealDescription: string): Promise<MealAnalysis> {
   const service = getOpenRouterService();
 
   const systemPrompt = `You are a nutrition expert. Analyze the meal description and provide detailed nutritional information. Be as accurate as possible based on standard serving sizes.`;
 
   const userMessage = `Analyze this meal and provide nutritional breakdown: ${mealDescription}`;
 
-  return await service.structuredChat<MealAnalysis>(
-    userMessage,
-    mealAnalysisSchema,
-    systemPrompt
-  );
+  return await service.structuredChat<MealAnalysis>(userMessage, mealAnalysisSchema, systemPrompt);
 }
 ```
 
 ### Krok 9: Integracja z API routes
 
 Utwórz endpoint dla analizy posiłków: `src/pages/api/v1/meals/analyze.ts`:
+
 ```typescript
-import type { APIRoute } from 'astro';
-import { analyzeMeal } from '@/lib/services/openrouter/meals';
-import {
-  OpenRouterError,
-  ValidationError,
-  RateLimitError
-} from '@/lib/services/openrouter';
+import type { APIRoute } from "astro";
+import { analyzeMeal } from "@/lib/services/openrouter/meals";
+import { OpenRouterError, ValidationError, RateLimitError } from "@/lib/services/openrouter";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
 
     if (!body.description) {
-      return new Response(JSON.stringify({
-        error: 'Meal description is required'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Meal description is required",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     const analysis = await analyzeMeal(body.description);
 
-    return new Response(JSON.stringify({
-      success: true,
-      data: analysis
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: analysis,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
-    console.error('Meal analysis error:', error);
+    console.error("Meal analysis error:", error);
 
     if (error instanceof ValidationError) {
-      return new Response(JSON.stringify({
-        error: 'Invalid request parameters'
-      }), { status: 400 });
+      return new Response(
+        JSON.stringify({
+          error: "Invalid request parameters",
+        }),
+        { status: 400 }
+      );
     }
 
     if (error instanceof RateLimitError) {
-      return new Response(JSON.stringify({
-        error: 'Rate limit exceeded, please try again later'
-      }), {
-        status: 429,
-        headers: {
-          'Retry-After': error.retryAfter?.toString() || '60'
+      return new Response(
+        JSON.stringify({
+          error: "Rate limit exceeded, please try again later",
+        }),
+        {
+          status: 429,
+          headers: {
+            "Retry-After": error.retryAfter?.toString() || "60",
+          },
         }
-      });
+      );
     }
 
     if (error instanceof OpenRouterError) {
-      return new Response(JSON.stringify({
-        error: 'AI service error'
-      }), { status: 503 });
+      return new Response(
+        JSON.stringify({
+          error: "AI service error",
+        }),
+        { status: 503 }
+      );
     }
 
-    return new Response(JSON.stringify({
-      error: 'Internal server error'
-    }), { status: 500 });
+    return new Response(
+      JSON.stringify({
+        error: "Internal server error",
+      }),
+      { status: 500 }
+    );
   }
 };
 ```
@@ -1153,6 +1184,7 @@ export const POST: APIRoute = async ({ request }) => {
 ### Krok 10: Użycie w React komponentach
 
 Przykład użycia w komponencie React:
+
 ```typescript
 import { useState } from 'react';
 
@@ -1220,39 +1252,43 @@ export function MealAnalyzer() {
 ### Krok 11: Dokumentacja użycia
 
 Utwórz `src/lib/services/openrouter/README.md` z przykładami użycia:
+
 ```markdown
 # OpenRouter Service - Dokumentacja użycia
 
 ## Podstawowe użycie
 
 ### Proste zapytanie text
+
 \`\`\`typescript
 const service = getOpenRouterService();
 const response = await service.simpleChat(
-  'What is 2+2?',
-  'You are a math tutor'
+'What is 2+2?',
+'You are a math tutor'
 );
 \`\`\`
 
 ### Zapytanie ze strukturalną odpowiedzią
+
 \`\`\`typescript
 const data = await service.structuredChat<MealAnalysis>(
-  'Analyze: eggs and toast',
-  mealAnalysisSchema,
-  'You are a nutrition expert'
+'Analyze: eggs and toast',
+mealAnalysisSchema,
+'You are a nutrition expert'
 );
 \`\`\`
 
 ### Konwersacja z historią
+
 \`\`\`typescript
 const history: Message[] = [
-  { role: 'user', content: 'Hello' },
-  { role: 'assistant', content: 'Hi! How can I help?' }
+{ role: 'user', content: 'Hello' },
+{ role: 'assistant', content: 'Hi! How can I help?' }
 ];
 
 const { response, updatedHistory } = await service.continueConversation(
-  'Tell me about nutrition',
-  history
+'Tell me about nutrition',
+history
 );
 \`\`\`
 
@@ -1387,6 +1423,7 @@ async streamChat(
 ## 12. Podsumowanie
 
 Po wykonaniu wszystkich kroków będziesz mieć:
+
 - ✅ Pełną, type-safe usługę OpenRouter
 - ✅ Obsługę błędów i retry logic
 - ✅ Wsparcie dla ustrukturyzowanych odpowiedzi

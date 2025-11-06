@@ -13,12 +13,14 @@
 Dodano `data-testid` do wszystkich kluczowych elementów UI:
 
 #### Login Flow:
+
 - ✅ `login-form` - formularz logowania
 - ✅ `login-email-input` - pole email
 - ✅ `login-password-input` - pole hasła
 - ✅ `login-submit-button` - przycisk logowania
 
 #### Add Meal Flow:
+
 - ✅ `add-meal-button` - przycisk otwierający modal
 - ✅ `meal-modal` - kontener modala
 - ✅ `mode-selector` - wybór trybu (AI/Manual)
@@ -38,6 +40,7 @@ Dodano `data-testid` do wszystkich kluczowych elementów UI:
 - ✅ `cancel-button` - przycisk anulowania
 
 #### Meal Card:
+
 - ✅ `meal-card` - karta posiłku
 - ✅ `data-meal-id` - ID posiłku (custom attribute)
 - ✅ `meal-card-description` - opis
@@ -60,6 +63,7 @@ e2e/pages/
 ```
 
 **Funkcje:**
+
 - Enkapsulacja selektorów (`getByTestId`)
 - High-level metody (np. `addMealManually()`)
 - Reusable helpers (np. `verifyMealData()`)
@@ -73,6 +77,7 @@ e2e/utils/
 ```
 
 **Funkcje:**
+
 - `createSupabaseTestClient()` - klient testowy
 - `getTestUserCredentials()` - credentials z .env.test
 - `cleanupUserMeals()` - cleanup przed/po testach
@@ -88,12 +93,14 @@ e2e/fixtures/
 ```
 
 **Funkcje:**
+
 - `loginPage` fixture - instancja LoginPage
 - `authenticatedPage` fixture - auto-login + redirect to dashboard
 
 ### 5. **Test Suites** (✅ Completed)
 
 #### Basic Scenarios (`add-meal.spec.ts`):
+
 1. ✅ Add meal with full data (description, calories, macros, category)
 2. ✅ Add meal with minimal data (description + calories)
 3. ✅ Add meal with category selection
@@ -107,6 +114,7 @@ e2e/fixtures/
 **Test count:** 9 tests
 
 #### Advanced Scenarios (`add-meal-advanced.spec.ts`):
+
 1. ✅ TC-MEAL-002: Macro validation warning (>5% mismatch)
 2. ✅ Consistent macros (no warning)
 3. ✅ Calories range validation (1-10000)
@@ -133,6 +141,7 @@ e2e/
 ```
 
 **Zawartość:**
+
 - Running tests (npm scripts)
 - Page Object Models usage
 - Database utilities
@@ -152,11 +161,11 @@ e2e/
 
 ### Test Cases Implemented:
 
-| Test Case | Status | Test File | Tests Count |
-|-----------|--------|-----------|-------------|
-| **TC-MEAL-001** | ✅ | `add-meal.spec.ts` | 9 |
-| **TC-MEAL-002** | ✅ | `add-meal-advanced.spec.ts` | 1 (+ related) |
-| **Validation Edge Cases** | ✅ | `add-meal-advanced.spec.ts` | 11 |
+| Test Case                 | Status | Test File                   | Tests Count   |
+| ------------------------- | ------ | --------------------------- | ------------- |
+| **TC-MEAL-001**           | ✅     | `add-meal.spec.ts`          | 9             |
+| **TC-MEAL-002**           | ✅     | `add-meal-advanced.spec.ts` | 1 (+ related) |
+| **Validation Edge Cases** | ✅     | `add-meal-advanced.spec.ts` | 11            |
 
 ### UI Coverage:
 
@@ -236,6 +245,7 @@ npx playwright show-report
 ## 📊 Metrics
 
 ### Implementation Time:
+
 - **Data-testid attributes:** ~1 hour
 - **Page Object Models:** ~1.5 hours
 - **Test Utilities:** ~1 hour
@@ -244,11 +254,13 @@ npx playwright show-report
 - **Total:** ~6 hours
 
 ### Test Execution Time (estimated):
+
 - **Basic tests:** ~30 seconds
 - **Advanced tests:** ~45 seconds
 - **Total (all 21 tests):** ~1m 15s
 
 ### Lines of Code:
+
 - **Page Objects:** ~450 lines
 - **Utilities:** ~200 lines
 - **Tests:** ~650 lines
@@ -259,6 +271,7 @@ npx playwright show-report
 ## ✅ Checklist
 
 ### Setup:
+
 - [x] Data-testid attributes added to components
 - [x] Page Object Models created
 - [x] Test utilities (Supabase) implemented
@@ -268,6 +281,7 @@ npx playwright show-report
 - [x] Playwright config fixed
 
 ### Verification:
+
 - [ ] Tests run successfully (run `npm run test:e2e`)
 - [ ] All 21 tests pass
 - [ ] Database cleanup works
@@ -275,6 +289,7 @@ npx playwright show-report
 - [ ] Report generated successfully
 
 ### Optional Enhancements:
+
 - [ ] CI/CD integration (GitHub Actions)
 - [ ] Visual regression testing (Percy, Chromatic)
 - [ ] Performance monitoring (Lighthouse CI)

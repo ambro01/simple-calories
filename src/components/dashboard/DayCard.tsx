@@ -9,11 +9,11 @@ import type { DailyProgressResponseDTO } from "@/types";
 import { CalorieProgressBar } from "@/components/shared/CalorieProgressBar";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 
-interface DayCardProps {
+type DayCardProps = {
   day: DailyProgressResponseDTO;
   onClick?: () => void;
   isSelected?: boolean;
-}
+};
 
 export function DayCard({ day, onClick, isSelected = false }: DayCardProps) {
   const dateFormatter = useDateFormatter();

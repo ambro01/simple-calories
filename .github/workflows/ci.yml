@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -36,14 +36,12 @@ jobs:
 
       # - name: Install Playwright browsers
       #   run: npx playwright install --with-deps chromium
-
       # - name: Run E2E tests
       #   run: npm run test:e2e
       #   env:
       #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       #     SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       #     SKIP_EMAIL_CONFIRMATION: true
-
       # - name: Upload Playwright report
       #   uses: actions/upload-artifact@v5
       #   if: always()
@@ -51,7 +49,6 @@ jobs:
       #     name: playwright-report
       #     path: playwright-report/
       #     retention-days: 30
-
       # - name: Upload coverage report
       #   uses: actions/upload-artifact@v5
       #   if: always()
@@ -59,7 +56,6 @@ jobs:
       #     name: coverage-report
       #     path: coverage/
       #     retention-days: 30
-
       - name: Build production
         run: npm run build
         # env:

@@ -5,9 +5,11 @@
 Wszystkie stare migracje zostały usunięte. Ten dokument służy tylko jako dokumentacja historyczna.
 
 ## Data
+
 2025-02-06
 
 ## Cel
+
 Zastąpienie 10 chaotycznych migracji RLS jedną, czystą, konsolidującą migracją.
 
 ## Migracje do usunięcia
@@ -15,10 +17,12 @@ Zastąpienie 10 chaotycznych migracji RLS jedną, czystą, konsolidującą migra
 Poniższe migracje są przestarzałe i zostaną zastąpione przez `20250206000000_consolidated_rls_setup.sql`:
 
 ### 1. Oryginalne migracje RLS (zachować!)
+
 - ✅ `20250127110500_create_functions.sql` - **ZACHOWAĆ** (funkcja handle_new_user)
 - ✅ `20250127110600_create_triggers.sql` - **ZACHOWAĆ** (trigger on_auth_user_created)
 
 ### 2. Chaotyczne migracje RLS (usunąć!)
+
 - ❌ `20250127110800_setup_rls_policies.sql` - pierwsze włączenie RLS (zastąpione przez consolidated)
 - ❌ `20250127111000_disable_rls_policies.sql` - wyłączenie polityk (dev workaround)
 - ❌ `20250127111100_disable_rls.sql` - całkowite wyłączenie RLS (dev workaround)
@@ -35,6 +39,7 @@ Poniższe migracje są przestarzałe i zostaną zastąpione przez `2025020600000
 ✅ `20250206000000_consolidated_rls_setup.sql` - czysta, skonsolidowana konfiguracja RLS
 
 ### Co zawiera:
+
 1. Włączenie RLS na wszystkich tabelach
 2. Polityki SELECT/UPDATE/DELETE wymagające `auth.uid()` (izolacja danych)
 3. Permisywne polityki INSERT dla `profiles` i `calorie_goals` (dla triggera)
@@ -101,6 +106,7 @@ npx supabase db push
 Uruchom następujące testy:
 
 ### 1. Rejestracja nowego użytkownika
+
 ```sql
 -- Sprawdź czy profil został utworzony automatycznie
 SELECT * FROM profiles WHERE id = '<new_user_id>';
@@ -110,6 +116,7 @@ SELECT * FROM calorie_goals WHERE user_id = '<new_user_id>';
 ```
 
 ### 2. Izolacja danych (RLS działa)
+
 ```sql
 -- Zaloguj się jako user_1
 SELECT * FROM meals; -- powinien widzieć tylko swoje posiłki
@@ -119,6 +126,7 @@ SELECT * FROM meals WHERE user_id = '<user_2_id>';
 ```
 
 ### 3. CRUD operations
+
 ```sql
 -- INSERT (authenticated user może dodać swój posiłek)
 INSERT INTO meals (user_id, ...) VALUES (auth.uid(), ...);

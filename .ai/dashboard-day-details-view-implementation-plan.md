@@ -11,11 +11,13 @@ System składa się z dwóch powiązanych widoków służących do przeglądania
 ## 2. Routing widoku
 
 ### Dashboard
+
 - **Ścieżka**: `/` (główna ścieżka dla zalogowanych użytkowników)
 - **Typ**: Strona Astro z komponentem React (`src/pages/index.astro`)
 - **Dostęp**: Wymaga autentykacji (redirect do `/login` jeśli niezalogowany)
 
 ### DayDetails
+
 - **Ścieżka**: `/day/[date]` (dynamiczny parametr daty w formacie YYYY-MM-DD)
 - **Przykład**: `/day/2025-01-27`
 - **Typ**: Strona Astro z komponentem React (`src/pages/day/[date].astro`)
@@ -75,6 +77,7 @@ DayDetailsPage (src/pages/day/[date].astro)
 **Opis**: Główny kontener zarządzający stanem dashboardu, infinite scroll oraz komunikacją z API. Orkiestruje wszystkie sub-komponenty i obsługuje różnice między layoutem desktop i mobile.
 
 **Główne elementy**:
+
 - Conditional rendering: lista dni lub empty state
 - InfiniteScrollTrigger na końcu listy
 - FAB (Floating Action Button) do dodawania posiłków
@@ -82,6 +85,7 @@ DayDetailsPage (src/pages/day/[date].astro)
 - Mobile: tylko lista dni
 
 **Obsługiwane interakcje**:
+
 - `onDayClick(date)`: Desktop → selekcja dnia i update panelu, Mobile → navigate do `/day/:date`
 - `onLoadMore()`: Infinite scroll trigger
 - `onRefresh()`: Pull-to-refresh (mobile)
@@ -91,10 +95,12 @@ DayDetailsPage (src/pages/day/[date].astro)
 **Walidacja**: Brak (przekazuje do child components)
 
 **Typy**:
+
 - State: `DashboardState`
 - Props: `DashboardContainerProps`
 
 **Props**:
+
 ```typescript
 interface DashboardContainerProps {
   initialData?: DailyProgressListResponseDTO; // SSR data (opcjonalnie)
@@ -108,21 +114,25 @@ interface DashboardContainerProps {
 **Opis**: Kontener listy dni obsługujący renderowanie DayCard oraz infinite scroll. Zarządza skeleton loaders i empty state.
 
 **Główne elementy**:
+
 - Mapowanie `days` na `DayCard` komponenty
 - `InfiniteScrollTrigger` na końcu listy
 - `SkeletonDayCard` (3 sztuki) podczas ładowania
 - `EmptyDashboard` gdy brak danych
 
 **Obsługiwane interakcje**:
+
 - `onDayClick(date)`: Przekazywane z DayCard do parent
 - `onInfiniteScroll()`: Trigger ładowania kolejnych dni
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `DaysListProps`
 
 **Props**:
+
 ```typescript
 interface DaysListProps {
   days: DailyProgressResponseDTO[];
@@ -141,6 +151,7 @@ interface DaysListProps {
 **Opis**: Karta reprezentująca pojedynczy dzień z podsumowaniem kalorycznym i progress bar. Wizualizuje status realizacji celu poprzez kolorowanie.
 
 **Główne elementy**:
+
 - Header z datą (format: "Poniedziałek, 30 października")
 - `CalorieProgressBar` z kolorowaniem wg statusu
 - Suma kalorii / cel (np. "2150 / 2500 Kcal")
@@ -148,6 +159,7 @@ interface DaysListProps {
 - Liczba posiłków (np. "5 posiłków")
 
 **Obsługiwane interakcje**:
+
 - `onClick`: Kliknięcie całej karty → wywołanie `onDayClick(date)`
 - Hover effect: shadow-lg, scale (animacja)
 - Active/Selected state (desktop): highlight selected day
@@ -155,9 +167,11 @@ interface DaysListProps {
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `DayCardProps`
 
 **Props**:
+
 ```typescript
 interface DayCardProps {
   day: DailyProgressResponseDTO;
@@ -173,6 +187,7 @@ interface DayCardProps {
 **Opis**: Komponent progress bar z kolorowaniem wg statusu realizacji celu. Używany zarówno w Dashboard jak i DayDetails.
 
 **Główne elementy**:
+
 - Progress bar (HTML `<progress>` lub custom div z width %)
 - Kolorowanie tła wg statusu:
   - `under`: bg-sky-400
@@ -183,19 +198,22 @@ interface DayCardProps {
 **Obsługiwane interakcje**: Brak (tylko wyświetlanie)
 
 **Walidacja**:
+
 - `percentage` ograniczone do 0-100% dla UI (może być > 100 w danych)
 - Status musi być jednym z: 'under' | 'on_track' | 'over'
 
 **Typy**:
+
 - Props: `CalorieProgressBarProps`
 
 **Props**:
+
 ```typescript
 interface CalorieProgressBarProps {
   percentage: number;
   status: DailyProgressStatus;
   showLabel?: boolean; // domyślnie false
-  size?: 'sm' | 'md' | 'lg'; // domyślnie 'md'
+  size?: "sm" | "md" | "lg"; // domyślnie 'md'
 }
 ```
 
@@ -206,6 +224,7 @@ interface CalorieProgressBarProps {
 **Opis**: Skeleton loader imitujący wygląd DayCard podczas ładowania danych.
 
 **Główne elementy**:
+
 - Placeholder dla daty (szara linia)
 - Placeholder dla progress bar
 - Placeholder dla tekstu kalorii
@@ -224,19 +243,23 @@ interface CalorieProgressBarProps {
 **Opis**: Empty state wyświetlany gdy użytkownik nie ma żadnych posiłków.
 
 **Główne elementy**:
+
 - Ikona (np. 🍽️)
 - Tekst: "Zacznij swoją przygodę! Dodaj pierwszy posiłek"
 - CTA Button: "Dodaj posiłek"
 
 **Obsługiwane interakcje**:
+
 - `onAddMeal()`: Kliknięcie CTA → otwiera AddMealModal
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `EmptyDashboardProps`
 
 **Props**:
+
 ```typescript
 interface EmptyDashboardProps {
   onAddMeal: () => void;
@@ -250,19 +273,23 @@ interface EmptyDashboardProps {
 **Opis**: Przycisk floating action (stała pozycja bottom-right) do szybkiego dodawania posiłków.
 
 **Główne elementy**:
+
 - Button z ikoną "+" (duży, rounded-full)
 - Pozycja: fixed bottom-right
 - Shadow i hover effects
 
 **Obsługiwane interakcje**:
+
 - `onClick`: Otwiera AddMealModal
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `FABProps`
 
 **Props**:
+
 ```typescript
 interface FABProps {
   onClick: () => void;
@@ -276,20 +303,25 @@ interface FABProps {
 **Opis**: Niewidoczny element służący jako trigger dla infinite scroll (Intersection Observer).
 
 **Główne elementy**:
+
 - Div o wysokości 1px (niewidoczny)
 - Intersection Observer hook
 
 **Obsługiwane interakcje**:
+
 - `onIntersect()`: Gdy element wejdzie w viewport → trigger loadMore
 
 **Walidacja**:
+
 - Trigger tylko gdy `hasMore === true`
 - Nie trigger gdy `loading === true`
 
 **Typy**:
+
 - Props: `InfiniteScrollTriggerProps`
 
 **Props**:
+
 ```typescript
 interface InfiniteScrollTriggerProps {
   onIntersect: () => void;
@@ -305,11 +337,13 @@ interface InfiniteScrollTriggerProps {
 **Opis**: Główny kontener szczegółów dnia zarządzający stanem, posiłkami oraz komunikacją z API. Może być używany jako osobna strona (mobile) lub w panelu (desktop).
 
 **Główne elementy**:
+
 - `DayHeader` (sticky)
 - `MealsList`
 - Modals: `AddMealModal`, `EditMealModal`
 
 **Obsługiwane interakcje**:
+
 - `onMealEdit(meal)`: Otwiera EditMealModal
 - `onMealDelete(id)`: Usuwa posiłek (po potwierdzeniu)
 - `onAddMeal()`: Otwiera AddMealModal
@@ -317,13 +351,16 @@ interface InfiniteScrollTriggerProps {
 - `onMealChange()`: Callback po dodaniu/edycji/usunięciu → refetch
 
 **Walidacja**:
+
 - Date param w formacie YYYY-MM-DD
 
 **Typy**:
+
 - State: `DayDetailsState`
 - Props: `DayDetailsContainerProps`
 
 **Props**:
+
 ```typescript
 interface DayDetailsContainerProps {
   date: string; // YYYY-MM-DD
@@ -339,6 +376,7 @@ interface DayDetailsContainerProps {
 **Opis**: Sticky header wyświetlający podsumowanie dnia z progress bar, sumą kalorii i makroskładnikami.
 
 **Główne elementy**:
+
 - BackButton (mobile only)
 - Data (format: "Poniedziałek, 30 października 2025")
 - `CalorieProgressBar`
@@ -348,15 +386,18 @@ interface DayDetailsContainerProps {
 - AddButton "+" (otwiera AddMealModal)
 
 **Obsługiwane interakcje**:
+
 - `onBack()`: Mobile only → navigate do dashboard
 - `onAddMeal()`: Kliknięcie "+" → otwiera AddMealModal
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `DayHeaderProps`
 
 **Props**:
+
 ```typescript
 interface DayHeaderProps {
   progress: DailyProgressResponseDTO;
@@ -374,6 +415,7 @@ interface DayHeaderProps {
 **Opis**: Grid wyświetlający podsumowanie makroskładników (Białko, Węglowodany, Tłuszcze, Błonnik).
 
 **Główne elementy**:
+
 - Grid 2x2 (responsive: 2x2 desktop, 1x4 mobile)
 - Dla każdego makro:
   - Label (np. "Białko")
@@ -385,9 +427,11 @@ interface DayHeaderProps {
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `MacroDisplayProps`
 
 **Props**:
+
 ```typescript
 interface MacroDisplayProps {
   protein: number;
@@ -404,11 +448,13 @@ interface MacroDisplayProps {
 **Opis**: Kontener listy posiłków z sortowaniem chronologicznym (od najstarszego) i empty state.
 
 **Główne elementy**:
+
 - Mapowanie `meals` na `MealCard` komponenty
 - `EmptyDayState` gdy brak posiłków
 - Loading state (skeleton loaders opcjonalnie)
 
 **Obsługiwane interakcje**:
+
 - `onMealClick(meal)`: Kliknięcie na posiłek → otwiera EditMealModal
 - `onMealEdit(meal)`: Kliknięcie edit icon → otwiera EditMealModal
 - `onMealDelete(id)`: Kliknięcie delete icon → pokazuje DeleteConfirmation
@@ -416,9 +462,11 @@ interface MacroDisplayProps {
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `MealsListProps`
 
 **Props**:
+
 ```typescript
 interface MealsListProps {
   meals: MealResponseDTO[];
@@ -436,6 +484,7 @@ interface MealsListProps {
 **Opis**: Karta pojedynczego posiłku z informacjami o kaloriach, makroskładnikach oraz akcjami (edycja, usuwanie).
 
 **Główne elementy**:
+
 - Header:
   - Timestamp (format: "08:30")
   - Category badge (opcjonalnie, np. "Śniadanie")
@@ -456,6 +505,7 @@ interface MealsListProps {
   - Auto-collapse po 5s bez akcji
 
 **Obsługiwane interakcje**:
+
 - `onClick`: Kliknięcie całej karty → wywołanie `onMealClick(meal)`
 - `onEdit`: Kliknięcie edit icon → wywołanie `onMealEdit(meal)`
 - `onDelete`: Kliknięcie delete icon → pokazanie inline DeleteConfirmation
@@ -464,14 +514,17 @@ interface MealsListProps {
 - Hover effect: shadow, scale
 
 **Walidacja**:
+
 - Edit/Delete buttons disabled podczas loading
 - Auto-collapse DeleteConfirmation po 5s
 
 **Typy**:
+
 - Props: `MealCardProps`
 - Local state: `DeleteConfirmationState`
 
 **Props**:
+
 ```typescript
 interface MealCardProps {
   meal: MealResponseDTO;
@@ -489,6 +542,7 @@ interface MealCardProps {
 **Opis**: Inline confirmation expandujący się w MealCard po kliknięciu delete. Alternatywnie może być osobnym komponentem (jeśli potrzebny reuse).
 
 **Główne elementy**:
+
 - Alert box (variant: destructive/warning)
 - Tekst pytający: "Czy na pewno chcesz usunąć ten posiłek?"
 - Opis posiłku (dla kontekstu)
@@ -497,17 +551,21 @@ interface MealCardProps {
   - "Anuluj" (variant: ghost)
 
 **Obsługiwane interakcje**:
+
 - `onConfirm()`: Potwierdzenie usunięcia
 - `onCancel()`: Anulowanie
 - Auto-collapse po 5s (setTimeout)
 
 **Walidacja**:
+
 - Przycisk "Usuń" disabled podczas loading
 
 **Typy**:
+
 - Props: `DeleteConfirmationProps`
 
 **Props**:
+
 ```typescript
 interface DeleteConfirmationProps {
   mealDescription: string;
@@ -524,19 +582,23 @@ interface DeleteConfirmationProps {
 **Opis**: Empty state wyświetlany gdy dzień nie ma żadnych posiłków.
 
 **Główne elementy**:
+
 - Ikona (np. 📝)
 - Tekst: "Brak posiłków w tym dniu. Dodaj swój pierwszy!"
 - CTA Button: "Dodaj posiłek"
 
 **Obsługiwane interakcje**:
+
 - `onAddMeal()`: Kliknięcie CTA → otwiera AddMealModal
 
 **Walidacja**: Brak
 
 **Typy**:
+
 - Props: `EmptyDayStateProps`
 
 **Props**:
+
 ```typescript
 interface EmptyDayStateProps {
   onAddMeal: () => void;
@@ -550,6 +612,7 @@ interface EmptyDayStateProps {
 **Opis**: Modal do edycji istniejącego posiłku. Bardzo podobny do `AddMealModal` ale z preloaded danymi i endpoint PATCH zamiast POST.
 
 **Główne elementy**:
+
 - Dialog/Modal z shadcn/ui
 - Formularz identyczny jak w AddMealModal:
   - SegmentedControl (AI/Manual)
@@ -560,19 +623,23 @@ interface EmptyDayStateProps {
 - Note: Gdy edytowany jest AI meal → automatyczna zmiana `input_method` na 'ai-edited'
 
 **Obsługiwane interakcje**:
+
 - `onClose`: Zamknięcie modala
 - `onSuccess(meal)`: Callback po pomyślnej edycji
 - Identyczne jak w AddMealModal (generacja AI, walidacja, submit)
 
 **Walidacja**:
+
 - Identyczna jak w AddMealModal
 - Dodatkowo: automatyczna zmiana input_method przy edycji AI meal
 
 **Typy**:
+
 - Props: `EditMealModalProps`
 - Hook: `useEditMealForm(mealId, initialData)` - podobny do `useAddMealForm`
 
 **Props**:
+
 ```typescript
 interface EditMealModalProps {
   isOpen: boolean;
@@ -604,7 +671,7 @@ import type {
   ErrorResponseDTO,
   MealCategory,
   InputMethodType,
-} from '../types';
+} from "../types";
 ```
 
 ### 5.2. Nowe typy ViewModel
@@ -662,19 +729,19 @@ export interface DeleteConfirmationState {
  */
 export const STATUS_COLOR_MAP: Record<DailyProgressStatus, StatusColorConfig> = {
   under: {
-    bg: 'bg-sky-400',
-    text: 'text-gray-700',
-    border: 'border-gray-300',
+    bg: "bg-sky-400",
+    text: "text-gray-700",
+    border: "border-gray-300",
   },
   on_track: {
-    bg: 'bg-green-500',
-    text: 'text-green-700',
-    border: 'border-green-400',
+    bg: "bg-green-500",
+    text: "text-green-700",
+    border: "border-green-400",
   },
   over: {
-    bg: 'bg-orange-500',
-    text: 'text-orange-700',
-    border: 'border-orange-400',
+    bg: "bg-orange-500",
+    text: "text-orange-700",
+    border: "border-orange-400",
   },
 };
 
@@ -689,29 +756,29 @@ export interface StatusColorConfig {
  */
 export const CATEGORY_CONFIG: Record<MealCategory, CategoryConfig> = {
   breakfast: {
-    label: 'Śniadanie',
-    icon: '🍳',
-    color: 'bg-yellow-100 text-yellow-800',
+    label: "Śniadanie",
+    icon: "🍳",
+    color: "bg-yellow-100 text-yellow-800",
   },
   lunch: {
-    label: 'Obiad',
-    icon: '🍽️',
-    color: 'bg-blue-100 text-blue-800',
+    label: "Obiad",
+    icon: "🍽️",
+    color: "bg-blue-100 text-blue-800",
   },
   dinner: {
-    label: 'Kolacja',
-    icon: '🍲',
-    color: 'bg-purple-100 text-purple-800',
+    label: "Kolacja",
+    icon: "🍲",
+    color: "bg-purple-100 text-purple-800",
   },
   snack: {
-    label: 'Przekąska',
-    icon: '🍪',
-    color: 'bg-pink-100 text-pink-800',
+    label: "Przekąska",
+    icon: "🍪",
+    color: "bg-pink-100 text-pink-800",
   },
   other: {
-    label: 'Inne',
-    icon: '🍴',
-    color: 'bg-gray-100 text-gray-800',
+    label: "Inne",
+    icon: "🍴",
+    color: "bg-gray-100 text-gray-800",
   },
 };
 
@@ -737,10 +804,10 @@ export const PAGINATION_LIMITS = {
  * Formaty dat używane w aplikacji
  */
 export type DateFormat =
-  | 'YYYY-MM-DD'           // 2025-01-27 (API format)
-  | 'full'                  // Poniedziałek, 30 października 2025
-  | 'short'                 // Pn, 30 paź
-  | 'time';                 // 08:30
+  | "YYYY-MM-DD" // 2025-01-27 (API format)
+  | "full" // Poniedziałek, 30 października 2025
+  | "short" // Pn, 30 paź
+  | "time"; // 08:30
 
 /**
  * Helper do formatowania dat
@@ -761,6 +828,7 @@ Zarządzanie stanem dashboardu jest scentralizowane w custom hooku `useDashboard
 **Lokalizacja**: `src/hooks/useDashboard.ts`
 
 **Odpowiedzialności**:
+
 - Zarządzanie stanem listy dni (DashboardState)
 - Ładowanie początkowe i infinite scroll
 - Pull-to-refresh (mobile)
@@ -831,20 +899,21 @@ function getInitialState(initialData?: DailyProgressListResponseDTO): DashboardS
 ### 6.3. Kluczowe funkcje hooka useDashboard
 
 #### loadInitialDays()
+
 ```typescript
 async function loadInitialDays(): Promise<void> {
-  setState(prev => ({ ...prev, loading: true, error: null }));
+  setState((prev) => ({ ...prev, loading: true, error: null }));
 
   try {
     const response = await fetch(`/api/v1/daily-progress?limit=${state.limit}&offset=0`);
 
     if (!response.ok) {
-      throw new Error('Failed to load days');
+      throw new Error("Failed to load days");
     }
 
     const data: DailyProgressListResponseDTO = await response.json();
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       days: data.data,
       loading: false,
@@ -852,34 +921,33 @@ async function loadInitialDays(): Promise<void> {
       hasMore: data.pagination.total > data.data.length,
     }));
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       loading: false,
-      error: 'Nie udało się załadować danych. Spróbuj ponownie.',
+      error: "Nie udało się załadować danych. Spróbuj ponownie.",
     }));
   }
 }
 ```
 
 #### loadMoreDays() - Infinite Scroll
+
 ```typescript
 async function loadMoreDays(): Promise<void> {
   if (!state.hasMore || state.loading) return;
 
-  setState(prev => ({ ...prev, loading: true }));
+  setState((prev) => ({ ...prev, loading: true }));
 
   try {
-    const response = await fetch(
-      `/api/v1/daily-progress?limit=${state.limit}&offset=${state.offset}`
-    );
+    const response = await fetch(`/api/v1/daily-progress?limit=${state.limit}&offset=${state.offset}`);
 
     if (!response.ok) {
-      throw new Error('Failed to load more days');
+      throw new Error("Failed to load more days");
     }
 
     const data: DailyProgressListResponseDTO = await response.json();
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       days: [...prev.days, ...data.data],
       loading: false,
@@ -887,30 +955,31 @@ async function loadMoreDays(): Promise<void> {
       hasMore: prev.offset + data.data.length < data.pagination.total,
     }));
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       loading: false,
-      error: 'Nie udało się załadować kolejnych dni.',
+      error: "Nie udało się załadować kolejnych dni.",
     }));
   }
 }
 ```
 
 #### refreshDays() - Pull-to-Refresh
+
 ```typescript
 async function refreshDays(): Promise<void> {
-  setState(prev => ({ ...prev, refreshing: true, error: null }));
+  setState((prev) => ({ ...prev, refreshing: true, error: null }));
 
   try {
     const response = await fetch(`/api/v1/daily-progress?limit=${state.limit}&offset=0`);
 
     if (!response.ok) {
-      throw new Error('Failed to refresh days');
+      throw new Error("Failed to refresh days");
     }
 
     const data: DailyProgressListResponseDTO = await response.json();
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       days: data.data,
       refreshing: false,
@@ -918,34 +987,33 @@ async function refreshDays(): Promise<void> {
       hasMore: data.pagination.total > data.data.length,
     }));
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       refreshing: false,
-      error: 'Nie udało się odświeżyć danych.',
+      error: "Nie udało się odświeżyć danych.",
     }));
   }
 }
 ```
 
 #### refetchAfterMealChange()
+
 ```typescript
 async function refetchAfterMealChange(): Promise<void> {
   // Refetch tylko widocznych dni (do obecnego offset)
   try {
-    const response = await fetch(
-      `/api/v1/daily-progress?limit=${state.offset}&offset=0`
-    );
+    const response = await fetch(`/api/v1/daily-progress?limit=${state.offset}&offset=0`);
 
     if (!response.ok) return; // Silent fail
 
     const data: DailyProgressListResponseDTO = await response.json();
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       days: data.data,
     }));
   } catch (error) {
-    console.error('Failed to refetch after meal change:', error);
+    console.error("Failed to refetch after meal change:", error);
   }
 }
 ```
@@ -957,6 +1025,7 @@ Zarządzanie stanem szczegółów dnia jest scentralizowane w custom hooku `useD
 **Lokalizacja**: `src/hooks/useDayDetails.ts`
 
 **Odpowiedzialności**:
+
 - Zarządzanie stanem szczegółów dnia (DayDetailsState)
 - Ładowanie progress i meals
 - Edycja i usuwanie posiłków
@@ -1027,9 +1096,10 @@ function getInitialState(date: string): DayDetailsState {
 ### 6.6. Kluczowe funkcje hooka useDayDetails
 
 #### loadDayDetails()
+
 ```typescript
 async function loadDayDetails(): Promise<void> {
-  setState(prev => ({ ...prev, loading: true, error: null }));
+  setState((prev) => ({ ...prev, loading: true, error: null }));
 
   try {
     // Parallel fetch progress i meals
@@ -1039,72 +1109,74 @@ async function loadDayDetails(): Promise<void> {
     ]);
 
     if (!progressRes.ok || !mealsRes.ok) {
-      throw new Error('Failed to load day details');
+      throw new Error("Failed to load day details");
     }
 
     const progress: DailyProgressResponseDTO = await progressRes.json();
     const mealsData: MealsListResponseDTO = await mealsRes.json();
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       progress,
       meals: mealsData.data,
       loading: false,
     }));
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       loading: false,
-      error: 'Nie udało się załadować szczegółów dnia.',
+      error: "Nie udało się załadować szczegółów dnia.",
     }));
   }
 }
 ```
 
 #### deleteMeal(id)
+
 ```typescript
 async function deleteMeal(id: string): Promise<void> {
-  setState(prev => ({ ...prev, deletingMealId: id }));
+  setState((prev) => ({ ...prev, deletingMealId: id }));
 
   try {
     const response = await fetch(`/api/v1/meals/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     if (!response.ok) {
       if (response.status === 404) {
         // Posiłek nie istnieje - usuń z listy
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          meals: prev.meals.filter(m => m.id !== id),
+          meals: prev.meals.filter((m) => m.id !== id),
           deletingMealId: null,
         }));
         // Refetch progress
         await refetchProgress();
         return;
       }
-      throw new Error('Failed to delete meal');
+      throw new Error("Failed to delete meal");
     }
 
     // Sukces - usuń z listy i refetch progress
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      meals: prev.meals.filter(m => m.id !== id),
+      meals: prev.meals.filter((m) => m.id !== id),
       deletingMealId: null,
     }));
 
     await refetchProgress();
   } catch (error) {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       deletingMealId: null,
-      error: 'Nie udało się usunąć posiłku.',
+      error: "Nie udało się usunąć posiłku.",
     }));
   }
 }
 ```
 
 #### refetchAfterMealChange()
+
 ```typescript
 async function refetchAfterMealChange(): Promise<void> {
   // Refetch progress i meals po dodaniu/edycji
@@ -1119,13 +1191,13 @@ async function refetchAfterMealChange(): Promise<void> {
     const progress: DailyProgressResponseDTO = await progressRes.json();
     const mealsData: MealsListResponseDTO = await mealsRes.json();
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       progress,
       meals: mealsData.data,
     }));
   } catch (error) {
-    console.error('Failed to refetch after meal change:', error);
+    console.error("Failed to refetch after meal change:", error);
   }
 }
 ```
@@ -1133,6 +1205,7 @@ async function refetchAfterMealChange(): Promise<void> {
 ### 6.7. Dodatkowe hooki pomocnicze
 
 #### useInfiniteScroll
+
 ```typescript
 export function useInfiniteScroll(
   callback: () => void,
@@ -1165,6 +1238,7 @@ export function useInfiniteScroll(
 ```
 
 #### usePullToRefresh
+
 ```typescript
 export function usePullToRefresh(onRefresh: () => Promise<void>) {
   const [pulling, setPulling] = useState(false);
@@ -1194,14 +1268,14 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
       }
     };
 
-    document.addEventListener('touchstart', handleTouchStart);
-    document.addEventListener('touchmove', handleTouchMove);
-    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("touchmove", handleTouchMove);
+    document.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [pulling, onRefresh]);
 
@@ -1210,6 +1284,7 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
 ```
 
 #### useMediaQuery
+
 ```typescript
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false);
@@ -1222,10 +1297,10 @@ export function useMediaQuery(query: string): boolean {
       setMatches(e.matches);
     };
 
-    media.addEventListener('change', listener);
+    media.addEventListener("change", listener);
 
     return () => {
-      media.removeEventListener('change', listener);
+      media.removeEventListener("change", listener);
     };
   }, [query]);
 
@@ -1236,44 +1311,48 @@ export function useMediaQuery(query: string): boolean {
 ```
 
 #### useDateFormatter
+
 ```typescript
 export function useDateFormatter(): DateFormatter {
-  return useMemo(() => ({
-    format(date: string | Date, format: DateFormat): string {
-      const d = typeof date === 'string' ? new Date(date) : date;
+  return useMemo(
+    () => ({
+      format(date: string | Date, format: DateFormat): string {
+        const d = typeof date === "string" ? new Date(date) : date;
 
-      switch (format) {
-        case 'YYYY-MM-DD':
-          return d.toISOString().split('T')[0];
-        case 'full':
-          return new Intl.DateTimeFormat('pl-PL', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          }).format(d);
-        case 'short':
-          return new Intl.DateTimeFormat('pl-PL', {
-            weekday: 'short',
-            day: 'numeric',
-            month: 'short',
-          }).format(d);
-        case 'time':
-          return new Intl.DateTimeFormat('pl-PL', {
-            hour: '2-digit',
-            minute: '2-digit',
-          }).format(d);
-        default:
-          return d.toISOString();
-      }
-    },
-    parseAPIDate(date: string): Date {
-      return new Date(date);
-    },
-    toAPIFormat(date: Date): string {
-      return date.toISOString().split('T')[0];
-    },
-  }), []);
+        switch (format) {
+          case "YYYY-MM-DD":
+            return d.toISOString().split("T")[0];
+          case "full":
+            return new Intl.DateTimeFormat("pl-PL", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }).format(d);
+          case "short":
+            return new Intl.DateTimeFormat("pl-PL", {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+            }).format(d);
+          case "time":
+            return new Intl.DateTimeFormat("pl-PL", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }).format(d);
+          default:
+            return d.toISOString();
+        }
+      },
+      parseAPIDate(date: string): Date {
+        return new Date(date);
+      },
+      toAPIFormat(date: Date): string {
+        return date.toISOString().split("T")[0];
+      },
+    }),
+    []
+  );
 }
 ```
 
@@ -1284,12 +1363,14 @@ export function useDateFormatter(): DateFormatter {
 **Cel**: Pobranie listy dni z podsumowaniem kalorycznym dla zalogowanego użytkownika.
 
 **Kiedy wywoływane**:
+
 - Initial load dashboardu
 - Infinite scroll (loadMoreDays)
 - Pull-to-refresh (refreshDays)
 - Po dodaniu/edycji/usunięciu posiłku (refetchAfterMealChange)
 
 **Request**:
+
 ```typescript
 // Query parameters
 interface GetDailyProgressQuery {
@@ -1301,11 +1382,13 @@ interface GetDailyProgressQuery {
 ```
 
 **Przykład request**:
+
 ```
 GET /api/v1/daily-progress?limit=30&offset=0
 ```
 
 **Response (success - 200)**:
+
 ```typescript
 // Typ: DailyProgressListResponseDTO
 {
@@ -1315,6 +1398,7 @@ GET /api/v1/daily-progress?limit=30&offset=0
 ```
 
 **Przykład response**:
+
 ```json
 {
   "data": [
@@ -1339,11 +1423,13 @@ GET /api/v1/daily-progress?limit=30&offset=0
 ```
 
 **Error responses**:
+
 - **400 Validation Error**: Invalid query parameters
 - **401 Unauthorized**: Not authenticated (redirect to login)
 - **500 Internal Server Error**: Database failure
 
 **Frontend handling**:
+
 ```typescript
 // W funkcji loadInitialDays() hooka useDashboard
 
@@ -1352,17 +1438,17 @@ try {
 
   if (response.status === 401) {
     // Redirect to login
-    window.location.href = '/login';
+    window.location.href = "/login";
     return;
   }
 
   if (!response.ok) {
-    throw new Error('Failed to load days');
+    throw new Error("Failed to load days");
   }
 
   const data: DailyProgressListResponseDTO = await response.json();
 
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     days: data.data,
     loading: false,
@@ -1370,10 +1456,10 @@ try {
     hasMore: data.pagination.total > data.data.length,
   }));
 } catch (error) {
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     loading: false,
-    error: 'Nie udało się załadować danych. Spróbuj ponownie.',
+    error: "Nie udało się załadować danych. Spróbuj ponownie.",
   }));
 }
 ```
@@ -1385,21 +1471,25 @@ try {
 **Cel**: Pobranie szczegółów pojedynczego dnia.
 
 **Kiedy wywoływane**:
+
 - Initial load DayDetails
 - Po dodaniu/edycji/usunięciu posiłku (refetch)
 
 **Request**:
+
 ```typescript
 // URL parameter
 date: string; // YYYY-MM-DD
 ```
 
 **Przykład request**:
+
 ```
 GET /api/v1/daily-progress/2025-01-27
 ```
 
 **Response (success - 200)**:
+
 ```typescript
 // Typ: DailyProgressResponseDTO
 {
@@ -1416,6 +1506,7 @@ GET /api/v1/daily-progress/2025-01-27
 ```
 
 **Response (no meals - 200)**:
+
 ```json
 {
   "date": "2025-01-27",
@@ -1431,11 +1522,13 @@ GET /api/v1/daily-progress/2025-01-27
 ```
 
 **Error responses**:
+
 - **400 Validation Error**: Invalid date format
 - **401 Unauthorized**: Not authenticated
 - **500 Internal Server Error**: Database failure
 
 **Frontend handling**:
+
 ```typescript
 // W funkcji loadDayDetails() hooka useDayDetails
 
@@ -1443,19 +1536,19 @@ try {
   const response = await fetch(`/api/v1/daily-progress/${date}`);
 
   if (!response.ok) {
-    throw new Error('Failed to load day progress');
+    throw new Error("Failed to load day progress");
   }
 
   const progress: DailyProgressResponseDTO = await response.json();
 
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     progress,
   }));
 } catch (error) {
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
-    error: 'Nie udało się załadować szczegółów dnia.',
+    error: "Nie udało się załadować szczegółów dnia.",
   }));
 }
 ```
@@ -1467,10 +1560,12 @@ try {
 **Cel**: Pobranie listy posiłków dla zalogowanego użytkownika z filtrowaniem po dacie.
 
 **Kiedy wywoływane**:
+
 - Initial load DayDetails (z filtrem `date`)
 - Po dodaniu/edycji/usunięciu posiłku (refetch)
 
 **Request**:
+
 ```typescript
 // Query parameters
 interface GetMealsQuery {
@@ -1480,16 +1575,18 @@ interface GetMealsQuery {
   category?: MealCategory;
   limit?: number; // domyślnie 50
   offset?: number; // domyślnie 0
-  sort?: 'asc' | 'desc'; // domyślnie desc, dla DayDetails używamy 'asc'
+  sort?: "asc" | "desc"; // domyślnie desc, dla DayDetails używamy 'asc'
 }
 ```
 
 **Przykład request (DayDetails)**:
+
 ```
 GET /api/v1/meals?date=2025-01-27&sort=asc
 ```
 
 **Response (success - 200)**:
+
 ```typescript
 // Typ: MealsListResponseDTO
 {
@@ -1499,6 +1596,7 @@ GET /api/v1/meals?date=2025-01-27&sort=asc
 ```
 
 **Przykład response**:
+
 ```json
 {
   "data": [
@@ -1533,6 +1631,7 @@ GET /api/v1/meals?date=2025-01-27&sort=asc
 ```
 
 **Frontend handling**:
+
 ```typescript
 // W funkcji loadDayDetails() hooka useDayDetails
 
@@ -1540,12 +1639,12 @@ try {
   const response = await fetch(`/api/v1/meals?date=${date}&sort=asc`);
 
   if (!response.ok) {
-    throw new Error('Failed to load meals');
+    throw new Error("Failed to load meals");
   }
 
   const mealsData: MealsListResponseDTO = await response.json();
 
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     meals: mealsData.data,
   }));
@@ -1563,12 +1662,14 @@ try {
 **Kiedy wywoływane**: Po potwierdzeniu usunięcia w DeleteConfirmation
 
 **Request**:
+
 ```typescript
 // URL parameter
 id: string; // UUID posiłku
 ```
 
 **Przykład request**:
+
 ```
 DELETE /api/v1/meals/550e8400-e29b-41d4-a716-446655440000
 ```
@@ -1577,24 +1678,26 @@ DELETE /api/v1/meals/550e8400-e29b-41d4-a716-446655440000
 (brak body)
 
 **Error responses**:
+
 - **404 Not Found**: Posiłek nie istnieje
 - **401 Unauthorized**: Not authenticated
 - **500 Internal Server Error**: Database failure
 
 **Frontend handling**:
+
 ```typescript
 // W funkcji deleteMeal(id) hooka useDayDetails
 
 try {
   const response = await fetch(`/api/v1/meals/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
   if (response.status === 404) {
     // Posiłek nie istnieje - usuń z listy lokalnie
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      meals: prev.meals.filter(m => m.id !== id),
+      meals: prev.meals.filter((m) => m.id !== id),
       deletingMealId: null,
     }));
     await refetchProgress();
@@ -1602,22 +1705,22 @@ try {
   }
 
   if (!response.ok) {
-    throw new Error('Failed to delete meal');
+    throw new Error("Failed to delete meal");
   }
 
   // Sukces - usuń z listy i refetch progress
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
-    meals: prev.meals.filter(m => m.id !== id),
+    meals: prev.meals.filter((m) => m.id !== id),
     deletingMealId: null,
   }));
 
   await refetchProgress();
 } catch (error) {
-  setState(prev => ({
+  setState((prev) => ({
     ...prev,
     deletingMealId: null,
-    error: 'Nie udało się usunąć posiłku.',
+    error: "Nie udało się usunąć posiłku.",
   }));
 }
 ```
@@ -1631,6 +1734,7 @@ try {
 **Trigger**: Wejście na stronę główną `/`
 
 **Akcja**:
+
 1. Strona Astro renderuje się po stronie serwera
 2. Komponent React (`DashboardContainer`) hydratuje się
 3. Hook `useDashboard()` wywołuje `loadInitialDays()`
@@ -1646,6 +1750,7 @@ try {
 **Trigger**: Scroll użytkownika do końca listy (IntersectionObserver trigger)
 
 **Akcja**:
+
 1. `InfiniteScrollTrigger` wykrywa wejście w viewport
 2. Sprawdzenie `hasMore === true && loading === false`
 3. Wywołanie `loadMoreDays()`
@@ -1661,6 +1766,7 @@ try {
 **Trigger**: Użytkownik przeciąga listę w dół na początku (pull-to-refresh gesture)
 
 **Akcja**:
+
 1. Hook `usePullToRefresh()` wykrywa gesture
 2. **Refreshing state**: Spinner na górze listy
 3. Wywołanie `refreshDays()`
@@ -1676,6 +1782,7 @@ try {
 **Trigger**: Tap na kartę dnia
 
 **Akcja**:
+
 1. Wywołanie `onDayClick(date)`
 2. Navigate do `/day/:date` (Astro navigate)
 3. Ładowanie strony DayDetails
@@ -1687,6 +1794,7 @@ try {
 **Trigger**: Click na kartę dnia
 
 **Akcja**:
+
 1. Wywołanie `selectDay(date)`
 2. Update `state.selectedDate = date`
 3. Highlight wybranej karty (active state)
@@ -1700,6 +1808,7 @@ try {
 **Trigger**: Click na FAB (Floating Action Button)
 
 **Akcja**:
+
 1. Wywołanie `setIsAddMealOpen(true)`
 2. Otwarcie `AddMealModal` (już zaimplementowany)
 3. Użytkownik wypełnia formularz i zapisuje
@@ -1715,6 +1824,7 @@ try {
 **Trigger**: Wejście na `/day/:date`
 
 **Akcja**:
+
 1. Strona Astro renderuje się z date param
 2. Komponent React (`DayDetailsContainer`) hydratuje się z `date` prop
 3. Hook `useDayDetails(date)` wywołuje `loadDayDetails()`
@@ -1734,6 +1844,7 @@ try {
 **Trigger**: Click/Tap na kartę posiłku
 
 **Akcja**:
+
 1. Wywołanie `onMealClick(meal)`
 2. Wywołanie `editMeal(meal)`
 3. Update `state.editingMeal = meal`
@@ -1751,6 +1862,7 @@ try {
 **Trigger**: Click/Tap na ikonę edycji w MealCard
 
 **Akcja**:
+
 - Identyczna jak 8.8 (kliknięcie na kartę)
 
 ---
@@ -1760,6 +1872,7 @@ try {
 **Trigger**: Click/Tap na ikonę usuwania w MealCard
 
 **Akcja**:
+
 1. Wywołanie `onDelete` w MealCard
 2. **Inline expansion**: MealCard expanduje się, pokazując `DeleteConfirmation`
 3. DeleteConfirmation wyświetla:
@@ -1777,6 +1890,7 @@ try {
 **Trigger**: Click na przycisk "Usuń" w DeleteConfirmation
 
 **Akcja**:
+
 1. Wywołanie `onConfirm()`
 2. Wywołanie `deleteMeal(id)` z hooka
 3. **Deleting state**: Przycisk "Usuń" pokazuje spinner + disabled
@@ -1795,10 +1909,12 @@ try {
 ### 8.12. DayDetails - Anulowanie Usunięcia
 
 **Trigger**:
+
 - Click na przycisk "Anuluj" w DeleteConfirmation
 - Auto-collapse po 5s
 
 **Akcja**:
+
 1. Wywołanie `onCancel()`
 2. **Collapse animation** DeleteConfirmation
 3. MealCard wraca do normalnego stanu
@@ -1810,6 +1926,7 @@ try {
 **Trigger**: Click na przycisk "+" w DayHeader
 
 **Akcja**:
+
 1. Wywołanie `onAddMeal()`
 2. Otwarcie `AddMealModal`
 3. Pre-fill daty i czasu (bieżący dzień + czas)
@@ -1826,6 +1943,7 @@ try {
 **Trigger**: Click na przycisk "←" w DayHeader (mobile only)
 
 **Akcja**:
+
 1. Wywołanie `onBack()`
 2. Navigate do `/` (dashboard)
 
@@ -1838,10 +1956,12 @@ try {
 **Komponenty**: `InfiniteScrollTrigger`
 
 **Warunki**:
+
 - `hasMore === true` - są jeszcze dni do załadowania
 - `loading === false` - nie trwa już ładowanie
 
 **Wpływ na UI**:
+
 - Jeśli warunki spełnione: trigger `loadMoreDays()` po wejściu w viewport
 - Jeśli `hasMore === false`: nie renderuj triggera
 
@@ -1852,10 +1972,12 @@ try {
 **Komponenty**: `DaysList`
 
 **Warunki**:
+
 - `loading === true` - trwa ładowanie
 - `days.length === 0` - brak danych (initial load)
 
 **Wpływ na UI**:
+
 - Render 3x `SkeletonDayCard`
 - Przy infinite scroll: render spinner na końcu listy (nie skeleton)
 
@@ -1866,10 +1988,12 @@ try {
 **Komponenty**: `DaysList`
 
 **Warunki**:
+
 - `loading === false` - zakończono ładowanie
 - `days.length === 0` - brak dni
 
 **Wpływ na UI**:
+
 - Render `EmptyDashboard` zamiast listy
 - Wyświetlenie CTA "Dodaj posiłek"
 
@@ -1880,9 +2004,11 @@ try {
 **Komponenty**: `DayCard`
 
 **Warunki**:
+
 - `isSelected === true` (day.date === selectedDate)
 
 **Wpływ na UI**:
+
 - Highlight karty (border, background color, shadow)
 - Active state styling
 
@@ -1893,10 +2019,12 @@ try {
 **Komponenty**: `DayDetailsPage` (Astro), `DayDetailsContainer`
 
 **Warunki**:
+
 - Date param musi być w formacie YYYY-MM-DD
 - Regex: `/^\d{4}-\d{2}-\d{2}$/`
 
 **Wpływ na UI**:
+
 - Niepoprawny format → redirect do `/`
 - Toast notification: "Niepoprawna data"
 
@@ -1907,10 +2035,12 @@ try {
 **Komponenty**: `MealsList`
 
 **Warunki**:
+
 - `loading === false` - zakończono ładowanie
 - `meals.length === 0` - brak posiłków
 
 **Wpływ na UI**:
+
 - Render `EmptyDayState` zamiast listy
 - Wyświetlenie CTA "Dodaj posiłek"
 
@@ -1921,11 +2051,13 @@ try {
 **Komponenty**: `MealCard`
 
 **Warunki**:
+
 - Dla każdego makroskładnika (protein, carbs, fats):
   - Jeśli `value !== null && value !== undefined`: wyświetl wartość
   - Jeśli `value === null || value === undefined`: wyświetl "-"
 
 **Wpływ na UI**:
+
 - Przykład: "Białko: 18.5g | Węglowodany: - | Tłuszcze: 28.0g"
 
 ---
@@ -1935,10 +2067,12 @@ try {
 **Komponenty**: `MealCard`, `DeleteConfirmation`
 
 **Warunki**:
+
 - `deleteConfirmationOpen === true` - confirmation jest otwarty
 - `deletingMealId === meal.id` - trwa usuwanie tego posiłku
 
 **Wpływ na UI**:
+
 - Expansion `DeleteConfirmation` inline w MealCard
 - Disabled edit/delete buttons podczas usuwania
 - Loading spinner w przycisku "Usuń"
@@ -1951,16 +2085,19 @@ try {
 **Komponenty**: `CalorieProgressBar`
 
 **Warunki**:
+
 - `status === 'under'`: bg-sky-400
 - `status === 'on_track'`: bg-green-500
 - `status === 'over'`: bg-orange-500
 
 **Obliczanie statusu** (po stronie API):
+
 - `under`: total_calories < calorie_goal - 100
 - `on_track`: calorie_goal - 100 <= total_calories <= calorie_goal + 100
 - `over`: total_calories > calorie_goal + 100
 
 **Wpływ na UI**:
+
 - Kolorowanie progress bar
 - Kolorowanie tła DayCard (opcjonalnie, light version)
 
@@ -1971,10 +2108,12 @@ try {
 **Komponenty**: `MealCard`
 
 **Warunki**:
+
 - `deletingMealId === meal.id` - trwa usuwanie
 - `loading === true` - trwa ładowanie ogólne
 
 **Wpływ na UI**:
+
 - Disabled edit/delete buttons
 - Cursor: not-allowed
 
@@ -1987,6 +2126,7 @@ try {
 **Scenariusz**: Błąd sieci lub serwera podczas początkowego ładowania dashboardu
 
 **Obsługa**:
+
 1. Catch w `loadInitialDays()`
 2. Update `state.error = 'Nie udało się załadować danych. Spróbuj ponownie.'`
 3. **Error state UI**:
@@ -2003,6 +2143,7 @@ try {
 **Scenariusz**: Błąd podczas ładowania kolejnych dni (infinite scroll)
 
 **Obsługa**:
+
 1. Catch w `loadMoreDays()`
 2. Toast notification: "Nie udało się załadować kolejnych dni"
 3. `state.hasMore = false` - zapobiega kolejnym próbom
@@ -2020,6 +2161,7 @@ try {
 **Scenariusz**: Błąd podczas pull-to-refresh (mobile)
 
 **Obsługa**:
+
 1. Catch w `refreshDays()`
 2. Toast notification: "Nie udało się odświeżyć danych"
 3. Zachowanie poprzednich danych w `state.days`
@@ -2034,6 +2176,7 @@ try {
 **Scenariusz**: Użytkownik niezalogowany lub sesja wygasła
 
 **Obsługa**:
+
 1. Wykrycie response.status === 401
 2. Redirect do `/login`
 3. Query param z returnUrl: `/login?returnUrl=/`
@@ -2048,6 +2191,7 @@ try {
 **Scenariusz**: Błąd podczas ładowania szczegółów dnia (progress lub meals)
 
 **Obsługa**:
+
 1. Catch w `loadDayDetails()`
 2. Update `state.error = 'Nie udało się załadować szczegółów dnia.'`
 3. **Error state UI**:
@@ -2064,6 +2208,7 @@ try {
 **Scenariusz**: Posiłek nie istnieje (został już usunięty lub nie należy do użytkownika)
 
 **Obsługa**:
+
 1. Wykrycie response.status === 404
 2. Toast notification: "Posiłek nie został znaleziony"
 3. Usunięcie z lokalnej listy: `state.meals = state.meals.filter(m => m.id !== id)`
@@ -2078,6 +2223,7 @@ try {
 **Scenariusz**: Błąd serwera podczas usuwania posiłku
 
 **Obsługa**:
+
 1. Catch w `deleteMeal(id)`
 2. Toast notification: "Nie udało się usunąć posiłku. Spróbuj ponownie."
 3. Collapse DeleteConfirmation
@@ -2093,6 +2239,7 @@ try {
 **Scenariusz**: Date param w URL nie jest w formacie YYYY-MM-DD
 
 **Obsługa**:
+
 1. Walidacja w Astro page lub useEffect
 2. Redirect do `/` (dashboard)
 3. Toast notification: "Niepoprawna data"
@@ -2106,6 +2253,7 @@ try {
 **Scenariusz**: Błąd walidacji podczas edycji posiłku (dane niepoprawne)
 
 **Obsługa**:
+
 1. Response 400 z details (field: message)
 2. Mapowanie błędów na `validationErrors`
 3. Wyświetlenie błędów przy odpowiednich polach w formularzu (czerwone obramowanie + komunikat)
@@ -2121,6 +2269,7 @@ try {
 **Scenariusz**: Błąd serwera podczas edycji posiłku
 
 **Obsługa**:
+
 1. Catch w `submitMeal()`
 2. Toast notification: "Nie udało się zaktualizować posiłku. Spróbuj ponownie."
 3. Modal pozostaje otwarty
@@ -2135,6 +2284,7 @@ try {
 **Scenariusz**: Brak połączenia z internetem, timeout, itp.
 
 **Obsługa**:
+
 1. Catch w bloku try-catch wszystkich API calls
 2. Toast notification: "Brak połączenia z internetem. Sprawdź połączenie i spróbuj ponownie."
 3. Przycisk "Spróbuj ponownie" (gdzie applicable)
@@ -2148,6 +2298,7 @@ try {
 ### Krok 1: Przygotowanie struktury projektu
 
 1.1. Utworzenie katalogów dla komponentów widoków:
+
 ```
 src/
   pages/
@@ -2176,6 +2327,7 @@ src/
 ```
 
 1.2. Utworzenie plików dla typów i hooków:
+
 ```
 src/
   types/
@@ -2199,22 +2351,26 @@ src/
 ### Krok 2: Implementacja typów i stałych
 
 2.1. Utworzyć plik `src/types/dashboard.types.ts`:
+
 - `DashboardState`
 - `InfiniteScrollParams`
 - `STATUS_COLOR_MAP`
 - `PAGINATION_LIMITS`
 
-2.2. Utworzyć plik `src/types/day-details.types.ts`:
+  2.2. Utworzyć plik `src/types/day-details.types.ts`:
+
 - `DayDetailsState`
 - `DeleteConfirmationState`
 - `CATEGORY_CONFIG`
 
-2.3. Utworzyć plik `src/lib/utils/date-formatter.ts`:
+  2.3. Utworzyć plik `src/lib/utils/date-formatter.ts`:
+
 - `DateFormatter` interface
 - `formatDate()` implementation
 - `parseAPIDate()` implementation
 
-2.4. Utworzyć plik `src/lib/utils/status-colors.ts`:
+  2.4. Utworzyć plik `src/lib/utils/status-colors.ts`:
+
 - `getStatusColor(status)` helper
 - Export `STATUS_COLOR_MAP`
 
@@ -2223,13 +2379,15 @@ src/
 ### Krok 3: Implementacja prostych komponentów shared
 
 3.1. **CalorieProgressBar.tsx**:
+
 - Props: percentage, status, showLabel, size
 - Progress bar element (HTML `<div>` z width %)
 - Kolorowanie wg statusu (używając `STATUS_COLOR_MAP`)
 - Opcjonalny label z procentem
 - Tailwind styling, responsive
 
-3.2. **InfiniteScrollTrigger.tsx**:
+  3.2. **InfiniteScrollTrigger.tsx**:
+
 - Props: onIntersect, hasMore, loading
 - Invisible div (h-1)
 - Intersection Observer hook
@@ -2240,22 +2398,26 @@ src/
 ### Krok 4: Implementacja pomocniczych hooków
 
 4.1. **useInfiniteScroll.ts**:
+
 - Params: callback, options (hasMore, loading)
 - Intersection Observer setup
 - Return: triggerRef
 
-4.2. **usePullToRefresh.ts** (opcjonalnie, może być biblioteka):
+  4.2. **usePullToRefresh.ts** (opcjonalnie, może być biblioteka):
+
 - Touch events handling
 - Pull gesture detection
 - Callback trigger
 - Return: pulling state
 
-4.3. **useMediaQuery.ts**:
+  4.3. **useMediaQuery.ts**:
+
 - Params: query string
 - MediaQueryList API
 - Return: matches boolean
 
-4.4. **useDateFormatter.ts**:
+  4.4. **useDateFormatter.ts**:
+
 - Return: DateFormatter object
 - Implementacja format(), parseAPIDate(), toAPIFormat()
 
@@ -2264,6 +2426,7 @@ src/
 ### Krok 5: Implementacja głównego hooka useDashboard
 
 5.1. **useDashboard.ts**:
+
 - Implementacja stanu (useState<DashboardState>)
 - `getInitialState(initialData)` function
 - `loadInitialDays()` - initial load
@@ -2273,33 +2436,37 @@ src/
 - `refetchAfterMealChange()` - po zmianach w posiłkach
 - Error handling w każdej funkcji
 
-5.2. Testowanie hooka w izolacji (opcjonalnie: unit testy)
+  5.2. Testowanie hooka w izolacji (opcjonalnie: unit testy)
 
 ---
 
 ### Krok 6: Implementacja komponentów Dashboard
 
 6.1. **SkeletonDayCard.tsx**:
+
 - Placeholder dla daty (gray line, animate-pulse)
 - Placeholder dla progress bar
 - Placeholder dla tekstu
 - Tailwind styling
 
-6.2. **EmptyDashboard.tsx**:
+  6.2. **EmptyDashboard.tsx**:
+
 - Props: onAddMeal
 - Ikona (🍽️)
 - Tekst "Zacznij swoją przygodę!"
 - CTA Button "Dodaj posiłek"
 - onClick → onAddMeal()
 
-6.3. **FAB.tsx**:
+  6.3. **FAB.tsx**:
+
 - Props: onClick
 - Button (rounded-full, fixed bottom-right)
 - Ikona "+"
 - Shadow, hover effects
 - Tailwind styling
 
-6.4. **DayCard.tsx**:
+  6.4. **DayCard.tsx**:
+
 - Props: day, isSelected, onClick
 - Layout:
   - Header: Data (formatDate 'short')
@@ -2311,13 +2478,15 @@ src/
 - Hover effects (shadow, scale)
 - Responsive
 
-6.5. **DaysList.tsx**:
+  6.5. **DaysList.tsx**:
+
 - Props: days, loading, hasMore, selectedDate, onDayClick, onLoadMore
 - Mapowanie days → DayCard
 - InfiniteScrollTrigger na końcu
 - Conditional: SkeletonDayCard (3x) vs DayCard list vs EmptyDashboard
 
-6.6. **DashboardContainer.tsx**:
+  6.6. **DashboardContainer.tsx**:
+
 - Props: initialData (opcjonalnie)
 - Hook: useDashboard(initialData)
 - Hook: useMediaQuery('(min-width: 768px)') dla desktop detection
@@ -2334,14 +2503,16 @@ src/
 ### Krok 7: Implementacja strony Dashboard (Astro)
 
 7.1. **src/pages/index.astro**:
+
 - Import DashboardContainer (client:load)
 - Import AppLayout
 - Opcjonalnie: SSR fetch initial data (getStaticProps lub SSR)
 - Layout:
+
   ```astro
   ---
-  import AppLayout from '../layouts/AppLayout.astro';
-  import DashboardContainer from '../components/dashboard/DashboardContainer';
+  import AppLayout from "../layouts/AppLayout.astro";
+  import DashboardContainer from "../components/dashboard/DashboardContainer";
 
   // Opcjonalnie: SSR fetch
   // const initialData = await fetch('/api/v1/daily-progress?limit=30&offset=0').then(r => r.json());
@@ -2357,6 +2528,7 @@ src/
 ### Krok 8: Implementacja głównego hooka useDayDetails
 
 8.1. **useDayDetails.ts**:
+
 - Implementacja stanu (useState<DayDetailsState>)
 - `getInitialState(date)` function
 - `loadDayDetails()` - parallel fetch progress + meals
@@ -2366,13 +2538,14 @@ src/
 - `refetchAfterMealChange()` - refetch po zmianach
 - Error handling
 
-8.2. Testowanie hooka
+  8.2. Testowanie hooka
 
 ---
 
 ### Krok 9: Implementacja komponentów DayDetails
 
 9.1. **MacroDisplay.tsx**:
+
 - Props: protein, carbs, fats, fiber (optional)
 - Grid 2x2 (responsive)
 - Dla każdego makro:
@@ -2380,20 +2553,23 @@ src/
   - Wartość (z "g" suffix) lub "-"
 - Tailwind styling
 
-9.2. **DeleteConfirmation.tsx**:
+  9.2. **DeleteConfirmation.tsx**:
+
 - Props: mealDescription, onConfirm, onCancel, loading
 - Alert box (variant: destructive/warning)
 - Tekst pytający + opis posiłku
 - Buttons: "Usuń" (loading state), "Anuluj"
 - Auto-collapse po 5s (useEffect z setTimeout)
 
-9.3. **EmptyDayState.tsx**:
+  9.3. **EmptyDayState.tsx**:
+
 - Props: onAddMeal
 - Ikona (📝)
 - Tekst "Brak posiłków w tym dniu"
 - CTA Button "Dodaj posiłek"
 
-9.4. **MealCard.tsx**:
+  9.4. **MealCard.tsx**:
+
 - Props: meal, onMealClick, onEdit, onDelete, deleting
 - Local state: deleteConfirmationOpen
 - Layout:
@@ -2405,13 +2581,15 @@ src/
 - Fade-out animation przy usuwaniu (CSS transition)
 - Hover effects
 
-9.5. **MealsList.tsx**:
+  9.5. **MealsList.tsx**:
+
 - Props: meals, loading, onMealClick, onMealEdit, onMealDelete
 - Mapowanie meals → MealCard
 - Conditional: EmptyDayState vs MealCard list
 - Skeleton loaders (opcjonalnie)
 
-9.6. **DayHeader.tsx**:
+  9.6. **DayHeader.tsx**:
+
 - Props: progress, mealCount, showBackButton, onBack, onAddMeal
 - Sticky positioning (sticky top-0)
 - Layout:
@@ -2424,7 +2602,8 @@ src/
   - AddButton "+"
 - Handlers: onBack, onAddMeal
 
-9.7. **DayDetailsContainer.tsx**:
+  9.7. **DayDetailsContainer.tsx**:
+
 - Props: date, embedded (optional), onDateChange (optional)
 - Hook: useDayDetails(date)
 - State: isAddMealOpen, isEditMealOpen
@@ -2439,6 +2618,7 @@ src/
 ### Krok 10: Implementacja EditMealModal
 
 10.1. **EditMealModal.tsx**:
+
 - Props: isOpen, meal, onClose, onSuccess
 - Hook: useEditMealForm(meal.id, meal) - podobny do useAddMealForm
 - Formularz identyczny jak AddMealModal:
@@ -2451,7 +2631,8 @@ src/
 - Note: automatyczna zmiana input_method na 'ai-edited' przy edycji AI meal
 - Callback onSuccess(updatedMeal)
 
-10.2. **useEditMealForm.ts**:
+  10.2. **useEditMealForm.ts**:
+
 - Podobny do useAddMealForm
 - Dodatkowo: preload initial data
 - API endpoint: PATCH zamiast POST
@@ -2462,23 +2643,25 @@ src/
 ### Krok 11: Implementacja strony DayDetails (Astro)
 
 11.1. **src/pages/day/[date].astro**:
+
 - Import DayDetailsContainer (client:load)
 - Import AppLayout
 - Extract date param
 - Walidacja date format (regex)
 - Opcjonalnie: SSR fetch initial data
 - Layout:
+
   ```astro
   ---
-  import AppLayout from '../../layouts/AppLayout.astro';
-  import DayDetailsContainer from '../../components/day-details/DayDetailsContainer';
+  import AppLayout from "../../layouts/AppLayout.astro";
+  import DayDetailsContainer from "../../components/day-details/DayDetailsContainer";
 
   const { date } = Astro.params;
 
   // Walidacja
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!date || !dateRegex.test(date)) {
-    return Astro.redirect('/');
+    return Astro.redirect("/");
   }
   ---
 
@@ -2492,18 +2675,22 @@ src/
 ### Krok 12: Implementacja Desktop Two-Pane Layout
 
 12.1. **DashboardContainer.tsx** - update:
+
 - Hook: useMediaQuery('(min-width: 768px)')
 - Conditional rendering:
   ```tsx
-  {isDesktop && selectedDate && (
-    <div className="fixed right-0 top-16 bottom-0 w-1/2 border-l overflow-auto">
-      <DayDetailsContainer date={selectedDate} embedded={true} />
-    </div>
-  )}
+  {
+    isDesktop && selectedDate && (
+      <div className="fixed right-0 top-16 bottom-0 w-1/2 border-l overflow-auto">
+        <DayDetailsContainer date={selectedDate} embedded={true} />
+      </div>
+    );
+  }
   ```
 - DaysList z max-width na desktop (w-1/2 gdy panel otwarty)
 
-12.2. **DayDetailsContainer.tsx** - update:
+  12.2. **DayDetailsContainer.tsx** - update:
+
 - Props: embedded (boolean)
 - Conditional: showBackButton = !embedded
 - Conditional styling dla embedded mode
@@ -2513,6 +2700,7 @@ src/
 ### Krok 13: Stylowanie z Tailwind CSS
 
 13.1. Stylowanie wszystkich komponentów zgodnie z designem:
+
 - Mobile-first approach
 - Responsive breakpoints (sm, md, lg)
 - Progress bar colors (gray-400, green-500, orange-500)
@@ -2520,7 +2708,8 @@ src/
 - Hover effects (shadow-lg, scale-105)
 - Animations (fade-in, fade-out, pulse, slide)
 
-13.2. Szczególne uwagi:
+  13.2. Szczególne uwagi:
+
 - DayCard: hover shadow-lg transition-transform
 - MealCard: fade-out animation przy usuwaniu (opacity + height transition)
 - DeleteConfirmation: slide-down animation (max-height transition)
@@ -2532,13 +2721,15 @@ src/
 ### Krok 14: Integracja z API i testowanie
 
 14.1. Testowanie wywołań API:
+
 - GET /api/v1/daily-progress (pagination, infinite scroll)
 - GET /api/v1/daily-progress/:date (single day)
 - GET /api/v1/meals (filtering by date)
 - DELETE /api/v1/meals/:id (delete meal)
 - Obsługa błędów (400, 401, 404, 500)
 
-14.2. Testowanie scenariuszy:
+  14.2. Testowanie scenariuszy:
+
 - Dashboard initial load
 - Infinite scroll (multiple batches)
 - Pull-to-refresh (mobile)
@@ -2554,6 +2745,7 @@ src/
 ### Krok 15: Accessibility
 
 15.1. Sprawdzenie:
+
 - Semantic HTML (`<main>`, `<nav>`, `<article>`)
 - Keyboard navigation (Tab, Enter, Escape)
 - Focus management (modals, delete confirmation)
@@ -2565,7 +2757,8 @@ src/
   - Alt text dla ikon (jeśli używamy img zamiast emoji)
   - Announce changes (aria-live dla toast notifications)
 
-15.2. Testy z:
+  15.2. Testy z:
+
 - Keyboard only
 - Screen reader (NVDA, VoiceOver)
 
@@ -2574,11 +2767,13 @@ src/
 ### Krok 16: Testowanie responsywności
 
 16.1. Testowanie na różnych rozdzielczościach:
+
 - Mobile (320px - 480px): single column, fullscreen DayDetails
 - Tablet (481px - 768px): single column
 - Desktop (>768px): two-pane layout
 
-16.2. Testowanie interakcji:
+  16.2. Testowanie interakcji:
+
 - Touch gestures (tap, swipe)
 - Pull-to-refresh (mobile)
 - Hover effects (desktop only)
@@ -2589,13 +2784,15 @@ src/
 ### Krok 17: Performance optimization
 
 17.1. Optymalizacje:
+
 - React.memo dla DayCard, MealCard (jeśli rendering jest wolny)
 - useCallback dla handlers przekazywanych jako props
 - useMemo dla obliczeń (np. date formatting)
 - Lazy loading modals (React.lazy + Suspense)
 - Virtualization dla długich list (opcjonalnie, react-window)
 
-17.2. Code splitting:
+  17.2. Code splitting:
+
 - Astro automatically splits pages
 - Dynamic import dla EditMealModal (jeśli duży)
 
@@ -2604,10 +2801,12 @@ src/
 ### Krok 18: Error boundaries
 
 18.1. Dodanie Error Boundary na poziomie głównych kontenerów:
+
 - DashboardContainer
 - DayDetailsContainer
 
-18.2. Fallback UI:
+  18.2. Fallback UI:
+
 - Komunikat błędu
 - Przycisk "Odśwież stronę"
 - Logowanie błędu do konsoli (dla developera)
@@ -2617,11 +2816,13 @@ src/
 ### Krok 19: Toast Notifications
 
 19.1. Implementacja toast system (opcjonalnie: biblioteka jak react-hot-toast):
+
 - Toast container
 - showToast(message, type)
 - Typy: success, error, info, warning
 
-19.2. Integracja w komponentach:
+  19.2. Integracja w komponentach:
+
 - Po dodaniu posiłku: "Posiłek dodany"
 - Po edycji: "Posiłek zaktualizowany"
 - Po usunięciu: "Posiłek usunięty"
@@ -2632,6 +2833,7 @@ src/
 ### Krok 20: Testowanie integracyjne
 
 20.1. Scenariusze end-to-end:
+
 - US-010: Przeglądanie dashboardu
 - US-011: Przeglądanie szczegółów dnia
 - US-012: Edycja posiłku
@@ -2647,11 +2849,13 @@ src/
 ### Krok 21: Dokumentacja
 
 21.1. Dodanie dokumentacji do kodu:
+
 - JSDoc dla wszystkich funkcji i komponentów
 - Przykłady użycia w komentarzach
 - README dla komponentów (opcjonalnie)
 
-21.2. Storybook (opcjonalnie):
+  21.2. Storybook (opcjonalnie):
+
 - Stories dla DayCard, MealCard, CalorieProgressBar
 - Różne stany (loading, error, empty)
 
@@ -2660,12 +2864,14 @@ src/
 ### Krok 22: Code review i refactoring
 
 22.1. Przegląd kodu:
+
 - Sprawdzenie zgodności z konwencjami projektu
 - Usunięcie duplikacji
 - Refactoring zbyt długich funkcji
 - Sprawdzenie typów TypeScript
 
-22.2. Cleanup:
+  22.2. Cleanup:
+
 - Usunięcie console.log
 - Usunięcie nieużywanych importów
 - Formatowanie kodu (Prettier)

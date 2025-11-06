@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PasswordInput } from "./PasswordInput";
 import { AuthFormFooter } from "./AuthFormFooter";
 
-interface LoginFormState {
+type LoginFormState = {
   email: string;
   password: string;
   isLoading: boolean;
@@ -24,7 +24,7 @@ interface LoginFormState {
     password?: string;
     general?: string;
   };
-}
+};
 
 export function LoginForm() {
   const [state, setState] = useState<LoginFormState>({
@@ -144,88 +144,76 @@ export function LoginForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={state.email}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                email: e.target.value,
-                errors: { ...prev.errors, email: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("email")}
-            placeholder="jan@example.com"
-            disabled={state.isLoading}
-            className={state.errors.email ? "border-red-500" : ""}
-            aria-invalid={!!state.errors.email}
-            aria-describedby={state.errors.email ? "email-error" : undefined}
-            autoComplete="email"
-            data-testid="login-email-input"
-          />
-          {state.errors.email && (
-            <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.email}
-            </p>
-          )}
-        </div>
-
-        {/* Password */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Hasło</Label>
-            <a
-              href="/auth/forgot-password"
-              className="text-xs text-primary hover:underline"
-            >
-              Zapomniałem hasła
-            </a>
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={state.email}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                  errors: { ...prev.errors, email: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("email")}
+              placeholder="jan@example.com"
+              disabled={state.isLoading}
+              className={state.errors.email ? "border-red-500" : ""}
+              aria-invalid={!!state.errors.email}
+              aria-describedby={state.errors.email ? "email-error" : undefined}
+              autoComplete="email"
+              data-testid="login-email-input"
+            />
+            {state.errors.email && (
+              <p id="email-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.email}
+              </p>
+            )}
           </div>
-          <PasswordInput
-            id="password"
-            value={state.password}
-            onChange={(e) =>
-              setState((prev) => ({
-                ...prev,
-                password: e.target.value,
-                errors: { ...prev.errors, password: undefined },
-              }))
-            }
-            onBlur={() => handleBlur("password")}
-            placeholder="Wprowadź hasło"
-            error={state.errors.password}
-            disabled={state.isLoading}
-            autoComplete="current-password"
-            data-testid="login-password-input"
-          />
-          {state.errors.password && (
-            <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
-              {state.errors.password}
-            </p>
-          )}
-        </div>
 
-        {/* Submit button */}
-        <Button
-          type="submit"
-          disabled={state.isLoading}
-          className="w-full"
-          data-testid="login-submit-button"
-        >
-          {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {state.isLoading ? "Logowanie..." : "Zaloguj się"}
-        </Button>
+          {/* Password */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Hasło</Label>
+              <a href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+                Zapomniałem hasła
+              </a>
+            </div>
+            <PasswordInput
+              id="password"
+              value={state.password}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                  errors: { ...prev.errors, password: undefined },
+                }))
+              }
+              onBlur={() => handleBlur("password")}
+              placeholder="Wprowadź hasło"
+              error={state.errors.password}
+              disabled={state.isLoading}
+              autoComplete="current-password"
+              data-testid="login-password-input"
+            />
+            {state.errors.password && (
+              <p id="password-error" className="text-sm text-red-500 mt-1" role="alert">
+                {state.errors.password}
+              </p>
+            )}
+          </div>
+
+          {/* Submit button */}
+          <Button type="submit" disabled={state.isLoading} className="w-full" data-testid="login-submit-button">
+            {state.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {state.isLoading ? "Logowanie..." : "Zaloguj się"}
+          </Button>
         </form>
 
-        <AuthFormFooter
-          text="Nie masz konta?"
-          linkText="Zarejestruj się"
-          linkHref="/auth/signup"
-        />
+        <AuthFormFooter text="Nie masz konta?" linkText="Zarejestruj się" linkHref="/auth/signup" />
       </CardContent>
     </Card>
   );
