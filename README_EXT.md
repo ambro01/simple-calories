@@ -1,6 +1,6 @@
 # Szybkie Kalorie
 
-Aplikacja internetowa (MVP) do uproszczonego liczenia kalorii i makroskładników z wykorzystaniem sztucznej inteligencji.
+Aplikacja internetowa (MVP) do uproszczonego liczenia kalorii i makroskładników z wykorzystaniem sztucznej inteligencji
 
 ## 📋 Spis treści
 
