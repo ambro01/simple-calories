@@ -58,7 +58,8 @@
       "Bash(del \"d:\\PROJEKTY\\simple-calories\\e2e\\global-setup.ts\")",
       "Bash(curl:*)",
       "Bash(npm run lint)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(npx js-yaml:*)"
     ],
     "deny": [],
     "ask": []
