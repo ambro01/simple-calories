@@ -27,6 +27,14 @@ export class LoginPage {
   async goto() {
     await this.page.goto("/auth/login");
     await expect(this.loginForm).toBeVisible();
+
+    // Wait for React hydration - ensure the form is interactive
+    // Without this, the form might submit as native HTML form instead of using fetch
+    await this.loginForm.waitFor({ state: "attached" });
+    await this.page.waitForFunction(() => {
+      const form = document.querySelector('[data-testid="login-form"]');
+      return form?.getAttribute("data-hydrated") === "true";
+    });
   }
 
   /**

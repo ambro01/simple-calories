@@ -5,7 +5,7 @@
  * Zawiera pola: email, hasło oraz linki do rejestracji i resetowania hasła.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +33,12 @@ export function LoginForm() {
     isLoading: false,
     errors: {},
   });
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Mark component as hydrated after mount
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const validateEmail = (email: string): string | undefined => {
     if (!email) {
@@ -143,7 +149,7 @@ export function LoginForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
+        <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form" data-hydrated={isHydrated}>
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

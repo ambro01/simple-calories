@@ -1,11 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
+// Load .env.test only in local environment, not in CI
+// In CI, environment variables are provided by GitHub Actions secrets
+if (!process.env.CI) {
+  dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
