@@ -1364,8 +1364,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 ```bash
 # Supabase (istniejące)
-PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-PUBLIC_SUPABASE_KEY=eyJxxx...
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_KEY=eyJxxx...
 SUPABASE_SERVICE_KEY=eyJxxx... # Tylko dla server-side admin operations
 
 # Auth (nowe)

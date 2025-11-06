@@ -460,8 +460,6 @@ Utwórz plik `.env` w katalogu głównym projektu:
 # ========================================
 # Znajdź w: Supabase Dashboard → Project Settings → API
 
-PUBLIC_SUPABASE_URL=https://twojprojekt.supabase.co
-PUBLIC_SUPABASE_KEY=twoj_supabase_anon_key
 SUPABASE_URL=https://twojprojekt.supabase.co
 SUPABASE_KEY=twoj_supabase_anon_key
 

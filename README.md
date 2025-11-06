@@ -101,8 +101,8 @@ This application is designed for health-conscious individuals who value their ti
    Create a `.env` file in the root directory:
    ```env
    # Supabase Configuration
-   PUBLIC_SUPABASE_URL=your_supabase_project_url
-   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
 
    # Openrouter.ai Configuration
    OPENROUTER_API_KEY=your_openrouter_api_key

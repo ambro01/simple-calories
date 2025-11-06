@@ -4,8 +4,8 @@ import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 
 import type { Database } from "../db/database.types.ts";
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY || import.meta.env.SUPABASE_KEY;
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
 
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
@@ -79,10 +79,7 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
  *   });
  * };
  */
-export const createSupabaseServerInstance = (context: {
-  headers: Headers;
-  cookies: AstroCookies;
-}) => {
+export const createSupabaseServerInstance = (context: { headers: Headers; cookies: AstroCookies }) => {
   // Determine if we're on localhost by checking the host header
   const host = context.headers.get("host") || "";
   const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
@@ -94,23 +91,17 @@ export const createSupabaseServerInstance = (context: {
     secure: !isLocalhost,
   };
 
-  const supabase = createServerClient<Database>(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookieOptions: dynamicCookieOptions,
-      cookies: {
-        getAll() {
-          return parseCookieHeader(context.headers.get("Cookie") ?? "");
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptionsWithName }[]) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            context.cookies.set(name, value, options),
-          );
-        },
+  const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: dynamicCookieOptions,
+    cookies: {
+      getAll() {
+        return parseCookieHeader(context.headers.get("Cookie") ?? "");
+      },
+      setAll(cookiesToSet: { name: string; value: string; options: CookieOptionsWithName }[]) {
+        cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
       },
     },
-  );
+  });
 
   return supabase;
 };

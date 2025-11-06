@@ -66,12 +66,10 @@ export default defineConfig({
       // Merge with existing environment instead of replacing
       ...process.env,
       // Override with test-specific values
-      SUPABASE_URL: process.env.SUPABASE_URL || '',
-      PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL || '',
-      SUPABASE_KEY: process.env.SUPABASE_KEY || '',
-      PUBLIC_SUPABASE_KEY: process.env.PUBLIC_SUPABASE_KEY || '',
-      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
-      OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || '',
+      SUPABASE_URL: process.env.SUPABASE_URL || "",
+      SUPABASE_KEY: process.env.SUPABASE_KEY || "",
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+      OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || "",
     },
   },
 });

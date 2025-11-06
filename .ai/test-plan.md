@@ -744,8 +744,8 @@ Plan obejmuje aplikację webową zbudowaną w stosie: Astro 5, React 19, TypeScr
 **Zmienne środowiskowe (.env):**
 ```
 # Supabase
-PUBLIC_SUPABASE_URL=
-PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY= (tylko backend)
 
 # OpenRouter

@@ -55,7 +55,8 @@
       "Bash(powershell -Command \"(Invoke-WebRequest -Uri ''http://localhost:3000'' -TimeoutSec 5).StatusCode\")",
       "Bash(taskkill:*)",
       "Bash(powershell -Command \"(Invoke-WebRequest -Uri ''https://tswnoptqyxgmnmnssruk.supabase.co/rest/v1/'' -TimeoutSec 5 -Headers @{''apikey''=''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd25vcHRxeXhnbW5tbnNzcnVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDU4ODEsImV4cCI6MjA3NzkyMTg4MX0.nwK-PVT_txo4W18YDQk36_V5b5BN0k78MDxtxNrLzUc''}).StatusCode\")",
-      "Bash(del \"d:\\PROJEKTY\\simple-calories\\e2e\\global-setup.ts\")"
+      "Bash(del \"d:\\PROJEKTY\\simple-calories\\e2e\\global-setup.ts\")",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
