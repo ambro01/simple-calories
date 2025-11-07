@@ -21,7 +21,21 @@ To działa lokalnie i podczas buildu, ale w runtime na Cloudflare Pages te zmien
 
 ## Rozwiązanie
 
-### 1. Użycie `process.env` jako fallback
+### 1. Utworzenie `wrangler.toml` z Node.js compatibility
+
+Utworzono plik `wrangler.toml` w root projektu z włączonym `nodejs_compat`:
+
+```toml
+name = "simple-calories"
+compatibility_date = "2025-04-01"
+
+# Enable Node.js compatibility for process.env support
+compatibility_flags = ["nodejs_compat"]
+```
+
+**Kluczowa informacja**: Od 1 kwietnia 2025, flaga `nodejs_compat` automatycznie włącza `nodejs_compat_populate_process_env`, co sprawia, że zmienne środowiskowe z Cloudflare Dashboard są dostępne przez `process.env`.
+
+### 2. Użycie `process.env` jako fallback
 
 Zmieniono `src/db/supabase.client.ts` aby używał `process.env` jako fallback:
 
@@ -30,9 +44,24 @@ const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL || 
 const supabaseAnonKey = import.meta.env.SUPABASE_KEY || process.env.SUPABASE_KEY || "";
 ```
 
-Cloudflare Pages automatycznie przekazuje zmienne środowiskowe zdefiniowane w Dashboard przez `process.env` w runtime.
+### 3. Konfiguracja Astro adapter
 
-### 2. Ustawienie `CF_PAGES=true` w workflow
+Zaktualizowano `astro.config.mjs` aby wskazywał na `wrangler.toml`:
+
+```javascript
+adapter: process.env.CF_PAGES
+  ? cloudflare({
+      platformProxy: {
+        enabled: true,
+        configPath: "wrangler.toml",
+      },
+    })
+  : node({
+      mode: "standalone",
+    }),
+```
+
+### 4. Ustawienie `CF_PAGES=true` w workflow
 
 Dodano zmienną `CF_PAGES=true` w GitHub Actions workflow, aby upewnić się, że build używa adaptera Cloudflare:
 

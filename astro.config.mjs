@@ -20,6 +20,7 @@ export default defineConfig({
     ? cloudflare({
         platformProxy: {
           enabled: true,
+          configPath: "wrangler.toml",
         },
       })
     : node({

@@ -1,0 +1,9 @@
+name = "simple-calories"
+compatibility_date = "2025-04-01"
+
+# Enable Node.js compatibility for process.env support
+compatibility_flags = ["nodejs_compat"]
+
+# These are placeholders - actual values must be set in Cloudflare Dashboard
+# under Pages → Settings → Environment variables
+# or using: wrangler secret put <KEY>
