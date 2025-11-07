@@ -59,7 +59,9 @@
       "Bash(curl:*)",
       "Bash(npm run lint)",
       "Bash(npx eslint:*)",
-      "Bash(npx js-yaml:*)"
+      "Bash(npx js-yaml:*)",
+      "Bash(set CF_PAGES=true)",
+      "Bash($env:CF_PAGES=\"true\")"
     ],
     "deny": [],
     "ask": []
