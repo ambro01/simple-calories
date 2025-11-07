@@ -62,7 +62,6 @@ jobs:
     environment: production
 
     env:
-      CF_PAGES: true
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -86,7 +85,7 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build
+        run: npm run build:cloudflare
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
