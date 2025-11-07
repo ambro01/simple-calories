@@ -1,4 +1,4 @@
-name: Master Pipeline
+name: Deploy to Cloudflare Pages
 
 on:
   workflow_dispatch:
@@ -92,4 +92,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          command: pages deploy dist --project-name=simple-calories
