@@ -64,21 +64,26 @@ env:
   # ... inne zmienne
 ```
 
-## Konfiguracja w Cloudflare Dashboard
+## Konfiguracja
 
-### 1. Ustawienie Compatibility Flags (KRYTYCZNE!)
+### 1. Plik wrangler.toml (KLUCZOWY!)
 
-**To jest kluczowa konfiguracja bez której `process.env` nie będzie działać!**
+Utworzono plik `wrangler.toml` w root projektu, który automatycznie konfiguruje Cloudflare Pages:
 
-1. Cloudflare Dashboard → Workers & Pages → [projekt] → Settings → **Functions**
-2. Znajdź sekcję **Compatibility Flags**
-3. Dla środowiska **Production**:
-   - W polu "Compatibility Flags" wpisz: `nodejs_compat`
-   - Ustaw "Compatibility Date" na: `2025-04-01` lub późniejszą
-4. Dla środowiska **Preview** (opcjonalnie):
-   - Powtórz te same ustawienia
-5. Kliknij **Save**
-6. **WAŻNE**: Po zapisaniu, musisz uruchomić nowy deployment aby zmiany zaczęły działać!
+```toml
+name = "simple-calories"
+compatibility_flags = [ "nodejs_compat", "disable_nodejs_process_v2" ]
+compatibility_date = "2025-10-14"
+pages_build_output_dir = "dist"
+```
+
+**Co daje ten plik:**
+- `nodejs_compat` - włącza Node.js compatibility (w tym `process.env`)
+- `disable_nodejs_process_v2` - wyłącza nową wersję process API dla stabilności
+- `compatibility_date` - określa wersję Cloudflare Workers runtime
+- `pages_build_output_dir` - wskazuje folder z buildem
+
+**Ważne**: Dzięki temu plikowi nie musisz ręcznie ustawiać compatibility flags w Cloudflare Dashboard!
 
 ### 2. Konfiguracja zmiennych środowiskowych
 
