@@ -50,4 +50,8 @@ Cele testowania:
 CI/CD i Hosting:
 
 - Github Actions do tworzenia pipeline'ów CI/CD
-- DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
+  - Workflow pull-request.yml: linting, testy jednostkowe, testy E2E
+  - Workflow master.yml: linting, testy jednostkowe, deployment do Cloudflare Pages
+- Cloudflare Pages jako hosting aplikacji Astro
+  - Adapter @astrojs/cloudflare skonfigurowany z platformProxy
+  - Automatyczny deployment po merge do branch master
