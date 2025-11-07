@@ -61,7 +61,8 @@
       "Bash(npx eslint:*)",
       "Bash(npx js-yaml:*)",
       "Bash(set CF_PAGES=true)",
-      "Bash($env:CF_PAGES=\"true\")"
+      "Bash($env:CF_PAGES=\"true\")",
+      "Bash(del \"d:\\PROJEKTY\\simple-calories\\wrangler.toml\")"
     ],
     "deny": [],
     "ask": []

@@ -14,13 +14,21 @@ export default defineConfig({
   server: { port: 3000 },
   vite: {
     plugins: [tailwindcss()],
+    // Fix for React 19 + Cloudflare Pages: Use edge-compatible React DOM server
+    // See: https://github.com/withastro/astro/issues/12824
+    resolve: process.env.CF_PAGES
+      ? {
+          alias: {
+            "react-dom/server": "react-dom/server.edge",
+          },
+        }
+      : {},
   },
   // eslint-disable-next-line no-undef
   adapter: process.env.CF_PAGES
     ? cloudflare({
         platformProxy: {
           enabled: true,
-          configPath: "wrangler.toml",
         },
       })
     : node({

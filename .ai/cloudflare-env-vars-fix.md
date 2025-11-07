@@ -21,19 +21,26 @@ To działa lokalnie i podczas buildu, ale w runtime na Cloudflare Pages te zmien
 
 ## Rozwiązanie
 
-### 1. Utworzenie `wrangler.toml` z Node.js compatibility
+### 1. Fix dla React 19 + Cloudflare Pages (MessageChannel error)
 
-Utworzono plik `wrangler.toml` w root projektu z włączonym `nodejs_compat`:
+React 19 używa `MessageChannel` API, które domyślnie nie jest dostępne w Cloudflare Workers. Rozwiązanie: użyj edge-compatible wersji React DOM server.
 
-```toml
-name = "simple-calories"
-compatibility_date = "2025-04-01"
+Zaktualizowano `astro.config.mjs` aby używał `react-dom/server.edge`:
 
-# Enable Node.js compatibility for process.env support
-compatibility_flags = ["nodejs_compat"]
+```javascript
+vite: {
+  plugins: [tailwindcss()],
+  resolve: process.env.CF_PAGES
+    ? {
+        alias: {
+          "react-dom/server": "react-dom/server.edge",
+        },
+      }
+    : {},
+}
 ```
 
-**Kluczowa informacja**: Od 1 kwietnia 2025, flaga `nodejs_compat` automatycznie włącza `nodejs_compat_populate_process_env`, co sprawia, że zmienne środowiskowe z Cloudflare Dashboard są dostępne przez `process.env`.
+**Alternatywnie**, można ustawić compatibility date na `2025-08-15` lub później w Cloudflare Dashboard (Settings → Functions → Compatibility Date), co włącza `MessageChannel` globalnie.
 
 ### 2. Użycie `process.env` jako fallback
 
@@ -44,24 +51,9 @@ const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL || 
 const supabaseAnonKey = import.meta.env.SUPABASE_KEY || process.env.SUPABASE_KEY || "";
 ```
 
-### 3. Konfiguracja Astro adapter
+**Uwaga**: `process.env` w Cloudflare Pages działa tylko gdy ustawiona jest compatibility flag `nodejs_compat` w Dashboard (patrz sekcja Konfiguracja poniżej).
 
-Zaktualizowano `astro.config.mjs` aby wskazywał na `wrangler.toml`:
-
-```javascript
-adapter: process.env.CF_PAGES
-  ? cloudflare({
-      platformProxy: {
-        enabled: true,
-        configPath: "wrangler.toml",
-      },
-    })
-  : node({
-      mode: "standalone",
-    }),
-```
-
-### 4. Ustawienie `CF_PAGES=true` w workflow
+### 3. Ustawienie `CF_PAGES=true` w workflow
 
 Dodano zmienną `CF_PAGES=true` w GitHub Actions workflow, aby upewnić się, że build używa adaptera Cloudflare:
 
@@ -72,15 +64,31 @@ env:
   # ... inne zmienne
 ```
 
-## Konfiguracja zmiennych w Cloudflare Dashboard
+## Konfiguracja w Cloudflare Dashboard
+
+### 1. Ustawienie Compatibility Flags (KRYTYCZNE!)
+
+**To jest kluczowa konfiguracja bez której `process.env` nie będzie działać!**
+
+1. Cloudflare Dashboard → Workers & Pages → [projekt] → Settings → **Functions**
+2. Znajdź sekcję **Compatibility Flags**
+3. Dla środowiska **Production**:
+   - W polu "Compatibility Flags" wpisz: `nodejs_compat`
+   - Ustaw "Compatibility Date" na: `2025-04-01` lub późniejszą
+4. Dla środowiska **Preview** (opcjonalnie):
+   - Powtórz te same ustawienia
+5. Kliknij **Save**
+6. **WAŻNE**: Po zapisaniu, musisz uruchomić nowy deployment aby zmiany zaczęły działać!
+
+### 2. Konfiguracja zmiennych środowiskowych
 
 Zmienne **muszą** być skonfigurowane w dwóch miejscach:
 
-### 1. GitHub Actions Secrets (dla buildu)
+#### a) GitHub Actions Secrets (dla buildu)
 - Settings → Secrets and variables → Actions
 - Dodaj: `SUPABASE_URL`, `SUPABASE_KEY`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`
 
-### 2. Cloudflare Pages Environment Variables (dla runtime)
+#### b) Cloudflare Pages Environment Variables (dla runtime)
 - Cloudflare Dashboard → Pages → [projekt] → Settings → Environment variables
 - Dla środowiska **Production** dodaj:
   - `SUPABASE_URL`
