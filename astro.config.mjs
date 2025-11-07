@@ -15,6 +15,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  // eslint-disable-next-line no-undef
   adapter: process.env.CF_PAGES
     ? cloudflare({
         platformProxy: {
