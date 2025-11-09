@@ -56,6 +56,7 @@ function getInitialState(initialDate?: string): MealFormState {
     aiPrompt: "",
     aiGenerationId: null,
     aiResult: null,
+    aiResultAccepted: false,
     aiLoading: false,
     aiLoadingStage: 0,
     aiError: null,
@@ -168,6 +169,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       const newState: Partial<MealFormState> = {
         mode: "manual",
         aiError: null,
+        aiResultAccepted: false, // Reset when switching to manual
       };
 
       if (prepopulate && prev.aiResult && prev.aiResult.status === "completed") {
@@ -228,6 +230,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       aiError: null,
       aiResult: null,
       aiGenerationId: null,
+      aiResultAccepted: false, // Reset accepted flag when generating new result
     }));
 
     // Multi-stage loading simulation
@@ -274,13 +277,24 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
           aiError: null,
         }));
       } else {
+        // Auto-accept AI result when successfully generated
         setState((prev) => ({
           ...prev,
           aiLoading: false,
           aiResult: result,
           aiGenerationId: result.id,
           aiError: null,
+          // Auto-populate form fields with AI result
+          description: prev.aiPrompt,
+          calories: result.generated_calories,
+          protein: result.generated_protein,
+          carbs: result.generated_carbs,
+          fats: result.generated_fats,
+          aiResultAccepted: true, // Mark as accepted automatically
         }));
+
+        // Calculate warnings after auto-accepting
+        setTimeout(() => calculateMacroWarning(), 0);
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -306,6 +320,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       protein: prev.aiResult?.generated_protein || null,
       carbs: prev.aiResult?.generated_carbs || null,
       fats: prev.aiResult?.generated_fats || null,
+      aiResultAccepted: true, // Mark that user accepted the result
     }));
 
     // Calculate warnings
@@ -362,6 +377,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
         time,
         loadingMeal: false,
         loadMealError: null,
+        aiResultAccepted: true, // Mark as accepted since we loaded existing meal with values
       }));
 
       // Calculate warnings
@@ -440,18 +456,16 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
     const errors: FormValidationError[] = [];
 
     if (state.mode === "ai") {
-      // AI mode validation - only check if we have AI result
-      const aiIdError = validateAIGenerationId(state.aiGenerationId);
-      if (aiIdError) errors.push(aiIdError);
-
-      // Description and calories will be taken from aiResult during submit
-      // So we only validate if aiResult exists
-      if (!state.aiResult || state.aiResult.status !== "completed") {
+      // AI mode validation - check if user accepted the AI result
+      if (!state.aiResultAccepted) {
         errors.push({
           field: "aiResult",
-          message: "Najpierw wygeneruj posiłek",
+          message: "Najpierw wygeneruj i zaakceptuj wynik AI",
         });
       }
+
+      const aiIdError = validateAIGenerationId(state.aiGenerationId);
+      if (aiIdError) errors.push(aiIdError);
     } else {
       // Manual mode validation
       const descError = validateDescription(state.description);
@@ -493,51 +507,44 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
   // Submit meal
   const submitMeal = useCallback(async (): Promise<CreateMealResponseDTO> => {
-    // For AI mode, prepare values from aiResult if not manually accepted
-    let description = state.description;
-    let calories = state.calories;
-    let protein = state.protein;
-    let carbs = state.carbs;
-    let fats = state.fats;
-
-    if (state.mode === "ai" && state.aiResult?.status === "completed") {
-      // Use AI result values if form fields are empty
-      if (!description) description = state.aiPrompt;
-      if (calories === null) calories = state.aiResult.generated_calories;
-      if (protein === null) protein = state.aiResult.generated_protein;
-      if (carbs === null) carbs = state.aiResult.generated_carbs;
-      if (fats === null) fats = state.aiResult.generated_fats;
-    }
-
     // Validate with actual values
     const errors: FormValidationError[] = [];
 
     if (state.mode === "ai") {
+      // In AI mode, user must have accepted the result first
+      // This ensures all values (description, calories, macros) are populated
+      if (!state.aiResultAccepted) {
+        errors.push({
+          field: "aiResult",
+          message: "Najpierw wygeneruj i zaakceptuj wynik AI",
+        });
+      }
+
       const aiIdError = validateAIGenerationId(state.aiGenerationId);
       if (aiIdError) errors.push(aiIdError);
 
-      const descError = validateDescription(description);
+      const descError = validateDescription(state.description);
       if (descError) errors.push(descError);
 
-      const calError = validateCalories(calories);
+      const calError = validateCalories(state.calories);
       if (calError) errors.push(calError);
     } else {
-      const descError = validateDescription(description);
+      const descError = validateDescription(state.description);
       if (descError) errors.push(descError);
 
-      const calError = validateCalories(calories);
+      const calError = validateCalories(state.calories);
       if (calError) errors.push(calError);
 
-      if (protein !== null) {
-        const proteinError = validateMacro(protein, "protein");
+      if (state.protein !== null) {
+        const proteinError = validateMacro(state.protein, "protein");
         if (proteinError) errors.push(proteinError);
       }
-      if (carbs !== null) {
-        const carbsError = validateMacro(carbs, "carbs");
+      if (state.carbs !== null) {
+        const carbsError = validateMacro(state.carbs, "carbs");
         if (carbsError) errors.push(carbsError);
       }
-      if (fats !== null) {
-        const fatsError = validateMacro(fats, "fats");
+      if (state.fats !== null) {
+        const fatsError = validateMacro(state.fats, "fats");
         if (fatsError) errors.push(fatsError);
       }
       if (state.fiber !== null) {
@@ -577,13 +584,13 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       if (isEditMode) {
         // PATCH - only include fields to update (UpdateMealRequestDTO)
         requestData = {
-          description: description,
+          description: state.description,
           // calories is guaranteed to be non-null due to validation
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          calories: calories!,
-          protein: protein,
-          carbs: carbs,
-          fats: fats,
+          calories: state.calories!,
+          protein: state.protein,
+          carbs: state.carbs,
+          fats: state.fats,
           category: state.category,
           meal_timestamp: timestamp,
         };
@@ -592,13 +599,13 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
         requestData =
           state.mode === "ai"
             ? {
-                description: description,
+                description: state.description,
                 // calories and ai_generation_id are guaranteed to be non-null due to validation
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                calories: calories!,
-                protein: protein,
-                carbs: carbs,
-                fats: fats,
+                calories: state.calories!,
+                protein: state.protein,
+                carbs: state.carbs,
+                fats: state.fats,
                 category: state.category,
                 input_method: "ai" as const,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -606,13 +613,13 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
                 meal_timestamp: timestamp,
               }
             : {
-                description: description,
+                description: state.description,
                 // calories is guaranteed to be non-null due to validation
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                calories: calories!,
-                protein: protein,
-                carbs: carbs,
-                fats: fats,
+                calories: state.calories!,
+                protein: state.protein,
+                carbs: state.carbs,
+                fats: state.fats,
                 category: state.category,
                 input_method: "manual" as const,
                 meal_timestamp: timestamp,
@@ -678,7 +685,23 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
   // Computed values
   const isAIMode = state.mode === "ai";
   const isManualMode = state.mode === "manual";
-  const canSubmit = !state.submitLoading && state.validationErrors.length === 0 && state.dateWarning?.type !== "future";
+
+  // Enhanced canSubmit for AI mode - require AI result to be accepted
+  const canSubmit = (() => {
+    if (state.submitLoading) return false;
+    if (state.dateWarning?.type === "future") return false;
+
+    // In AI mode, require user to accept the AI result before submitting
+    // This ensures calories have been calculated by AI
+    if (state.mode === "ai") {
+      if (!state.aiResultAccepted) {
+        return false; // Block submit until AI result is accepted
+      }
+    }
+
+    return state.validationErrors.length === 0;
+  })();
+
   const hasAIResult = state.aiResult !== null && state.aiResult.status === "completed";
 
   return {

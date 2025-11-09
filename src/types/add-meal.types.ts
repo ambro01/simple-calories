@@ -76,6 +76,7 @@ export type MealFormState = {
   aiPrompt: string;
   aiGenerationId: string | null;
   aiResult: AIGenerationResponseDTO | null;
+  aiResultAccepted: boolean; // Track if user accepted AI result
   aiLoading: boolean;
   aiLoadingStage: AILoadingStage;
   aiError: string | null;
@@ -155,7 +156,6 @@ export type AIModeProps = {
   aiLoadingStage: AILoadingStage;
   aiError: string | null;
   onGenerate: () => Promise<void>;
-  onAcceptResult: () => void;
   onRegenerate: () => Promise<void>;
   onSwitchToManual: () => void;
 };
@@ -181,7 +181,6 @@ export type LoadingStateProps = {
  */
 export type AIResultProps = {
   result: AIGenerationResponseDTO;
-  onAccept: () => void;
   onRegenerate: () => Promise<void>;
   onEditManually: () => void;
   regenerateLoading?: boolean;

@@ -45,7 +45,6 @@ export function AIMode({
   aiLoadingStage,
   aiError,
   onGenerate,
-  onAcceptResult,
   onRegenerate,
   onSwitchToManual,
 }: AIModeProps) {
@@ -148,7 +147,6 @@ export function AIMode({
       {hasSuccessResult && (
         <AIResult
           result={aiResult}
-          onAccept={onAcceptResult}
           onRegenerate={onRegenerate}
           onEditManually={onSwitchToManual}
           regenerateLoading={aiLoading}

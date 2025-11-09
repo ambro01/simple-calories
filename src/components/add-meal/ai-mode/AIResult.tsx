@@ -5,13 +5,15 @@
  * - Large calorie display
  * - Macronutrients grid (2x2)
  * - AI assumptions text
- * - Action buttons (Accept, Regenerate, Edit Manually)
+ * - Action buttons (Regenerate, Edit Manually)
+ *
+ * Note: The result is automatically accepted after successful generation.
+ * Users can regenerate if they're not satisfied or switch to manual mode for editing.
  *
  * @component
  * @example
  * <AIResult
  *   result={aiGenerationData}
- *   onAccept={() => handleAccept()}
  *   onRegenerate={async () => await handleRegenerate()}
  *   onEditManually={() => switchToManual()}
  *   regenerateLoading={false}
@@ -23,7 +25,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import type { AIResultProps } from "../../../types/add-meal.types";
 
-export function AIResult({ result, onAccept, onRegenerate, onEditManually, regenerateLoading = false }: AIResultProps) {
+export function AIResult({ result, onRegenerate, onEditManually, regenerateLoading = false }: AIResultProps) {
   const macros = [
     { label: "Białko", value: result.generated_protein, unit: "g" },
     { label: "Węglowodany", value: result.generated_carbs, unit: "g" },
@@ -63,9 +65,6 @@ export function AIResult({ result, onAccept, onRegenerate, onEditManually, regen
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button type="button" onClick={onAccept} className="flex-1">
-            Dodaj
-          </Button>
           <Button
             type="button"
             variant="outline"

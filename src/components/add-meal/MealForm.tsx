@@ -85,7 +85,6 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
           aiLoadingStage={form.state.aiLoadingStage}
           aiError={form.state.aiError}
           onGenerate={form.generateAI}
-          onAcceptResult={form.acceptAIResult}
           onRegenerate={form.generateAI}
           onSwitchToManual={handleSwitchToManual}
         />
