@@ -68,11 +68,17 @@ export class RateLimitService {
    */
   private cleanupInterval?: NodeJS.Timeout;
 
+  /**
+   * Flag to track if cleanup has been started
+   */
+  private cleanupStarted = false;
+
   constructor(config: RateLimitConfig) {
     this.config = config;
 
-    // Start automatic cleanup every minute to prevent memory leaks
-    this.startCleanup();
+    // NOTE: Cleanup is NOT started in constructor for Cloudflare Workers compatibility
+    // setInterval() in global scope is forbidden in Workers
+    // Cleanup will be started lazily on first checkRateLimit() call
   }
 
   /**
@@ -82,6 +88,12 @@ export class RateLimitService {
    * @returns Rate limit check result with allowed status and metadata
    */
   checkRateLimit(userId: string): RateLimitResult {
+    // Lazy initialization: start cleanup on first use (Cloudflare Workers compatible)
+    if (!this.cleanupStarted) {
+      this.startCleanup();
+      this.cleanupStarted = true;
+    }
+
     const now = Date.now();
     const windowStart = now - this.config.windowMs;
 

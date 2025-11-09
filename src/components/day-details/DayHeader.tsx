@@ -42,7 +42,7 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
               <button
                 onClick={onAddMeal}
                 data-testid="add-meal-button"
-                className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                className="hidden lg:flex px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium shadow-sm hover:shadow-md transition-all items-center gap-2"
                 aria-label="Dodaj posiłek"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
