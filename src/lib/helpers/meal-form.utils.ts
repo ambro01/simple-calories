@@ -10,12 +10,14 @@ import { MACRO_CALORIES } from "../constants/meal-form.constants";
 
 /**
  * Łączy datę i czas w ISO 8601 timestamp
- * @param date - Data w formacie YYYY-MM-DD
- * @param time - Czas w formacie HH:MM
- * @returns ISO 8601 timestamp (YYYY-MM-DDTHH:MM:00Z)
+ * Konwertuje lokalny czas na UTC
+ * @param date - Data w formacie YYYY-MM-DD (czas lokalny)
+ * @param time - Czas w formacie HH:MM (czas lokalny)
+ * @returns ISO 8601 timestamp w UTC (YYYY-MM-DDTHH:MM:SS.sssZ)
  */
 export function formatDateTime(date: string, time: string): string {
-  return `${date}T${time}:00Z`;
+  const localDateTime = new Date(`${date}T${time}:00`);
+  return localDateTime.toISOString();
 }
 
 /**

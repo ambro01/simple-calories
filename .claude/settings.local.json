@@ -6,7 +6,14 @@
       "Bash(timeout 120 bash -c \"while [ ! -f dist/_worker.js ]; do sleep 1; done && echo ''BUILD COMPLETE'' && ls -lh dist/_worker.js\")",
       "Bash(node --version:*)",
       "Bash(node generate-favicon.mjs:*)",
-      "Bash(del generate-favicon.js generate-emoji-favicon.html generate-favicon.mjs)"
+      "Bash(del generate-favicon.js generate-emoji-favicon.html generate-favicon.mjs)",
+      "Bash(cat:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Read(//d/**)",
+      "Bash(npm test:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []

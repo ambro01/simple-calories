@@ -1,24 +1,16 @@
 /**
- * MealForm Component
+ * MealForm Component (Refactored with React Hook Form)
  *
- * Main form orchestrator that manages all sub-components and form logic.
- * Uses useAddMealForm hook for state management.
- *
- * @component
- * @example
- * <MealForm
- *   onClose={() => closeModal()}
- *   onSuccess={(meal) => {
- *     refreshMeals();
- *     toast.success('Posiłek dodany');
- *   }}
- * />
+ * Main form orchestrator using new architecture:
+ * - React Hook Form for state management
+ * - useMealForm for orchestration
+ * - Separated concerns (AI, validation, edit)
  */
 
 import { useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import type { AIGenerationDTO, MealFormProps } from "../../types/add-meal.types";
-import { useAddMealForm } from "../../hooks/useAddMealForm";
+import type { MealFormProps } from "../../types/add-meal.types";
+import { useMealForm } from "../../hooks/useMealForm";
 import { SegmentedControl } from "./SegmentedControl";
 import { AIMode } from "./ai-mode/AIMode";
 import { ManualMode } from "./manual-mode/ManualMode";
@@ -27,22 +19,20 @@ import { FormActions } from "./FormActions";
 import { LoadingOverlay } from "./LoadingOverlay";
 
 export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormProps) {
-  const form = useAddMealForm(initialDate);
+  const mealForm = useMealForm(initialDate);
 
   // Load meal data for editing
   useEffect(() => {
     if (mealId) {
       // eslint-disable-next-line no-console -- Error logging for debugging
-      form.loadMealForEdit(mealId).catch((error) => console.error("Failed to load meal for editing:", error));
-      // Error is already set in form state, LoadingOverlay will be hidden
-      // and error message will be displayed
+      mealForm.loadMealForEdit(mealId).catch((error) => console.error("Failed to load meal for editing:", error));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mealId]);
 
   const handleSubmit = async () => {
     try {
-      const result = await form.submitMeal();
+      const result = await mealForm.submitMeal();
       await onSuccess(result);
       // onClose is now called by the parent component after refetch
     } catch (error) {
@@ -53,57 +43,35 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
   };
 
   const handleSwitchToManual = () => {
-    form.switchToManual(true);
+    mealForm.switchToManual(true);
   };
 
-  const handleFieldChange = (field: string, value: unknown) => {
-    form.updateField(field as keyof typeof form.state, value as string | number | null | AIGenerationDTO);
-  };
+  // Get active form based on mode
+  const activeForm = mealForm.mode === "manual" ? mealForm.manualForm : mealForm.aiForm;
 
   return (
     <div className="relative space-y-6">
       {/* Loading Overlay - shown while loading meal for edit */}
-      {form.state.loadingMeal && <LoadingOverlay />}
+      {mealForm.edit.loadingMeal && <LoadingOverlay />}
 
       {/* Load Error */}
-      {form.state.loadMealError && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{form.state.loadMealError}</div>
+      {mealForm.edit.loadMealError && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{mealForm.edit.loadMealError}</div>
       )}
 
       {/* Mode Selector */}
       <div className="flex justify-center">
-        <SegmentedControl value={form.state.mode} onChange={form.setMode} disabled={form.state.submitLoading} />
+        <SegmentedControl value={mealForm.mode} onChange={mealForm.setMode} disabled={mealForm.submitLoading} />
       </div>
 
       {/* AI Mode */}
-      {form.isAIMode && (
-        <AIMode
-          prompt={form.state.aiPrompt}
-          onPromptChange={form.updatePrompt}
-          aiResult={form.state.aiResult}
-          aiLoading={form.state.aiLoading}
-          aiLoadingStage={form.state.aiLoadingStage}
-          aiError={form.state.aiError}
-          onGenerate={form.generateAI}
-          onRegenerate={form.generateAI}
-          onSwitchToManual={handleSwitchToManual}
-        />
+      {mealForm.mode === "ai" && (
+        <AIMode form={mealForm.aiForm} ai={mealForm.ai} onSwitchToManual={handleSwitchToManual} />
       )}
 
       {/* Manual Mode */}
-      {form.isManualMode && (
-        <ManualMode
-          description={form.state.description}
-          calories={form.state.calories}
-          protein={form.state.protein}
-          carbs={form.state.carbs}
-          fats={form.state.fats}
-          fiber={form.state.fiber}
-          macroWarning={form.state.macroWarning}
-          onFieldChange={handleFieldChange}
-          onAutoCalculate={form.autoCalculateCalories}
-          validationErrors={form.state.validationErrors}
-        />
+      {mealForm.mode === "manual" && mealForm.validation && (
+        <ManualMode form={mealForm.manualForm} validation={mealForm.validation} />
       )}
 
       {/* Separator */}
@@ -111,27 +79,27 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
 
       {/* Common Fields */}
       <CommonFields
-        category={form.state.category}
-        date={form.state.date}
-        time={form.state.time}
-        dateWarning={form.state.dateWarning}
-        onCategoryChange={(category) => form.updateField("category", category)}
-        onDateChange={(date) => form.updateField("date", date)}
-        onTimeChange={(time) => form.updateField("time", time)}
+        category={activeForm.watch("category")}
+        date={activeForm.watch("date")}
+        time={activeForm.watch("time")}
+        dateWarning={mealForm.validation?.dateWarning || null}
+        onCategoryChange={(category) => activeForm.setValue("category", category)}
+        onDateChange={(date) => activeForm.setValue("date", date)}
+        onTimeChange={(time) => activeForm.setValue("time", time)}
       />
 
       {/* Submit Error */}
-      {form.state.submitError && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{form.state.submitError}</div>
+      {mealForm.submitError && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{mealForm.submitError}</div>
       )}
 
       {/* Form Actions */}
       <FormActions
         onCancel={onClose}
         onSubmit={handleSubmit}
-        submitDisabled={!form.canSubmit}
-        submitLoading={form.state.submitLoading}
-        editMode={form.state.editMode}
+        submitDisabled={!mealForm.canSubmit}
+        submitLoading={mealForm.submitLoading}
+        editMode={mealForm.editMode}
       />
     </div>
   );

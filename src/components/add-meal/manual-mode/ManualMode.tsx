@@ -1,67 +1,32 @@
 /**
- * ManualMode Component
+ * ManualMode Component (Refactored with React Hook Form)
  *
- * Interface for manual meal entry including:
- * - Textarea for meal description
- * - Calories input (required)
- * - Macronutrient inputs (optional)
- * - Macro warning when calories don't match macros
- *
- * @component
- * @example
- * <ManualMode
- *   description={description}
- *   calories={calories}
- *   protein={protein}
- *   carbs={carbs}
- *   fats={fats}
- *   fiber={fiber}
- *   macroWarning={warning}
- *   onFieldChange={(field, value) => updateField(field, value)}
- *   onAutoCalculate={handleAutoCalculate}
- *   validationErrors={errors}
- * />
+ * Interface for manual meal entry with React Hook Form integration.
  */
 
+import type { UseFormReturn } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import type { ManualModeProps } from "../../../types/add-meal.types";
+import type { ManualMealFormData } from "@/utils/validation/schemas";
+import type { UseMealValidationReturn } from "@/hooks/useMealValidation";
 import { CharacterCounter } from "../CharacterCounter";
 import { MacroInputs } from "./MacroInputs";
 import { MacroWarning } from "./MacroWarning";
 import { VALIDATION_LIMITS } from "../../../lib/constants/meal-form.constants";
 
-export function ManualMode({
-  description,
-  calories,
-  protein,
-  carbs,
-  fats,
-  fiber,
-  macroWarning,
-  onFieldChange,
-  onAutoCalculate,
-  validationErrors,
-}: ManualModeProps) {
-  // Extract errors for specific fields
-  const getFieldError = (fieldName: string) => {
-    return validationErrors.find((err) => err.field === fieldName)?.message;
-  };
+type ManualModeProps = {
+  form: UseFormReturn<ManualMealFormData>;
+  validation: UseMealValidationReturn;
+};
 
-  const descriptionError = getFieldError("description");
-  const caloriesError = getFieldError("calories");
-
-  const macroErrors: Record<string, string> = {};
-  const proteinError = getFieldError("protein");
-  const carbsError = getFieldError("carbs");
-  const fatsError = getFieldError("fats");
-  const fiberError = getFieldError("fiber");
-
-  if (proteinError) macroErrors.protein = proteinError;
-  if (carbsError) macroErrors.carbs = carbsError;
-  if (fatsError) macroErrors.fats = fatsError;
-  if (fiberError) macroErrors.fiber = fiberError;
+export function ManualMode({ form, validation }: ManualModeProps) {
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = form;
+  const description = watch("description");
 
   return (
     <div className="space-y-4" data-testid="manual-mode-form">
@@ -72,17 +37,16 @@ export function ManualMode({
         </Label>
         <Textarea
           id="manual-description"
-          value={description}
-          onChange={(e) => onFieldChange("description", e.target.value)}
+          {...register("description")}
           placeholder="np. Kurczak z ryżem i warzywami"
           maxLength={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH}
           rows={3}
-          className={`resize-none ${descriptionError ? "border-destructive" : ""}`}
+          className={`resize-none ${errors.description ? "border-destructive" : ""}`}
           data-testid="manual-description-input"
         />
         <div className="flex items-center justify-between">
           <CharacterCounter current={description.length} max={VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH} />
-          {descriptionError && <span className="text-xs text-destructive">{descriptionError}</span>}
+          {errors.description && <span className="text-xs text-destructive">{errors.description.message}</span>}
         </div>
       </div>
 
@@ -97,40 +61,43 @@ export function ManualMode({
             type="number"
             min={VALIDATION_LIMITS.CALORIES_MIN}
             max={VALIDATION_LIMITS.CALORIES_MAX}
-            value={calories ?? ""}
-            onChange={(e) => {
-              const value = e.target.value === "" ? null : parseInt(e.target.value, 10);
-              onFieldChange("calories", value);
-            }}
+            {...register("calories")}
             placeholder="0"
-            className={caloriesError ? "border-destructive" : ""}
+            className={errors.calories ? "border-destructive" : ""}
             data-testid="manual-calories-input"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">kcal</span>
         </div>
-        {caloriesError && <p className="text-xs text-destructive">{caloriesError}</p>}
+        {errors.calories && <p className="text-xs text-destructive">{errors.calories.message}</p>}
       </div>
 
       {/* Macronutrients */}
       <div className="space-y-2">
         <Label className="text-sm font-medium">Makroskładniki</Label>
         <MacroInputs
-          protein={protein}
-          carbs={carbs}
-          fats={fats}
-          fiber={fiber}
-          onChange={onFieldChange}
-          errors={macroErrors}
+          protein={watch("protein")}
+          carbs={watch("carbs")}
+          fats={watch("fats")}
+          fiber={watch("fiber")}
+          onChange={(field, value) => {
+            form.setValue(field as keyof ManualMealFormData, value, { shouldValidate: true });
+          }}
+          errors={{
+            protein: errors.protein?.message,
+            carbs: errors.carbs?.message,
+            fats: errors.fats?.message,
+            fiber: errors.fiber?.message,
+          }}
         />
       </div>
 
       {/* Macro Warning */}
-      {macroWarning && (
+      {validation.macroWarning && (
         <MacroWarning
-          calculatedCalories={macroWarning.calculatedCalories}
-          providedCalories={macroWarning.providedCalories}
-          differencePercent={macroWarning.differencePercent}
-          onAutoCalculate={onAutoCalculate}
+          calculatedCalories={validation.macroWarning.calculatedCalories}
+          providedCalories={validation.macroWarning.providedCalories}
+          differencePercent={validation.macroWarning.differencePercent}
+          onAutoCalculate={validation.autoCalculateCalories}
         />
       )}
     </div>

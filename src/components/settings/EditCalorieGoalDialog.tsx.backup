@@ -1,12 +1,13 @@
 /**
- * EditCalorieGoalDialog Component (Refactored with React Hook Form)
+ * EditCalorieGoalDialog Component
  *
  * Dialog do edycji celu kalorycznego użytkownika.
- * Wykorzystuje React Hook Form + Zod dla walidacji i zarządzania stanem.
+ * Pozwala na ustawienie nowego celu dziennego, który będzie obowiązywał od jutra.
+ * Zawiera walidację i obsługę błędów z API.
  */
 
 import { useEffect } from "react";
-import { Info, Loader2, AlertCircle } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,21 +19,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { EditCalorieGoalDialogProps } from "@/types/settings.types";
 import { useCalorieGoalForm } from "@/hooks/useCalorieGoalForm";
 
 export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSuccess }: EditCalorieGoalDialogProps) {
-  const { form, apiError, onSubmit, isSubmitting, reset } = useCalorieGoalForm(currentGoal);
+  const form = useCalorieGoalForm(currentGoal);
 
   /**
    * Reset formularza przy otwieraniu dialogu
    */
   useEffect(() => {
     if (open) {
-      reset();
+      form.reset();
     }
-  }, [open, reset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on open change
+  }, [open]);
 
   /**
    * Obsługa submit formularza
@@ -41,13 +43,13 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
     e.preventDefault();
 
     try {
-      await onSubmit(e);
+      await form.submitGoal();
 
       // Sukces - wywołaj callback i zamknij dialog
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      // Błędy są już obsłużone w hooku (apiError)
+      // Błędy są obsługiwane w hooku (form.state.validationError lub form.state.apiError)
       // eslint-disable-next-line no-console -- Error logging for debugging
       console.error("Failed to save goal:", error);
     }
@@ -57,7 +59,7 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
    * Obsługa zamknięcia dialogu
    */
   const handleClose = (isOpen: boolean) => {
-    if (!isOpen && !isSubmitting) {
+    if (!isOpen && !form.state.isSaving) {
       // Zamknięcie tylko jeśli nie trwa zapisywanie
       onOpenChange(false);
     }
@@ -67,7 +69,7 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
    * Obsługa klawisza Enter w polu input
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !isSubmitting) {
+    if (e.key === "Enter" && !form.state.isSaving) {
       handleSubmit(e);
     }
   };
@@ -107,12 +109,13 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
                 max="10000"
                 step="1"
                 placeholder="np. 2000"
-                {...form.register("dailyGoal")}
+                value={form.state.goalValue}
+                onChange={(e) => form.updateGoalValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                disabled={isSubmitting}
-                className={form.formState.errors.dailyGoal ? "border-destructive focus-visible:ring-destructive" : ""}
-                aria-invalid={!!form.formState.errors.dailyGoal}
-                aria-describedby={form.formState.errors.dailyGoal ? "goal-error" : undefined}
+                disabled={form.state.isSaving}
+                className={form.state.validationError ? "border-destructive focus-visible:ring-destructive" : ""}
+                aria-invalid={!!form.state.validationError}
+                aria-describedby={form.state.validationError ? "goal-error" : undefined}
                 autoFocus // eslint-disable-line jsx-a11y/no-autofocus -- Dialog focus management
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
@@ -121,30 +124,28 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
             </div>
 
             {/* Validation Error */}
-            {form.formState.errors.dailyGoal && (
+            {form.state.validationError && (
               <p id="goal-error" className="text-sm text-destructive" role="alert">
-                {form.formState.errors.dailyGoal.message}
+                {form.state.validationError}
               </p>
             )}
           </div>
 
           {/* API Error */}
-          {apiError && (
+          {form.state.apiError && (
             <Alert className="mt-4 border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Błąd</AlertTitle>
-              <AlertDescription>{apiError}</AlertDescription>
+              <AlertDescription>{form.state.apiError}</AlertDescription>
             </Alert>
           )}
 
           {/* Dialog Footer with Actions */}
           <DialogFooter className="mt-6">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={form.state.isSaving}>
               Anuluj
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Zapisywanie..." : "Zapisz"}
+            <Button type="submit" disabled={form.state.isSaving}>
+              {form.state.isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {form.state.isSaving ? "Zapisywanie..." : "Zapisz"}
             </Button>
           </DialogFooter>
         </form>

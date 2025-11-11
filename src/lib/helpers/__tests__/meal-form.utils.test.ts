@@ -20,16 +20,26 @@ import {
 } from "../meal-form.utils";
 
 describe("formatDateTime", () => {
-  it("combines date and time into ISO 8601 format", () => {
-    expect(formatDateTime("2025-01-27", "08:30")).toBe("2025-01-27T08:30:00Z");
+  it("converts local date and time to ISO 8601 UTC format", () => {
+    const result = formatDateTime("2025-01-27", "08:30");
+    // Result should be a valid ISO 8601 string ending with Z
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
   });
 
-  it("handles midnight correctly", () => {
-    expect(formatDateTime("2025-01-27", "00:00")).toBe("2025-01-27T00:00:00Z");
+  it("creates a valid Date object that can be parsed", () => {
+    const result = formatDateTime("2025-01-27", "12:00");
+    const parsed = new Date(result);
+    expect(parsed).toBeInstanceOf(Date);
+    expect(parsed.toString()).not.toBe("Invalid Date");
   });
 
-  it("handles end of day correctly", () => {
-    expect(formatDateTime("2025-01-27", "23:59")).toBe("2025-01-27T23:59:00Z");
+  it("maintains correct date-time relationship after UTC conversion", () => {
+    const result = formatDateTime("2025-01-27", "14:00");
+    const parsed = new Date(result);
+
+    // Convert back to local time to verify
+    const localDate = new Date("2025-01-27T14:00:00");
+    expect(parsed.getTime()).toBe(localDate.getTime());
   });
 });
 
