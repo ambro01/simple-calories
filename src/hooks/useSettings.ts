@@ -19,6 +19,7 @@ type UseSettingsReturn = {
   closeLogoutDialog: () => void;
   logout: () => Promise<void>;
   refreshData: () => Promise<void>;
+  tomorrowGoal: CalorieGoalResponseDTO | null;
 };
 
 /**
@@ -80,6 +81,35 @@ async function fetchCurrentGoal(): Promise<CalorieGoalResponseDTO | null> {
 }
 
 /**
+ * Pobiera cel kaloryczny na jutro z API
+ */
+async function fetchTomorrowGoal(): Promise<CalorieGoalResponseDTO | null> {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowDate = tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
+
+  const response = await fetch(`/api/v1/calorie-goals/by-date?date=${tomorrowDate}`, {
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+  });
+
+  if (response.status === 404) {
+    // Brak celu na jutro - to normalna sytuacja
+    return null;
+  }
+
+  if (!response.ok) {
+    // Nie rzucamy błędu - brak celu na jutro nie jest problemem
+    return null;
+  }
+
+  return response.json();
+}
+
+/**
  * Pobiera email użytkownika z API
  */
 async function fetchUserEmail(): Promise<string | null> {
@@ -117,6 +147,8 @@ export function useSettings(): UseSettingsReturn {
     showLogoutDialog: false,
   });
 
+  const [tomorrowGoal, setTomorrowGoal] = useState<CalorieGoalResponseDTO | null>(null);
+
   /**
    * Ładuje wszystkie dane potrzebne na stronie Settings
    */
@@ -125,10 +157,11 @@ export function useSettings(): UseSettingsReturn {
 
     try {
       // Pobierz wszystkie dane równolegle dla lepszej wydajności
-      const [profile, currentGoal, userEmail] = await Promise.all([
+      const [profile, currentGoal, userEmail, tomorrowGoalData] = await Promise.all([
         fetchProfile(),
         fetchCurrentGoal(),
         fetchUserEmail(),
+        fetchTomorrowGoal(),
       ]);
 
       setState((prev) => ({
@@ -138,6 +171,8 @@ export function useSettings(): UseSettingsReturn {
         userEmail,
         isLoading: false,
       }));
+
+      setTomorrowGoal(tomorrowGoalData);
     } catch (error) {
       setState((prev) => ({
         ...prev,
@@ -153,10 +188,11 @@ export function useSettings(): UseSettingsReturn {
   const refreshData = useCallback(async () => {
     // Odśwież dane bez pokazywania loading spinner
     try {
-      const [profile, currentGoal, userEmail] = await Promise.all([
+      const [profile, currentGoal, userEmail, tomorrowGoalData] = await Promise.all([
         fetchProfile(),
         fetchCurrentGoal(),
         fetchUserEmail(),
+        fetchTomorrowGoal(),
       ]);
 
       setState((prev) => ({
@@ -165,6 +201,8 @@ export function useSettings(): UseSettingsReturn {
         currentGoal,
         userEmail,
       }));
+
+      setTomorrowGoal(tomorrowGoalData);
     } catch (error) {
       // Silent fail - nie zmieniamy error state podczas odświeżania
       // eslint-disable-next-line no-console -- Error logging for debugging
@@ -259,5 +297,6 @@ export function useSettings(): UseSettingsReturn {
     closeLogoutDialog,
     logout,
     refreshData,
+    tomorrowGoal,
   };
 }

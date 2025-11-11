@@ -5,7 +5,7 @@
  * Używa React Hook Form + Zod dla walidacji i zarządzania stanem.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { calorieGoalSchema, type CalorieGoalFormData } from "@/utils/validation/schemas";
@@ -15,7 +15,7 @@ import type { CalorieGoalResponseDTO } from "@/types";
 type UseCalorieGoalFormReturn = {
   form: ReturnType<typeof useForm<CalorieGoalFormData>>;
   apiError: string | null;
-  onSubmit: (e: React.FormEvent) => Promise<CalorieGoalResponseDTO>;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
   isSubmitting: boolean;
   reset: () => void;
 };
@@ -40,17 +40,17 @@ export function useCalorieGoalForm(currentGoal: CalorieGoalResponseDTO | null): 
         dailyGoal: currentGoal.daily_goal,
       });
     }
-  }, [currentGoal, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- form.reset is stable, only depend on currentGoal changes
+  }, [currentGoal?.daily_goal]);
 
   /**
    * Wysyła formularz do API
    */
-  const handleSubmit = async (data: CalorieGoalFormData): Promise<CalorieGoalResponseDTO> => {
+  const handleSubmit = async (data: CalorieGoalFormData): Promise<void> => {
     setApiError(null);
 
     try {
-      const result = await calorieGoalService.saveGoalForTomorrow(data.dailyGoal);
-      return result;
+      await calorieGoalService.saveGoalForTomorrow(data.dailyGoal);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Nie udało się zapisać celu";
       setApiError(errorMessage);
@@ -61,12 +61,13 @@ export function useCalorieGoalForm(currentGoal: CalorieGoalResponseDTO | null): 
   /**
    * Resetuje formularz do stanu początkowego
    */
-  const reset = () => {
+  const reset = useCallback(() => {
     form.reset({
       dailyGoal: currentGoal?.daily_goal || 2000,
     });
     setApiError(null);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- form.reset is stable
+  }, [currentGoal?.daily_goal]);
 
   return {
     form,

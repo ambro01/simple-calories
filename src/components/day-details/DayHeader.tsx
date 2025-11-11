@@ -74,32 +74,30 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
           </div>
         </div>
 
-        {/* Calories and Macros summary in one row */}
-        <div className="flex gap-3">
-          {/* Calories summary - 1/3 width */}
-          <div className="flex-1 bg-muted rounded-lg p-3">
-            <div className="flex justify-between items-baseline mb-2">
-              <div className="text-lg font-bold text-foreground">
-                {progress.total_calories} / {progress.calorie_goal} kcal
-              </div>
-              <div className="text-sm text-muted-foreground">{progress.percentage.toFixed(0)}%</div>
+        {/* Calories and Macros summary */}
+        <div className="bg-muted rounded-lg p-3">
+          {/* Calories summary */}
+          <div className="flex justify-between items-baseline mb-2">
+            <div className="text-lg font-bold text-foreground">
+              {progress.total_calories} / {progress.calorie_goal} kcal
             </div>
-            <CalorieProgressBar percentage={progress.percentage} status={progress.status} size="sm" />
+            <div className="text-sm text-muted-foreground">{progress.percentage.toFixed(0)}%</div>
           </div>
+          <CalorieProgressBar percentage={progress.percentage} status={progress.status} size="sm" />
 
-          {/* Macros summary - 2/3 width */}
-          <div className="flex-[2] grid grid-cols-3 gap-2">
-            <div className="bg-blue-500/10 dark:bg-blue-500/20 rounded-lg p-3 text-center">
-              <div className="text-xs text-muted-foreground mb-1">Białko</div>
-              <div className="text-lg font-semibold text-foreground">{progress.total_protein}g</div>
+          {/* Macros summary - compact badges */}
+          <div className="flex flex-wrap gap-2 mt-3">
+            <div className="bg-blue-500/10 dark:bg-blue-500/20 rounded-md px-2.5 py-1 flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground">Białko</span>
+              <span className="text-sm font-semibold text-foreground">{progress.total_protein}g</span>
             </div>
-            <div className="bg-orange-500/10 dark:bg-orange-500/20 rounded-lg p-3 text-center">
-              <div className="text-xs text-muted-foreground mb-1">Węglowodany</div>
-              <div className="text-lg font-semibold text-foreground">{progress.total_carbs}g</div>
+            <div className="bg-orange-500/10 dark:bg-orange-500/20 rounded-md px-2.5 py-1 flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground">Węglowodany</span>
+              <span className="text-sm font-semibold text-foreground">{progress.total_carbs}g</span>
             </div>
-            <div className="bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg p-3 text-center">
-              <div className="text-xs text-muted-foreground mb-1">Tłuszcze</div>
-              <div className="text-lg font-semibold text-foreground">{progress.total_fats}g</div>
+            <div className="bg-yellow-500/10 dark:bg-yellow-500/20 rounded-md px-2.5 py-1 flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground">Tłuszcze</span>
+              <span className="text-sm font-semibold text-foreground">{progress.total_fats}g</span>
             </div>
           </div>
         </div>

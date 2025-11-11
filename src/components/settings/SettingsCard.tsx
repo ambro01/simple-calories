@@ -68,7 +68,7 @@ export function SettingsCard({
         {/* Title and Subtitle */}
         <div className="flex-1 min-w-0">
           <h3 className={titleClasses}>{title}</h3>
-          {subtitle && <p className="text-sm text-muted-foreground mt-0.5 truncate">{subtitle}</p>}
+          {subtitle && <p className="text-sm text-muted-foreground mt-0.5 whitespace-pre-line">{subtitle}</p>}
         </div>
 
         {/* Chevron */}

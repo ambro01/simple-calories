@@ -116,47 +116,49 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
   const [state, setState] = useState<MealFormState>(getInitialState(initialDate));
 
   // Generic field update
-  const updateField = useCallback(<K extends keyof MealFormState>(field: K, value: MealFormState[K]) => {
-    setState((prev) => ({ ...prev, [field]: value }));
+  const updateField = useCallback(
+    <K extends keyof MealFormState>(field: K, value: MealFormState[K]) => {
+      setState((prev) => ({ ...prev, [field]: value }));
 
-    // Auto-calculate macro warning when relevant fields change
-    if (field === "calories" || field === "protein" || field === "carbs" || field === "fats") {
-      setTimeout(() => calculateMacroWarning(), 0);
-    }
+      // Auto-calculate macro warning when relevant fields change
+      if (field === "calories" || field === "protein" || field === "carbs" || field === "fats") {
+        setTimeout(() => calculateMacroWarning(), 0);
+      }
 
-    // Auto-validate date when it changes
-    if (field === "date") {
-      setTimeout(() => validateDateField(value as string), 0);
-    }
+      // Auto-validate date when it changes
+      if (field === "date") {
+        setTimeout(() => validateDateField(value as string), 0);
+      }
 
-    // Auto-detect category when time changes
-    if (field === "time") {
-      setTimeout(() => autoDetectCategory(value as string), 0);
-    }
+      // Auto-detect category when time changes
+      if (field === "time") {
+        setTimeout(() => autoDetectCategory(value as string), 0);
+      }
 
-    // Clear validation errors when user modifies fields
-    if (field === "description") {
-      setState((prev) => ({
-        ...prev,
-        validationErrors: prev.validationErrors.filter((err) => err.field !== "description"),
-      }));
-    }
+      // Clear validation errors when user modifies fields
+      if (field === "description") {
+        setState((prev) => ({
+          ...prev,
+          validationErrors: prev.validationErrors.filter((err) => err.field !== "description"),
+        }));
+      }
 
-    if (field === "calories") {
-      setState((prev) => ({
-        ...prev,
-        validationErrors: prev.validationErrors.filter((err) => err.field !== "calories"),
-      }));
-    }
+      if (field === "calories") {
+        setState((prev) => ({
+          ...prev,
+          validationErrors: prev.validationErrors.filter((err) => err.field !== "calories"),
+        }));
+      }
 
-    if (field === "protein" || field === "carbs" || field === "fats" || field === "fiber") {
-      setState((prev) => ({
-        ...prev,
-        validationErrors: prev.validationErrors.filter((err) => err.field !== field),
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      if (field === "protein" || field === "carbs" || field === "fats" || field === "fiber") {
+        setState((prev) => ({
+          ...prev,
+          validationErrors: prev.validationErrors.filter((err) => err.field !== field),
+        }));
+      }
+    },
+    [calculateMacroWarning, validateDateField, autoDetectCategory]
+  );
 
   // Update prompt (AI mode)
   const updatePrompt = useCallback((prompt: string) => {
@@ -164,33 +166,35 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
   }, []);
 
   // Switch to manual mode
-  const switchToManual = useCallback((prepopulate: boolean) => {
-    setState((prev) => {
-      const newState: Partial<MealFormState> = {
-        mode: "manual",
-        aiError: null,
-        aiResultAccepted: false, // Reset when switching to manual
-      };
+  const switchToManual = useCallback(
+    (prepopulate: boolean) => {
+      setState((prev) => {
+        const newState: Partial<MealFormState> = {
+          mode: "manual",
+          aiError: null,
+          aiResultAccepted: false, // Reset when switching to manual
+        };
 
-      if (prepopulate && prev.aiResult && prev.aiResult.status === "completed") {
-        // Prepopulate with AI result
-        newState.description = prev.aiPrompt;
-        newState.calories = prev.aiResult.generated_calories;
-        newState.protein = prev.aiResult.generated_protein;
-        newState.carbs = prev.aiResult.generated_carbs;
-        newState.fats = prev.aiResult.generated_fats;
-      } else {
-        // Keep description only
-        newState.description = prev.aiPrompt || prev.description;
-      }
+        if (prepopulate && prev.aiResult && prev.aiResult.status === "completed") {
+          // Prepopulate with AI result
+          newState.description = prev.aiPrompt;
+          newState.calories = prev.aiResult.generated_calories;
+          newState.protein = prev.aiResult.generated_protein;
+          newState.carbs = prev.aiResult.generated_carbs;
+          newState.fats = prev.aiResult.generated_fats;
+        } else {
+          // Keep description only
+          newState.description = prev.aiPrompt || prev.description;
+        }
 
-      return { ...prev, ...newState };
-    });
+        return { ...prev, ...newState };
+      });
 
-    // Recalculate warnings
-    setTimeout(() => calculateMacroWarning(), 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      // Recalculate warnings
+      setTimeout(() => calculateMacroWarning(), 0);
+    },
+    [calculateMacroWarning]
+  );
 
   // Switch to AI mode
   const switchToAI = useCallback(() => {
@@ -307,7 +311,7 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
       clearTimeout(stageTimer1);
       clearTimeout(stageTimer2);
     }
-  }, [state.aiPrompt]);
+  }, [state.aiPrompt, calculateMacroWarning]);
 
   // Accept AI result and prepopulate form
   const acceptAIResult = useCallback(() => {
@@ -325,79 +329,80 @@ export function useAddMealForm(initialDate?: string): UseAddMealFormReturn {
 
     // Calculate warnings
     setTimeout(() => calculateMacroWarning(), 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.aiResult, state.aiPrompt]);
+  }, [state.aiResult, calculateMacroWarning]);
 
   // Load meal for editing
-  const loadMealForEdit = useCallback(async (mealId: string) => {
-    setState((prev) => ({
-      ...prev,
-      loadingMeal: true,
-      loadMealError: null,
-      editMode: "edit",
-      editingMealId: mealId,
-    }));
-
-    try {
-      const response = await fetch(`/api/v1/meals/${mealId}`);
-
-      if (response.status === 404) {
-        throw new Error("Meal not found");
-      }
-
-      if (!response.ok) {
-        throw new Error("Failed to load meal");
-      }
-
-      const meal = await response.json();
-
-      // Parse meal_timestamp to date and time
-      const mealDate = new Date(meal.meal_timestamp);
-      const date = mealDate.toISOString().split("T")[0]; // YYYY-MM-DD
-      const hours = mealDate.getHours().toString().padStart(2, "0");
-      const minutes = mealDate.getMinutes().toString().padStart(2, "0");
-      const time = `${hours}:${minutes}`; // HH:MM
-
-      // Set mode based on input_method
-      // If meal was generated by AI, show AI mode; otherwise show manual mode
-      const mode: "ai" | "manual" = meal.input_method === "ai" ? "ai" : "manual";
-
+  const loadMealForEdit = useCallback(
+    async (mealId: string) => {
       setState((prev) => ({
         ...prev,
-        mode,
-        description: meal.description,
-        aiPrompt: mode === "ai" ? meal.description : "", // Set aiPrompt for AI mode
-        calories: meal.calories,
-        protein: meal.protein,
-        carbs: meal.carbs,
-        fats: meal.fats,
-        fiber: null, // API nie zwraca fiber
-        category: meal.category,
-        date,
-        time,
-        loadingMeal: false,
+        loadingMeal: true,
         loadMealError: null,
-        aiResultAccepted: true, // Mark as accepted since we loaded existing meal with values
+        editMode: "edit",
+        editingMealId: mealId,
       }));
 
-      // Calculate warnings
-      setTimeout(() => calculateMacroWarning(), 0);
-      setTimeout(() => validateDateField(date), 0);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error && error.message === "Meal not found"
-          ? "Posiłek nie został znaleziony"
-          : "Nie udało się wczytać posiłku. Spróbuj ponownie.";
+      try {
+        const response = await fetch(`/api/v1/meals/${mealId}`);
 
-      setState((prev) => ({
-        ...prev,
-        loadingMeal: false,
-        loadMealError: errorMessage,
-      }));
-      throw error;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+        if (response.status === 404) {
+          throw new Error("Meal not found");
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to load meal");
+        }
+
+        const meal = await response.json();
+
+        // Parse meal_timestamp to date and time
+        const mealDate = new Date(meal.meal_timestamp);
+        const date = mealDate.toISOString().split("T")[0]; // YYYY-MM-DD
+        const hours = mealDate.getHours().toString().padStart(2, "0");
+        const minutes = mealDate.getMinutes().toString().padStart(2, "0");
+        const time = `${hours}:${minutes}`; // HH:MM
+
+        // Set mode based on input_method
+        // If meal was generated by AI, show AI mode; otherwise show manual mode
+        const mode: "ai" | "manual" = meal.input_method === "ai" ? "ai" : "manual";
+
+        setState((prev) => ({
+          ...prev,
+          mode,
+          description: meal.description,
+          aiPrompt: mode === "ai" ? meal.description : "", // Set aiPrompt for AI mode
+          calories: meal.calories,
+          protein: meal.protein,
+          carbs: meal.carbs,
+          fats: meal.fats,
+          fiber: null, // API nie zwraca fiber
+          category: meal.category,
+          date,
+          time,
+          loadingMeal: false,
+          loadMealError: null,
+          aiResultAccepted: true, // Mark as accepted since we loaded existing meal with values
+        }));
+
+        // Calculate warnings
+        setTimeout(() => calculateMacroWarning(), 0);
+        setTimeout(() => validateDateField(date), 0);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error && error.message === "Meal not found"
+            ? "Posiłek nie został znaleziony"
+            : "Nie udało się wczytać posiłku. Spróbuj ponownie.";
+
+        setState((prev) => ({
+          ...prev,
+          loadingMeal: false,
+          loadMealError: errorMessage,
+        }));
+        throw error;
+      }
+    },
+    [calculateMacroWarning, validateDateField]
+  );
 
   // Calculate macro warning
   const calculateMacroWarning = useCallback(() => {

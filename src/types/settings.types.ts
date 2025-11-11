@@ -64,6 +64,7 @@ export type EditCalorieGoalDialogProps = {
   open: boolean; // Czy dialog jest otwarty
   onOpenChange: (open: boolean) => void; // Handler zmiany stanu otwarcia
   currentGoal: CalorieGoalResponseDTO | null; // Aktualny cel (do wyświetlenia)
+  tomorrowGoal?: CalorieGoalResponseDTO | null; // Cel na jutro (jeśli istnieje)
   onSuccess: () => void; // Callback po udanym zapisie (do odświeżenia danych)
 };
 

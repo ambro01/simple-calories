@@ -5,7 +5,7 @@
  * Używa React Hook Form + Zod dla walidacji i zarządzania stanem.
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { changePasswordSchema, type ChangePasswordFormData } from "@/utils/validation/schemas";
@@ -50,10 +50,11 @@ export function useChangePasswordForm(): UseChangePasswordFormReturn {
   /**
    * Resetuje formularz do stanu początkowego
    */
-  const reset = () => {
+  const reset = useCallback(() => {
     form.reset();
     setApiError(null);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- form.reset is stable
+  }, []);
 
   return {
     form,

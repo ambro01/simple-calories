@@ -70,7 +70,7 @@ export function AIMode({ form, ai, onSwitchToManual }: AIModeProps) {
         <p className="text-xs text-muted-foreground">Przykłady:</p>
         <ExampleChips
           examples={MEAL_EXAMPLES}
-          onSelect={(value) => form.setValue("aiPrompt", value)}
+          onSelect={(value) => form.setValue("aiPrompt", value, { shouldDirty: true })}
           disabled={ai.aiLoading}
         />
       </div>

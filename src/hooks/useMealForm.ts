@@ -5,7 +5,7 @@
  * Manages mode switching, AI generation, validation, and submission.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -85,7 +85,7 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
       date: initialDate || getCurrentDate(),
       time: getCurrentTime(),
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const aiForm = useForm<AIMealFormData>({
@@ -96,7 +96,7 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
       date: initialDate || getCurrentDate(),
       time: getCurrentTime(),
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   // Initialize hooks
@@ -188,11 +188,6 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
           throw new Error("Formularz zawiera błędy");
         }
 
-        // Check if AI result exists
-        if (!ai.aiResult || ai.aiResult.status !== "completed") {
-          throw new Error("Najpierw wygeneruj wynik AI");
-        }
-
         const aiData = aiForm.getValues();
 
         // Prepare request data - convert local time to UTC
@@ -200,13 +195,38 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
         const timestamp = localDateTime.toISOString();
 
         if (editMode === "edit" && editingMealId) {
+          // In edit mode: use new AI result if available, otherwise use original data
+          const hasNewAIResult = ai.aiResult?.status === "completed";
+
+          // Determine which data to use
+          let calories: number;
+          let protein: number | null;
+          let carbs: number | null;
+          let fats: number | null;
+
+          if (hasNewAIResult && ai.aiResult) {
+            // Use new AI result
+            calories = ai.aiResult.generated_calories;
+            protein = ai.aiResult.generated_protein;
+            carbs = ai.aiResult.generated_carbs;
+            fats = ai.aiResult.generated_fats;
+          } else if (edit.originalMealData) {
+            // Use original data from loaded meal
+            calories = edit.originalMealData.calories;
+            protein = edit.originalMealData.protein;
+            carbs = edit.originalMealData.carbs;
+            fats = edit.originalMealData.fats;
+          } else {
+            throw new Error("Brak danych do zapisu");
+          }
+
           // Update meal
           const updateData: UpdateMealRequestDTO = {
             description: aiData.aiPrompt,
-            calories: ai.aiResult.generated_calories,
-            protein: ai.aiResult.generated_protein,
-            carbs: ai.aiResult.generated_carbs,
-            fats: ai.aiResult.generated_fats,
+            calories,
+            protein,
+            carbs,
+            fats,
             meal_timestamp: timestamp,
           };
 
@@ -218,15 +238,23 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
           const result = await mealService.updateMeal(editingMealId, updateData);
           return result as CreateMealResponseDTO;
         } else {
+          // In create mode: must have AI result
+          if (!ai.aiResult || ai.aiResult.status !== "completed") {
+            throw new Error("Najpierw wygeneruj wynik AI");
+          }
+
+          // TypeScript narrowing: ai.aiResult is guaranteed to be non-null here
+          const aiResult = ai.aiResult;
+
           // Create meal
           const mealData: CreateAIMealRequestDTO = {
             description: aiData.aiPrompt,
-            calories: ai.aiResult.generated_calories,
-            protein: ai.aiResult.generated_protein,
-            carbs: ai.aiResult.generated_carbs,
-            fats: ai.aiResult.generated_fats,
+            calories: aiResult.generated_calories,
+            protein: aiResult.generated_protein,
+            carbs: aiResult.generated_carbs,
+            fats: aiResult.generated_fats,
             input_method: "ai",
-            ai_generation_id: ai.aiResult.id,
+            ai_generation_id: aiResult.id,
             meal_timestamp: timestamp,
           };
 
@@ -255,11 +283,15 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
         const localDateTime = new Date(`${manualData.date}T${manualData.time}:00`);
         const timestamp = localDateTime.toISOString();
 
+        // Ensure calories is a number (React Hook Form may return string from number input)
+        const calories =
+          typeof manualData.calories === "string" ? Number(manualData.calories) : (manualData.calories ?? 0);
+
         if (editMode === "edit" && editingMealId) {
           // Update meal
           const updateData: UpdateMealRequestDTO = {
             description: manualData.description,
-            calories: manualData.calories ?? 0,
+            calories,
             protein: manualData.protein,
             carbs: manualData.carbs,
             fats: manualData.fats,
@@ -277,7 +309,7 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
           // Create meal
           const mealData: CreateManualMealRequestDTO = {
             description: manualData.description,
-            calories: manualData.calories ?? 0,
+            calories,
             protein: manualData.protein,
             carbs: manualData.carbs,
             fats: manualData.fats,
@@ -310,24 +342,55 @@ export function useMealForm(initialDate?: string): UseMealFormReturn {
     } finally {
       setSubmitLoading(false);
     }
-  }, [mode, editMode, editingMealId, ai.aiResult, manualForm, aiForm, validation]);
+  }, [mode, editMode, editingMealId, ai.aiResult, manualForm, aiForm, validation, edit.originalMealData]);
 
   /**
    * Can submit check
    */
-  const canSubmit = (() => {
+  const canSubmit = useMemo(() => {
     if (submitLoading) return false;
     if (edit.loadingMeal) return false;
     if (validation?.dateWarning?.type === "future") return false;
 
     if (mode === "ai") {
-      // In AI mode, must have successful AI result
-      return ai.aiResult?.status === "completed" && !ai.aiLoading;
+      // In AI mode, must have successful AI result OR editing existing meal
+      const hasAIResult = ai.aiResult?.status === "completed" && !ai.aiLoading;
+
+      // In edit mode, allow submit if:
+      // 1. Form is dirty (changed) AND no errors
+      // 2. Either has new AI result OR has original meal data (editing without regenerating)
+      if (editMode === "edit") {
+        const hasData = hasAIResult || edit.originalMealData !== null;
+        return aiForm.formState.isDirty && Object.keys(aiForm.formState.errors).length === 0 && hasData;
+      }
+
+      // In create mode, must have AI result
+      return hasAIResult;
     } else {
-      // In manual mode, check form validity
-      return manualForm.formState.isValid;
+      // In manual mode
+      const formState = manualForm.formState;
+
+      // In edit mode, allow submit if form is dirty (changed) and has no errors
+      if (editMode === "edit") {
+        return formState.isDirty && Object.keys(formState.errors).length === 0;
+      }
+
+      // In create mode, check form validity
+      return formState.isValid;
     }
-  })();
+  }, [
+    submitLoading,
+    edit.loadingMeal,
+    edit.originalMealData,
+    validation?.dateWarning,
+    mode,
+    editMode,
+    ai.aiResult,
+    ai.aiLoading,
+    aiForm.formState.isDirty,
+    aiForm.formState.errors,
+    manualForm.formState,
+  ]);
 
   return {
     mode,

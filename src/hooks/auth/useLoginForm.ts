@@ -32,7 +32,9 @@ export function useLoginForm() {
     }
 
     // Redirect to dashboard on success
-    window.location.href = "/";
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 0);
   };
 
   return {

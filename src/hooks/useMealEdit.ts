@@ -18,11 +18,23 @@ type UseMealEditReturn = {
     form: UseFormReturn<ManualMealFormData> | UseFormReturn<AIMealFormData>,
     mode: "ai" | "manual"
   ) => Promise<void>;
+  originalMealData: {
+    calories: number;
+    protein: number | null;
+    carbs: number | null;
+    fats: number | null;
+  } | null;
 };
 
 export function useMealEdit(): UseMealEditReturn {
   const [loadingMeal, setLoadingMeal] = useState(false);
   const [loadMealError, setLoadMealError] = useState<string | null>(null);
+  const [originalMealData, setOriginalMealData] = useState<{
+    calories: number;
+    protein: number | null;
+    carbs: number | null;
+    fats: number | null;
+  } | null>(null);
 
   /**
    * Load meal for editing
@@ -39,6 +51,14 @@ export function useMealEdit(): UseMealEditReturn {
 
       try {
         const meal = await mealService.getMealById(mealId);
+
+        // Store original meal data (for AI mode editing without regenerating)
+        setOriginalMealData({
+          calories: meal.calories,
+          protein: meal.protein,
+          carbs: meal.carbs,
+          fats: meal.fats,
+        });
 
         // Parse meal_timestamp to date and time
         const mealDate = new Date(meal.meal_timestamp);
@@ -91,5 +111,6 @@ export function useMealEdit(): UseMealEditReturn {
     loadingMeal,
     loadMealError,
     loadMealForEdit,
+    originalMealData,
   };
 }

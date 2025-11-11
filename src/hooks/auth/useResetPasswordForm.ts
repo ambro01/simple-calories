@@ -34,7 +34,9 @@ export function useResetPasswordForm() {
     }
 
     // Redirect to login with success message
-    window.location.href = "/auth/login?success=password_reset";
+    setTimeout(() => {
+      window.location.href = "/auth/login?success=password_reset";
+    }, 0);
   };
 
   return {

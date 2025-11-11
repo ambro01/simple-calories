@@ -10,6 +10,12 @@ import { useState, useEffect, useRef } from "react";
 import type { MealResponseDTO } from "@/types";
 import { CATEGORY_CONFIG } from "@/types/day-details.types";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type MealCardProps = {
   meal: MealResponseDTO;
@@ -71,15 +77,15 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
       data-testid="meal-card"
       data-meal-id={meal.id}
     >
-      {/* Header: category badge + AI badge + time */}
-      <div className="flex justify-between items-center mb-2">
-        <span
-          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${categoryConfig.color}`}
-        >
-          <span>{categoryConfig.icon}</span>
-          <span>{categoryConfig.label}</span>
-        </span>
-        <div className="flex items-center gap-2">
+      {/* Header: category badge + AI badge + time + actions menu */}
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span
+            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${categoryConfig.color}`}
+          >
+            <span>{categoryConfig.icon}</span>
+            <span>{categoryConfig.label}</span>
+          </span>
           {meal.input_method === "ai" && (
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -90,13 +96,64 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
                   clipRule="evenodd"
                 />
               </svg>
-              Wygenerowane przez AI
+              <span className="hidden sm:inline">Wygenerowane przez AI</span>
             </span>
           )}
-          <span className="text-sm text-muted-foreground" data-testid="meal-card-time">
+          <span className="text-sm text-muted-foreground ml-auto" data-testid="meal-card-time">
             {mealTime}
           </span>
         </div>
+
+        {/* Actions menu - three dots (mobile only) */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            disabled={isDeleting}
+            className="lg:hidden ml-2 p-1.5 hover:bg-accent rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Menu akcji"
+            data-testid="meal-card-actions-menu"
+          >
+            <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+              />
+            </svg>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem
+              onClick={() => onEdit(meal)}
+              className="cursor-pointer"
+              data-testid="meal-card-edit-button-mobile"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Edytuj
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleDeleteClick}
+              className="cursor-pointer text-destructive focus:text-destructive"
+              data-testid="meal-card-delete-button-mobile"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+              Usuń
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Description line */}
@@ -104,14 +161,14 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
         {meal.description}
       </p>
 
-      {/* Calories, macros & actions line */}
+      {/* Calories and macros line */}
       {!showDeleteConfirm ? (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="text-lg font-bold text-foreground whitespace-nowrap" data-testid="meal-card-calories">
             {meal.calories} kcal
           </div>
           {(meal.protein !== null || meal.carbs !== null || meal.fats !== null) && (
-            <div className="flex gap-2 text-xs text-muted-foreground whitespace-nowrap">
+            <div className="flex gap-2 text-xs text-muted-foreground whitespace-nowrap flex-wrap">
               {meal.protein !== null && (
                 <span>
                   <span className="font-medium">Białko:</span> {meal.protein}g
@@ -130,8 +187,8 @@ export function MealCard({ meal, onEdit, onDelete, isDeleting = false }: MealCar
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="flex gap-2 ml-auto">
+          {/* Action buttons (desktop only) */}
+          <div className="hidden lg:flex gap-2 ml-auto">
             <button
               onClick={() => onEdit(meal)}
               disabled={isDeleting}

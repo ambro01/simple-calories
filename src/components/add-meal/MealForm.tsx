@@ -83,9 +83,9 @@ export function MealForm({ onClose, onSuccess, mealId, initialDate }: MealFormPr
         date={activeForm.watch("date")}
         time={activeForm.watch("time")}
         dateWarning={mealForm.validation?.dateWarning || null}
-        onCategoryChange={(category) => activeForm.setValue("category", category)}
-        onDateChange={(date) => activeForm.setValue("date", date)}
-        onTimeChange={(time) => activeForm.setValue("time", time)}
+        onCategoryChange={(category) => activeForm.setValue("category", category, { shouldDirty: true })}
+        onDateChange={(date) => activeForm.setValue("date", date, { shouldDirty: true })}
+        onTimeChange={(time) => activeForm.setValue("time", time, { shouldDirty: true })}
       />
 
       {/* Submit Error */}

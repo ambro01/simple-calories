@@ -40,6 +40,12 @@ export function ChangePasswordDialog({ open, onOpenChange, onSuccess }: ChangePa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Sprawdź czy formularz jest poprawny przed próbą zapisu
+    const isValid = await form.trigger();
+    if (!isValid) {
+      return; // Nie zamykaj dialogu jeśli walidacja nie przeszła
+    }
+
     try {
       await onSubmit(e);
 

@@ -19,6 +19,12 @@ export function Settings() {
   const settings = useSettings();
   const { theme, toggleTheme } = useTheme();
 
+  // Sprawdź czy cel na jutro różni się od aktualnego
+  const hasDifferentTomorrowGoal =
+    settings.tomorrowGoal &&
+    settings.state.currentGoal &&
+    settings.tomorrowGoal.daily_goal !== settings.state.currentGoal.daily_goal;
+
   /**
    * Obsługa sukcesu zapisania celu
    * Odświeża dane i zamyka dialog
@@ -67,6 +73,8 @@ export function Settings() {
     ? `${settings.state.currentGoal.daily_goal} kcal`
     : "Nie ustawiono";
 
+  const tomorrowGoalDisplay = settings.tomorrowGoal ? `${settings.tomorrowGoal.daily_goal} kcal` : null;
+
   const userEmailDisplay = settings.state.userEmail || "Brak danych";
 
   return (
@@ -108,7 +116,11 @@ export function Settings() {
             <h2 className="text-lg font-semibold mb-3">Cele</h2>
             <SettingsCard
               title="Cel kaloryczny"
-              subtitle={`Aktualnie: ${currentGoalDisplay}`}
+              subtitle={
+                hasDifferentTomorrowGoal
+                  ? `Aktualnie: ${currentGoalDisplay}\nOd jutra: ${tomorrowGoalDisplay}`
+                  : `Aktualnie: ${currentGoalDisplay}`
+              }
               icon={<Target className="h-5 w-5" />}
               onClick={settings.openEditGoalDialog}
             />
@@ -154,6 +166,7 @@ export function Settings() {
         open={settings.state.showEditGoalDialog}
         onOpenChange={settings.closeEditGoalDialog}
         currentGoal={settings.state.currentGoal}
+        tomorrowGoal={settings.tomorrowGoal}
         onSuccess={handleGoalSuccess}
       />
 

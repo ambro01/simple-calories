@@ -22,8 +22,16 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { EditCalorieGoalDialogProps } from "@/types/settings.types";
 import { useCalorieGoalForm } from "@/hooks/useCalorieGoalForm";
 
-export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSuccess }: EditCalorieGoalDialogProps) {
-  const { form, apiError, onSubmit, isSubmitting, reset } = useCalorieGoalForm(currentGoal);
+export function EditCalorieGoalDialog({
+  open,
+  onOpenChange,
+  currentGoal,
+  tomorrowGoal,
+  onSuccess,
+}: EditCalorieGoalDialogProps) {
+  // Użyj celu na jutro jeśli istnieje, w przeciwnym razie aktualnego
+  const goalToEdit = tomorrowGoal || currentGoal;
+  const { form, apiError, onSubmit, isSubmitting, reset } = useCalorieGoalForm(goalToEdit);
 
   /**
    * Reset formularza przy otwieraniu dialogu
@@ -39,6 +47,12 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Sprawdź czy formularz jest poprawny przed próbą zapisu
+    const isValid = await form.trigger();
+    if (!isValid) {
+      return; // Nie zamykaj dialogu jeśli walidacja nie przeszła
+    }
 
     try {
       await onSubmit(e);
@@ -74,6 +88,7 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
 
   // Wyświetl aktualny cel (jeśli istnieje)
   const currentGoalDisplay = currentGoal ? `${currentGoal.daily_goal} kcal` : "Brak celu";
+  const tomorrowGoalDisplay = tomorrowGoal ? `${tomorrowGoal.daily_goal} kcal` : null;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -81,7 +96,17 @@ export function EditCalorieGoalDialog({ open, onOpenChange, currentGoal, onSucce
         <DialogHeader>
           <DialogTitle>Ustaw cel kaloryczny</DialogTitle>
           <DialogDescription>
-            Aktualnie: <span className="font-semibold">{currentGoalDisplay}</span>
+            {tomorrowGoal && tomorrowGoal.daily_goal !== currentGoal?.daily_goal ? (
+              <>
+                Aktualnie: <span className="font-semibold">{currentGoalDisplay}</span>
+                <br />
+                Od jutra: <span className="font-semibold">{tomorrowGoalDisplay}</span>
+              </>
+            ) : (
+              <>
+                Aktualnie: <span className="font-semibold">{currentGoalDisplay}</span>
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
 

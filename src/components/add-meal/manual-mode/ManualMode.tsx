@@ -33,7 +33,7 @@ export function ManualMode({ form, validation }: ManualModeProps) {
       {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="manual-description" className="text-sm font-medium">
-          Opis posiłku
+          Opis posiłku <span className="text-destructive">*</span>
         </Label>
         <Textarea
           id="manual-description"
@@ -80,7 +80,7 @@ export function ManualMode({ form, validation }: ManualModeProps) {
           fats={watch("fats")}
           fiber={watch("fiber")}
           onChange={(field, value) => {
-            form.setValue(field as keyof ManualMealFormData, value, { shouldValidate: true });
+            form.setValue(field as keyof ManualMealFormData, value, { shouldValidate: true, shouldDirty: true });
           }}
           errors={{
             protein: errors.protein?.message,
