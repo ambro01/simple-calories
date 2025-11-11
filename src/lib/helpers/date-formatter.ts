@@ -10,8 +10,10 @@
  */
 export type DateFormat =
   | "YYYY-MM-DD" // 2025-01-27 (API format)
+  | "DD.MM.YYYY" // 30.10.2025
   | "full" // Poniedziałek, 30 października 2025
   | "short" // Pn, 30 paź
+  | "weekday-date" // Poniedziałek, 30.10.2025
   | "time"; // 08:30
 
 /**
@@ -34,6 +36,12 @@ export function createDateFormatter(): DateFormatter {
       switch (format) {
         case "YYYY-MM-DD":
           return d.toISOString().split("T")[0];
+        case "DD.MM.YYYY": {
+          const day = String(d.getDate()).padStart(2, "0");
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const year = d.getFullYear();
+          return `${day}.${month}.${year}`;
+        }
         case "full":
           return new Intl.DateTimeFormat("pl-PL", {
             weekday: "long",
@@ -47,6 +55,15 @@ export function createDateFormatter(): DateFormatter {
             day: "numeric",
             month: "short",
           }).format(d);
+        case "weekday-date": {
+          const weekday = new Intl.DateTimeFormat("pl-PL", {
+            weekday: "long",
+          }).format(d);
+          const day = String(d.getDate()).padStart(2, "0");
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const year = d.getFullYear();
+          return `${weekday}, ${day}.${month}.${year}`;
+        }
         case "time":
           return new Intl.DateTimeFormat("pl-PL", {
             hour: "2-digit",

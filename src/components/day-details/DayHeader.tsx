@@ -19,7 +19,7 @@ export function DayHeader({ progress, onBack, onAddMeal }: DayHeaderProps) {
   const dateFormatter = useDateFormatter();
 
   // Format daty
-  const formattedDate = dateFormatter.format(progress.date, "full");
+  const formattedDate = dateFormatter.format(progress.date, "weekday-date");
 
   return (
     <div className="bg-background border-b border-border sticky top-0 z-10">
